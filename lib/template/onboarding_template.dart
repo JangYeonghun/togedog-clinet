@@ -10,8 +10,8 @@ class OnboardingTemplate extends StatefulWidget {
 }
 
 class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTickerProviderStateMixin {
-  late final double deviceHeight;
-  late final double deviceWidth;
+  late double deviceHeight;
+  late double deviceWidth;
   late final TabController _tabController;
   static const TextStyle textStyle = TextStyle(
       color: Palette.darkFont4,
@@ -22,8 +22,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
   @override
   void initState() {
-    deviceWidth = GlobalVariables.width;
-    deviceHeight = GlobalVariables.height;
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
@@ -81,7 +79,10 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-
+    GlobalVariables.width = MediaQuery.of(context).size.width;
+    GlobalVariables.height = MediaQuery.of(context).size.height;
+    deviceWidth = GlobalVariables.width;
+    deviceHeight = GlobalVariables.height;
     return SafeArea(
         bottom: false,
         child: Scaffold(
