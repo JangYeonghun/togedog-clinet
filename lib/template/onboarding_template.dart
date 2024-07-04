@@ -1,4 +1,5 @@
 import 'package:dog/config/global_variables.dart';
+import 'package:dog/config/palette.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingTemplate extends StatefulWidget {
@@ -12,9 +13,8 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   late final double deviceHeight;
   late final double deviceWidth;
   late final TabController _tabController;
-  //int _recentIndex = 0;
   static const TextStyle textStyle = TextStyle(
-      color: Color(0xFF222222),
+      color: Palette.darkFont4,
       fontSize: 16,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w500
@@ -33,21 +33,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
     _tabController.dispose();
     super.dispose();
   }
-
-/*  // 탭뷰 슬라이드 리스너
-  void tabSlideListener() {
-    //리스너 등록
-    _tabController.animation!.addListener(() {
-      // 2번쨰, 3번째 슬라이드 사이의 이동시에만 상태 갱신
-      if (_recentIndex + _tabController.index == 3) {
-        setState(() {
-
-        });
-      }
-      // 최근 인덱스 기록
-      _recentIndex = _tabController.index;
-    });
-  }*/
 
   // 온보딩 위젯
   Widget onboarding({required String content, required int index}) {
@@ -104,49 +89,43 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
           body: Stack(
             alignment: Alignment.topCenter,
             children: [
-              //if (_tabController.index < 2)
-                Positioned(
-                  bottom: deviceHeight / 812 * 220,
-                  child: SizedBox(
-                    width: 120,
-                    height: 7,
-                    child: Stack(
-                      children: [
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              tabDot(),
-                              tabDot(),
-                              tabDot()
-                            ]
+              Positioned(
+                bottom: deviceHeight / 812 * 220,
+                child: SizedBox(
+                  width: 120,
+                  height: 7,
+                  child: Stack(
+                    children: [
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            tabDot(),
+                            tabDot(),
+                            tabDot()
+                          ]
+                      ),
+                      TabBar(
+                        controller: _tabController,
+                        tabs: [
+                          tabDot(colored: false),
+                          tabDot(colored: false),
+                          tabDot(colored: false),
+                        ],
+                        indicator: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Palette.green6
                         ),
-                        TabBar(
-                          controller: _tabController,
-                          tabs: [
-                            tabDot(colored: false),
-                            tabDot(colored: false),
-                            tabDot(colored: false),
-                          ],
-                          indicator: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFF00DB97)
-                          ),
-                          overlayColor: const WidgetStatePropertyAll(
-                              Colors.transparent
-                          ),
-                          onTap: (index) {
-                            /*setState(() {
-
-                            });*/
-                          },
-                          indicatorWeight: 0.1,
-                          dividerColor: Colors.transparent,
-                          indicatorSize: TabBarIndicatorSize.tab,
+                        overlayColor: const WidgetStatePropertyAll(
+                            Colors.transparent
                         ),
-                      ],
-                    ),
+                        indicatorWeight: 0.1,
+                        dividerColor: Colors.transparent,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                      ),
+                    ],
                   ),
                 ),
+              ),
               TabBarView(
                 controller: _tabController,
                 children: [
