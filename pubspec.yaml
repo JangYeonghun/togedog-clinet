@@ -29,7 +29,7 @@ dependencies:
 
   # etc
   url_launcher:
-  riverpod: ^2.5.1
+  flutter_riverpod: ^2.5.1
   permission_handler:
   device_info_plus:
   sqflite: ^2.2.8+4
@@ -63,7 +63,6 @@ flutter_launcher_icons:
 
 flutter:
   uses-material-design: true
-
 
   assets:
     - assets/images/
