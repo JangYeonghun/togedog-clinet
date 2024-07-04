@@ -1,6 +1,7 @@
 import 'package:dog/config/global_variables.dart';
 import 'package:dog/config/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OnboardingTemplate extends StatefulWidget {
   const OnboardingTemplate({super.key});
@@ -52,11 +53,47 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
                 color: Colors.white,
                 child: Column(
                   children: [
-                    Image.asset('assets/images/sign_with_naver.png', width: deviceWidth - 80),
+                    InkWell(
+                        onTap: () async {
+                          await launchUrl(
+                            Uri(
+                              scheme: 'http',
+                              host: '175.106.99.104',
+                              port: 8080,
+                              path: 'oauth2/authorization/naver',
+                            ),
+                          );
+                        },
+                        child: Image.asset('assets/images/sign_with_naver.png', width: deviceWidth - 80))
+                    ,
                     const SizedBox(height: 10),
-                    Image.asset('assets/images/sign_with_kakao.png', width: deviceWidth - 80),
+                    InkWell(
+                        onTap: () async {
+                          await launchUrl(
+                            Uri(
+                              scheme: 'http',
+                              host: '175.106.99.104',
+                              port: 8080,
+                              path: 'oauth2/authorization/kakao',
+                            ),
+                          );
+                        },
+                        child: Image.asset('assets/images/sign_with_kakao.png', width: deviceWidth - 80))
+                    ,
                     const SizedBox(height: 10),
-                    Image.asset('assets/images/sign_with_google.png', width: deviceWidth - 80),
+                    InkWell(
+                        onTap: () async {
+                          await launchUrl(
+                            Uri(
+                              scheme: 'http',
+                              host: '175.106.99.104',
+                              port: 8080,
+                              path: 'oauth2/authorization/google',
+                            ),
+                          );
+                        },
+                        child: Image.asset('assets/images/sign_with_google.png', width: deviceWidth - 80)
+                    ),
                   ],
                 ),
             )
