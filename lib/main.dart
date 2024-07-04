@@ -1,3 +1,4 @@
+import 'package:dog/config/global_variables.dart';
 import 'package:dog/template/onboarding_template.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +11,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GlobalVariables.height = MediaQuery.of(context).size.height;
+    GlobalVariables.width = MediaQuery.of(context).size.width;
     return MaterialApp(
       home: OnboardingTemplate(),
     );
