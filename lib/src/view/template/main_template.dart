@@ -1,11 +1,13 @@
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/provider/bottom_navigation_bar_provider.dart';
+import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/body/home_body.dart';
 import 'package:dog/src/view/body/my_page_body.dart';
 import 'package:dog/src/view/body/my_walk_body.dart';
 import 'package:dog/src/view/body/profile_body.dart';
 import 'package:dog/src/view/body/walking_body.dart';
 import 'package:dog/src/view/component/bottom_navigation.dart';
+import 'package:dog/src/view/component/home/home_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,7 +26,10 @@ class MainTemplate extends ConsumerWidget {
       canPop: true,
       child: Scaffold(
         body: <int, Widget>{
-          0: const SafeArea(top: true, bottom: false, child: HomeBody()),
+          0: const CommonScaffoldUtil(
+              appBar: HomeHeader(),
+              body: HomeBody()
+          ),
           1: const SafeArea(top: true, bottom: false, child: WalkingBody()),
           2: const SafeArea(top: true, bottom: false, child: MyWalkBody()),
           3: const SafeArea(top: true, bottom: false, child: ProfileBody()),

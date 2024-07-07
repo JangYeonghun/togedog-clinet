@@ -8,7 +8,7 @@ class MyPageBody extends StatelessWidget {
     debugPrint('MYLOG build MyPageBody');
     return Scaffold(
       appBar: AppBar(
-        title: Text('마이 페이지'),
+        title: const Text('마이 페이지'),
       ),
     );
   }

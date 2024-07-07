@@ -13,7 +13,7 @@ class _MyWalkBodyState extends State<MyWalkBody> {
     debugPrint('MYLOG build MyWalkBody');
     return Scaffold(
       appBar: AppBar(
-        title: Text('내산책'),
+        title: const Text('내산책'),
       ),
     );
   }

@@ -8,7 +8,7 @@ class ProfileBody extends StatelessWidget {
     debugPrint('MYLOG build ProfileBody');
     return Scaffold(
       appBar: AppBar(
-        title: Text('프로필'),
+        title: const Text('프로필'),
       ),
     );
   }

@@ -12,7 +12,7 @@ class OnboardingTemplate extends StatefulWidget {
 }
 
 class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTickerProviderStateMixin {
-  final FlutterSecureStorage storage = FlutterSecureStorage();
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
   late double deviceHeight;
   late double deviceWidth;
   late final TabController _tabController;
