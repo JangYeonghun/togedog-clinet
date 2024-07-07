@@ -91,7 +91,7 @@ class BottomNavigation extends ConsumerWidget {
                         fit: BoxFit.contain,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
                       e['name'],
                       style: TextStyle(
