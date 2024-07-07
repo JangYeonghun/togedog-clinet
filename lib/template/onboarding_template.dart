@@ -1,6 +1,7 @@
 import 'package:dog/config/global_variables.dart';
 import 'package:dog/config/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class OnboardingTemplate extends StatefulWidget {
@@ -11,6 +12,7 @@ class OnboardingTemplate extends StatefulWidget {
 }
 
 class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTickerProviderStateMixin {
+  final FlutterSecureStorage storage = FlutterSecureStorage();
   late double deviceHeight;
   late double deviceWidth;
   late final TabController _tabController;
@@ -21,8 +23,17 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
       fontWeight: FontWeight.w500
   );
 
+  Future<void> checkAccessToken() async {
+    await storage.read(key: 'accessToken').then((value) {
+      if (value != null) {
+        Navigator.pushReplacementNamed(context, '/main');
+      }
+    });
+  }
+
   @override
   void initState() {
+    checkAccessToken();
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
@@ -55,14 +66,15 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
                   children: [
                     InkWell(
                         onTap: () async {
-                          await launchUrl(
+                          await storage.write(key: 'accessToken', value: 'test').whenComplete(() => Navigator.pushReplacementNamed(context, '/main'));
+                          /*await launchUrl(
                             Uri(
                               scheme: 'http',
                               host: '175.106.99.104',
                               port: 8080,
                               path: 'oauth2/authorization/naver',
                             ),
-                          );
+                          );*/
                         },
                         child: Image.asset('assets/images/sign_with_naver.png', width: deviceWidth - 80))
                     ,
