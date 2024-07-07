@@ -1,5 +1,5 @@
-import 'package:dog/config/global_variables.dart';
-import 'package:dog/config/palette.dart';
+import 'package:dog/src/config/global_variables.dart';
+import 'package:dog/src/config/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -128,8 +128,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    GlobalVariables.width = MediaQuery.of(context).size.width;
-    GlobalVariables.height = MediaQuery.of(context).size.height;
     deviceWidth = GlobalVariables.width;
     deviceHeight = GlobalVariables.height;
     return SafeArea(

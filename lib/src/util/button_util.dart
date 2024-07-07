@@ -1,4 +1,4 @@
-import 'package:dog/config/palette.dart';
+import 'package:dog/src/config/palette.dart';
 import 'package:flutter/material.dart';
 
 class ButtonUtil {
