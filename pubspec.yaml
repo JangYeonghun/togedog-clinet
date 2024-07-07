@@ -84,19 +84,6 @@ flutter:
         - asset: assets/fonts/Pretendard-Thin.ttf
         - asset: assets/fonts/PretendardVariable.ttf
 
-#  fonts:
-#    - family: NotoSansKR
-#      fonts:
-#        - asset: assets/fonts/NotoSansKR-Black.ttf
-#        - asset: assets/fonts/NotoSansKR-Bold.ttf
-#        - asset: assets/fonts/NotoSansKR-ExtraBold.ttf
-#        - asset: assets/fonts/NotoSansKR-ExtraLight.ttf
-#        - asset: assets/fonts/NotoSansKR-Light.ttf
-#        - asset: assets/fonts/NotoSansKR-Medium.ttf
-#        - asset: assets/fonts/NotoSansKR-Regular.ttf
-#        - asset: assets/fonts/NotoSansKR-SemiBold.ttf
-#        - asset: assets/fonts/NotoSansKR-Thin.ttf
-
 # flutter pub run flutter_native_splash:remove
 # flutter pub run flutter_native_splash:create
 #flutter_native_splash:
