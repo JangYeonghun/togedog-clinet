@@ -2,7 +2,8 @@ import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/view/component/home/profile_grid.dart';
-import 'package:dog/src/view/component/home/upper_tab.dart';
+import 'package:dog/src/view/component/home/profile_list.dart';
+import 'package:dog/src/view/component/home/slide_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -24,7 +25,20 @@ class _HomeBodyState extends State<HomeBody> {
             padding: const EdgeInsets.only(top: 239),
             child: const ProfileGrid()
         ),
-        const UpperTab()
+        const SlideTab()
+      ],
+    );
+  }
+
+  Widget walkerHome() {
+    return Stack(
+      children: [
+        Container(
+            color: Colors.white,
+            padding: const EdgeInsets.only(top: 239),
+            child: const ProfileList()
+        ),
+        const SlideTab()
       ],
     );
   }
@@ -36,10 +50,7 @@ class _HomeBodyState extends State<HomeBody> {
       builder: (context, ref, _) {
         final mode = ref.watch(modeProvider);
         return SingleChildScrollView(
-          child: SizedBox(
-            height: deviceHeight,
-            child: mode ? ownerHome() : Center(child: Text('산책메이트'))
-          ),
+          child: mode ? ownerHome() : walkerHome(),
         );
       },
     );
