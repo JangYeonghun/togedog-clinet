@@ -100,28 +100,28 @@ class _ProfileGridState extends State<ProfileGrid> {
             ),
           ),
           const SizedBox(height: 10),
-          Flexible(
-            child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 15,
-                  crossAxisSpacing: 11,
-                  childAspectRatio: 168/200
-                ),
-                padding: const EdgeInsets.only(left: 12, right: 16, top: 15, bottom: 170),
-                itemCount: testData.length,
-                itemBuilder: (context, index) {
-                  return ProfileGridItem(
-                      width: deviceWidth - 43,
-                      height: (deviceWidth - 43) / 168 * 200,
-                      nickname: testData[index]['nickname'],
-                      gender: testData[index]['gender'],
-                      age: testData[index]['age'],
-                      location: testData[index]['location'],
-                      imgUrl: 'https://cdn.gijn.kr/news/photo/202202/411141_315429_83.jpg'
-                  );
-                }
-            ),
+          GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 15,
+                crossAxisSpacing: 11,
+                childAspectRatio: 168/200
+              ),
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              padding: const EdgeInsets.only(left: 12, right: 16, top: 15, bottom: 10),
+              itemCount: testData.length,
+              itemBuilder: (context, index) {
+                return ProfileGridItem(
+                    width: deviceWidth - 43,
+                    height: (deviceWidth - 43) / 168 * 200,
+                    nickname: testData[index]['nickname'],
+                    gender: testData[index]['gender'],
+                    age: testData[index]['age'],
+                    location: testData[index]['location'],
+                    imgUrl: 'https://cdn.gijn.kr/news/photo/202202/411141_315429_83.jpg'
+                );
+              }
           ),
         ],
       ),
