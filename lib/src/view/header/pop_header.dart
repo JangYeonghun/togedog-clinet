@@ -6,11 +6,13 @@ class PopHeader extends StatelessWidget implements PreferredSizeWidget {
   static const double defaultHeight = 55;
   final String title;
   final bool? useBackButton;
+  final Color color;
 
   const PopHeader({
     super.key,
     required this.title,
     this.useBackButton = false,
+    this.color = Colors.white,
   });
 
   @override
@@ -28,7 +30,7 @@ class PopHeader extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       height: defaultHeight,
-      color: Colors.red,
+      color: color,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -45,7 +47,7 @@ class PopHeader extends StatelessWidget implements PreferredSizeWidget {
                   Icons.arrow_back_ios_new,
                   color: Colors.black,
                 )
-            ) : const SizedBox(),
+            ) : SizedBox(width: deviceWidth * 0.1),
           ),
           SizedBox(
             width: deviceWidth * 0.6,
