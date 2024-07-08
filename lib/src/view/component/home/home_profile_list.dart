@@ -1,5 +1,5 @@
 import 'package:dog/src/config/palette.dart';
-import 'package:dog/src/view/component/home/profile_list_item.dart';
+import 'package:dog/src/view/component/home/home_profile_list_item.dart';
 import 'package:flutter/material.dart';
 
 class ProfileList extends StatefulWidget {

@@ -10,6 +10,7 @@ class ProfileListItem extends StatelessWidget {
   final String size;
   final String species;
   final String location;
+
   const ProfileListItem({
     super.key,
     required this.imgUrl,
