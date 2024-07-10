@@ -1,4 +1,4 @@
-package com.example.dog
+package com.example.togedog
 
 import io.flutter.embedding.android.FlutterActivity
 
