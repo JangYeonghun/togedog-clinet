@@ -1,3 +1,4 @@
+import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,8 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   late double deviceHeight;
   late double deviceWidth;
   late final TabController _tabController;
+  late AppLinks _appLinks;
+
   static const TextStyle textStyle = TextStyle(
       color: Palette.darkFont4,
       fontSize: 16,
@@ -31,10 +34,41 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
     });
   }
 
+  Future<void> initAppLinks() async {
+    _appLinks = AppLinks();
+
+    // 앱이 실행 중일 때
+    _appLinks.uriLinkStream.listen((Uri? uri) {
+      if (uri != null) {
+        _handleIncomingLink(uri);
+      }
+    });
+
+    // 앱이 종료 되었을 때
+    final appLinkUri = await _appLinks.getInitialLink();
+    if (appLinkUri != null) {
+      _handleIncomingLink(appLinkUri);
+    }
+  }
+
+  void _handleIncomingLink(Uri uri) {
+    debugPrint('Received link: $uri');
+    if (uri.scheme == 'togedog' && uri.host == 'togedog' && uri.path.startsWith('/login')) {
+      String? accessToken = uri.queryParameters['token'];
+      if (accessToken != null) {
+        debugPrint('Access Token: $accessToken');
+        storage.write(key: 'accessToken', value: accessToken).then((_) {
+          Navigator.pushReplacementNamed(context, '/main');
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     checkAccessToken();
     _tabController = TabController(length: 3, vsync: this);
+    initAppLinks();
     super.initState();
   }
 
@@ -90,8 +124,8 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
                             ),
                           );
                         },
-                        child: Image.asset('assets/images/sign_with_kakao.png', width: deviceWidth - 80))
-                    ,
+                        child: Image.asset('assets/images/sign_with_kakao.png', width: deviceWidth - 80)
+                    ),
                     const SizedBox(height: 10),
                     InkWell(
                         onTap: () async {
