@@ -15,6 +15,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    GlobalVariables.width = MediaQuery.of(context).size.width;
+    GlobalVariables.height = MediaQuery.of(context).size.height;
     // ScreenUtil 초기화
     return ScreenUtilInit(
       designSize: const Size(375, 812), // 아이폰 13 미니
