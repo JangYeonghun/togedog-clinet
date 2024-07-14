@@ -54,11 +54,11 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   void _handleIncomingLink(Uri uri) {
     debugPrint('Received link: $uri');
     if (uri.scheme == 'togedog' && uri.host == 'togedog' && uri.path.startsWith('/login')) {
-      String? accessToken = uri.queryParameters['token'];
+      String? accessToken = uri.queryParameters['accessToken'];
       if (accessToken != null) {
         debugPrint('Access Token: $accessToken');
         storage.write(key: 'accessToken', value: accessToken).then((_) {
-          Navigator.pushReplacementNamed(context, '/main');
+          checkAccessToken();
         });
       }
     }
@@ -76,6 +76,23 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  // 로그인 버튼
+  Widget socialLogin({required String social}) {
+    return InkWell(
+        onTap: () async {
+          await launchUrl(
+            Uri(
+              scheme: 'http',
+              host: '175.106.99.104',
+              port: 8080,
+              path: 'oauth2/authorization/$social',
+            ),
+          );
+        },
+        child: Image.asset('assets/images/sign_with_$social.png', width: deviceWidth - 80)
+    );
   }
 
   // 온보딩 위젯
@@ -98,48 +115,11 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
                 color: Colors.white,
                 child: Column(
                   children: [
-                    InkWell(
-                        onTap: () async {
-                          await storage.write(key: 'accessToken', value: 'test').whenComplete(() => Navigator.pushReplacementNamed(context, '/main'));
-                          /*await launchUrl(
-                            Uri(
-                              scheme: 'http',
-                              host: '175.106.99.104',
-                              port: 8080,
-                              path: 'oauth2/authorization/naver',
-                            ),
-                          );*/
-                        },
-                        child: Image.asset('assets/images/sign_with_naver.png', width: deviceWidth - 80))
-                    ,
+                    socialLogin(social: 'naver'),
                     const SizedBox(height: 10),
-                    InkWell(
-                        onTap: () async {
-                          await launchUrl(
-                            Uri(
-                              scheme: 'http',
-                              host: '175.106.99.104',
-                              port: 8080,
-                              path: 'oauth2/authorization/kakao',
-                            ),
-                          );
-                        },
-                        child: Image.asset('assets/images/sign_with_kakao.png', width: deviceWidth - 80)
-                    ),
+                    socialLogin(social: 'kakao'),
                     const SizedBox(height: 10),
-                    InkWell(
-                        onTap: () async {
-                          await launchUrl(
-                            Uri(
-                              scheme: 'http',
-                              host: '175.106.99.104',
-                              port: 8080,
-                              path: 'oauth2/authorization/google',
-                            ),
-                          );
-                        },
-                        child: Image.asset('assets/images/sign_with_google.png', width: deviceWidth - 80)
-                    ),
+                    socialLogin(social: 'google')
                   ],
                 ),
             )
