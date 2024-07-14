@@ -2,6 +2,7 @@ import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/provider/bottom_navigation_bar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BottomNavigation extends ConsumerWidget {
   const BottomNavigation({super.key});
@@ -46,14 +47,12 @@ class BottomNavigation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deviceWidth = GlobalVariables.width;
-    final deviceHeight = GlobalVariables.height;
     final currentIndex = ref.watch(bottomNavigationProvider);
 
     return Container(
-      width: deviceWidth,
+      width: 1.sw,
       height: 80,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
           // borderRadius: BorderRadius.only(
           //   topLeft: Radius.circular(30),
           //   topRight: Radius.circular(30),
@@ -61,10 +60,10 @@ class BottomNavigation extends ConsumerWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Color.fromARGB(15, 0, 0, 0),
-              blurRadius: 50.0,
-              spreadRadius: 30.0,
-              offset: Offset(0, -20),
+              color: const Color.fromARGB(50, 0, 0, 0),
+              blurRadius: 50.0.r,
+              spreadRadius: 30.0.r,
+              // offset: Offset(0, -0),
             ),
           ],
       ),
@@ -78,25 +77,25 @@ class BottomNavigation extends ConsumerWidget {
             },
             child: Container(
               color: Colors.transparent,
-              width: deviceWidth / 5,
+              width: 0.2.sw,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 25,
-                      height: 25,
+                      width: 25.w,
+                      height: 25.h,
                       child: Image.asset(
                         currentIndex == e['index'] ? e['selectedImage'] : e['image'],
                         fit: BoxFit.contain,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: 5.h),
                     Text(
                       e['name'],
                       style: TextStyle(
                         color: currentIndex == e['index'] ? const Color(0xFF01DB97) : const Color(0xFF999999),
-                        fontSize: 8,
+                        fontSize: 8.sp,
                         fontFamily: 'Pretendard',
                         fontWeight: FontWeight.w500,
                       ),
