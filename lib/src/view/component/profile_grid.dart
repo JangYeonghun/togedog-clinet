@@ -18,48 +18,56 @@ class ProfileGrid extends StatefulWidget {
 class _ProfileGridState extends State<ProfileGrid> {
   static const List<Map<String, dynamic>> testData = [
     {
+      'id': 1,
       'nickname':'니니님',
       'age':23,
       'gender':'여',
       'location':'서울시'
     },
     {
+      'id': 2,
       'nickname':'지워닝',
       'age':22,
       'gender':'여',
       'location':'대구시'
     },
     {
+      'id': 3,
       'nickname':'테스트1',
       'age':24,
       'gender':'남',
       'location':'대전시'
     },
     {
+      'id': 4,
       'nickname':'테스트2',
       'age':22,
       'gender':'남',
       'location':'포항시'
     },
     {
+      'id': 5,
       'nickname':'니니님',
       'age':23,
       'gender':'여',
       'location':'서울시'
     },
     {
+      'id': 6,
       'nickname':'지워닝',
       'age':22,
       'gender':'여',
       'location':'대구시'
     },
     {
+      'id': 7,
       'nickname':'테스트1',
       'age':24,
       'gender':'남',
       'location':'대전시'
     },
     {
+      'id': 8,
       'nickname':'테스트2',
       'age':22,
       'gender':'남',
@@ -94,6 +102,7 @@ class _ProfileGridState extends State<ProfileGrid> {
                 return ProfileGridItem(
                     width: deviceWidth - 43,
                     height: (deviceWidth - 43) / 168 * 200,
+                    id: testData[index]['id'],
                     nickname: testData[index]['nickname'],
                     gender: testData[index]['gender'],
                     age: testData[index]['age'],

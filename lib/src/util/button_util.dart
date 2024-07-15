@@ -1,5 +1,6 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ButtonUtil {
   double width;
@@ -36,16 +37,24 @@ class ButtonUtil {
     );
   }
   
-  TextStyle _textStyle({required Color color}) {
+  TextStyle _textStyle({required Color color, double? fontSize}) {
     return TextStyle(
       color: color,
-      fontSize: 16,
+      fontSize: fontSize?? 16.sp,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w500
     );
   }
 
-  Widget filledButton1() {
+  Widget filledButton1s() {
+    return _basicButton(
+        onTap: onTap,
+        color: Palette.green6,
+        titleStyle: _textStyle(color: Colors.white, fontSize: 14.sp)
+    );
+  }
+
+  Widget filledButton1m() {
     return _basicButton(
         onTap: onTap,
         color: Palette.green6,
