@@ -1,9 +1,9 @@
 import 'package:dog/src/config/global_variables.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Scaffold는 appBar 속성에 PreferredSizeWidget을 기대함. 이를 통해 나머지 레이아웃을 조정함(body 등)
 class PopHeader extends StatelessWidget implements PreferredSizeWidget {
-  static const double defaultHeight = 55;
   final String title;
   final bool? useBackButton;
   final Color color;
@@ -16,26 +16,20 @@ class PopHeader extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(defaultHeight);
+  Size get preferredSize => Size.fromHeight(55.h);
 
   @override
   Widget build(BuildContext context) {
-    GlobalVariables.width = MediaQuery.of(context).size.width;
-
-    final deviceWidth = GlobalVariables.width;
-
-    const double textHeight = 19;
-
     bool isPressed = false;
 
     return Container(
-      height: defaultHeight,
+      height: 55.h,
       color: color,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            width: deviceWidth * 0.1,
+            width: 0.1.sw,
             child: useBackButton! ? IconButton(
                 onPressed: () {
                   if (!isPressed) {
@@ -47,24 +41,24 @@ class PopHeader extends StatelessWidget implements PreferredSizeWidget {
                   Icons.arrow_back_ios_new,
                   color: Colors.black,
                 )
-            ) : SizedBox(width: deviceWidth * 0.1),
+            ) : SizedBox(width: 0.1.sw),
           ),
           SizedBox(
-            width: deviceWidth * 0.6,
-            height: textHeight,
+            width: 0.6.sw,
+            height: 19.h,
             child: Center(
               child: Text(
                 title,
-                style: const TextStyle(
-                  color: Color(0xFF222222),
-                  fontSize: 16,
+                style: TextStyle(
+                  color: const Color(0xFF222222),
+                  fontSize: 16.sp,
                   fontFamily: 'Pretendard',
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           ),
-          SizedBox(width: deviceWidth * 0.1),
+          SizedBox(width: 0.1.sw),
         ],
       ),
     );
