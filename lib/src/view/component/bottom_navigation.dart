@@ -1,4 +1,3 @@
-import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/provider/bottom_navigation_bar_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
