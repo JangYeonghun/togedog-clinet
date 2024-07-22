@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
@@ -6,6 +8,7 @@ import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileRegisterTemplate extends StatefulWidget {
   final TabController tabController;
@@ -19,6 +22,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final TextEditingController dogHashTagController = TextEditingController();
   int pageIndex = 0;
+  XFile? profileImage;
   List<String> hashTags = [];
   Map<String, Map<String, dynamic>> dogInfo = {
     "gender" : {
@@ -55,19 +59,63 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
   String? selectedLocation;
 
+  @override
+  void initState() {
+    dogHashTagListener();
+    dogHashTagController.text = "#";
+    super.initState();
+  }
+
+  Future<void> getImage({required ImageSource imageSource}) async {
+    ImagePicker().pickImage(
+        source: imageSource,
+        maxHeight: 360,
+        maxWidth: 360,
+        imageQuality: 70
+    ).then((image) async {
+      if (image != null) {
+        debugPrint("#\n\n\n");
+        debugPrint("${(await image.length() / 1024 / 1024).toStringAsFixed(3)}Mb");
+        debugPrint("\n\n\n#");
+        setState(() {
+          profileImage = image;
+        });
+      }
+    });
+  }
+
   Widget profileUpload() {
     return Padding(
       padding: const EdgeInsets.only(left: 14, top: 18, bottom: 23),
       child: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         onTap: () {
-          
+          getImage(imageSource: ImageSource.gallery).whenComplete(() {
+            setState(() {
+
+            });
+          });
         },
         child: Stack(
           alignment: Alignment.bottomRight,
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 11, bottom: 4),
-              child: Image.asset('assets/images/empty_profile.png', width: 83),
+              child: profileImage == null ?
+              Image.asset('assets/images/empty_profile.png', width: 83) :
+              Container(
+                width: 83,
+                height: 83,
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Palette.outlinedButton1),
+                  borderRadius: BorderRadius.circular(10)
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(File(profileImage!.path), fit: BoxFit.cover)
+                ),
+              ),
             ),
             Image.asset('assets/images/camera_icon.png', width: 22),
           ],
@@ -246,6 +294,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 27),
           titleBox(title: '프로필 사진 등록'),
@@ -265,7 +314,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
               controller: ageController,
               hintText: '반려견의 나이를 입력하세요'
           ),
-          const SizedBox(height: 41),
+          const SizedBox(height: 70),
           nextButton()
         ],
       ),
@@ -339,10 +388,69 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   }
 
   void hashTagHandler(String value) {
+    if (dogHashTagController.text == "") {
+      dogHashTagController.text = "#";
+    }
     List<String> split = value.replaceAll(" ", "").replaceAll(",", "").split('#');
     split.removeAt(0);
+
+    // 해쉬태그 수 4개로 제한
+    if (split.length > 4) {
+      split.removeLast();
+      dogHashTagController.text = dogHashTagController.text.substring(0, dogHashTagController.text.length - 1);
+    }
+
+    // #앞에 자동으로 띄어쓰기 추가, #앞의 띄어쓰기 한칸으로 변경
+    dogHashTagController.text = dogHashTagController.text.replaceAll("#", " #").substring(1).replaceAll("  ", " ");
+
+    // 각 태그 글자수 5글자로 제한
+    if (split.isNotEmpty) {
+      if (split.last.length > 5) {
+        dogHashTagController.text = dogHashTagController.text.substring(0, dogHashTagController.text.length - 1);
+        split.last = split.last.substring(0, 5);
+      }
+    }
+
+    // #만 있는 빈 해쉬태그는 위젯 생성할 목록에서 제거
+    split.remove("");
+
     setState(() {
       hashTags = split;
+    });
+  }
+
+  void dogHashTagListener() {
+    dogHashTagController.addListener(() {
+      final text = dogHashTagController.text;
+      final selection = TextSelection.fromPosition(
+        TextPosition(offset: text.length),
+      );
+      dogHashTagController.value = dogHashTagController.value.copyWith(
+        selection: selection,
+      );
+    });
+  }
+
+  void hashTagRemoveHandler({required String hashTag}) {
+    String hashTagString = dogHashTagController.text;
+
+    final RegExp regExp = RegExp(r"#(\w+)");
+    final Iterable<RegExpMatch> matches = regExp.allMatches(hashTagString);
+    final List<String> matchList = matches.map((e) => e.group(0) ?? '').toList();
+
+    hashTagString = "";
+    matchList.remove("#$hashTag");
+
+    for (String tag in matchList) {
+      hashTagString += "$tag ";
+    }
+
+    setState(() {
+      dogHashTagController.text = matchList.isNotEmpty ? hashTagString.substring(0, hashTagString.length - 1) : "";
+      hashTags.remove(hashTag);
+      if (hashTags.isEmpty) {
+        dogHashTagController.text = "#";
+      }
     });
   }
 
@@ -369,12 +477,10 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
             ),
           ),
           InkWell(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
             onTap: () {
-              setState(() {
-                String hashTagString = dogHashTagController.text;
-                dogHashTagController.text = hashTagString.replaceAll('#$hashTag', "");
-                hashTags.remove(hashTag);
-              });
+              hashTagRemoveHandler(hashTag: hashTag);
             },
             child: Container(
                 decoration: const BoxDecoration(
