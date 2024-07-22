@@ -407,6 +407,16 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
       dogHashTagController.text = "${dogHashTagController.text.substring(0, dogHashTagController.text.length - 1)} #";
     }
 
+    // #뒤의 공백 제어
+    if (dogHashTagController.text.endsWith('# ')) {
+      dogHashTagController.text = dogHashTagController.text.substring(0, dogHashTagController.text.length - 1);
+    }
+
+    // 스페이스바 시 #추가
+    if (dogHashTagController.text.endsWith(' ') && !dogHashTagController.text.endsWith('# ') && previousHashTagTextLen < dogHashTagController.text.length) {
+      dogHashTagController.text = "${dogHashTagController.text.substring(0, dogHashTagController.text.length)}#";
+    }
+
     // 각 태그 글자수 5글자로 제한
     if (split.isNotEmpty) {
       if (split.last.length > 5) {
