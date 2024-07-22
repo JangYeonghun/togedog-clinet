@@ -29,6 +29,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   int pageIndex = 0;
   XFile? profileImage;
   List<String> hashTags = [];
+  int previousHashTagTextLen = 0;
   Map<String, Map<String, dynamic>> dogInfo = {
     "gender" : {
       "toggle1" : const Text("암컷",
@@ -387,6 +388,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
     );
   }
 
+  // 해쉬태그 및 텍스트 관리
   void hashTagHandler(String value) {
     if (dogHashTagController.text == "") {
       dogHashTagController.text = "#";
@@ -401,7 +403,9 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
     }
 
     // #앞에 자동으로 띄어쓰기 추가, #앞의 띄어쓰기 한칸으로 변경
-    dogHashTagController.text = dogHashTagController.text.replaceAll("#", " #").substring(1).replaceAll("  ", " ");
+    if (dogHashTagController.text.endsWith('#') && !dogHashTagController.text.endsWith('# ') && previousHashTagTextLen < dogHashTagController.text.length) {
+      dogHashTagController.text = "${dogHashTagController.text.substring(0, dogHashTagController.text.length - 1)} #";
+    }
 
     // 각 태그 글자수 5글자로 제한
     if (split.isNotEmpty) {
@@ -416,9 +420,11 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
 
     setState(() {
       hashTags = split;
+      previousHashTagTextLen = dogHashTagController.text.length;
     });
   }
 
+  // 입력 커서 항상 맨 뒤로 유지
   void dogHashTagListener() {
     dogHashTagController.addListener(() {
       final text = dogHashTagController.text;
@@ -431,10 +437,11 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
     });
   }
 
+  // 해쉬태그 제거
   void hashTagRemoveHandler({required String hashTag}) {
     String hashTagString = dogHashTagController.text;
 
-    final RegExp regExp = RegExp(r"#(\w+)");
+    final RegExp regExp = RegExp(r"#([A-Za-z가-힣]+)");
     final Iterable<RegExpMatch> matches = regExp.allMatches(hashTagString);
     final List<String> matchList = matches.map((e) => e.group(0) ?? '').toList();
 
@@ -451,6 +458,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
       if (hashTags.isEmpty) {
         dogHashTagController.text = "#";
       }
+      previousHashTagTextLen = dogHashTagController.text.length;
     });
   }
 
