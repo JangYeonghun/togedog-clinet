@@ -1,4 +1,3 @@
-import 'package:dog/src/view/component/walking/walking_list_text.dart';
 import 'package:dog/src/view/component/walking/walking_profile_list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -106,7 +105,6 @@ class _WalkingProfileListState extends State<WalkingProfileList> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const WalkingListText(),
         Container(
           color: const Color(0xFFF2F2F2),
           child: ListView.builder(

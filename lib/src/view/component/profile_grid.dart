@@ -1,5 +1,4 @@
 import 'package:dog/src/config/global_variables.dart';
-import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/view/component/profile_grid_item.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +7,7 @@ class ProfileGrid extends StatefulWidget {
 
   const ProfileGrid({
     super.key,
-    required this.gridText,
+    this.gridText = const SizedBox(),
   });
 
   @override
