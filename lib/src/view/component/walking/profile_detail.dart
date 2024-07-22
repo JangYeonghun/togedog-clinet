@@ -1,4 +1,4 @@
-import 'package:dog/src/view/component/profile_details_sheet.dart';
+import 'package:dog/src/view/component/profile_details_bottom_sheet.dart';
 import 'package:dog/src/view/component/profile_header_image.dart';
 import 'package:dog/src/view/component/profile_info_card.dart';
 import 'package:flutter/material.dart';
@@ -72,8 +72,8 @@ class ProfileDetail extends StatelessWidget {
   ];
 
   Widget profileHeader() {
-    String url = 'https://cdn.gijn.kr/news/photo/202202/411141_315429_83.jpg';
-    return ProfileHeaderImage(imgUrl: url);
+    String imgUrl = 'https://cdn.gijn.kr/news/photo/202202/411141_315429_83.jpg';
+    return ProfileHeaderImage(imgUrl: imgUrl);
   }
 
   Widget profileInfo() {
@@ -96,7 +96,7 @@ class ProfileDetail extends StatelessWidget {
       'companionDogCount': '2마리',
     };
 
-    return ProfileDetailsSheet(hashTag: hashTag, profileData: testProfileData);
+    return ProfileDetailsBottomSheet(type: 'front', hashTag: hashTag, profileData: testProfileData);
   }
 
 
