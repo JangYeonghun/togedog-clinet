@@ -21,6 +21,11 @@ class ProfileRegisterTemplate extends StatefulWidget {
 class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final TextEditingController dogHashTagController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController speciesController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
+  final TextEditingController significantController = TextEditingController();
+  final TextEditingController dogWeightController = TextEditingController();
   int pageIndex = 0;
   XFile? profileImage;
   List<String> hashTags = [];
@@ -287,9 +292,6 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   }
 
   Widget dogRegister1() {
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController speciesController = TextEditingController();
-    final TextEditingController ageController = TextEditingController();
 
     return SingleChildScrollView(
       child: Column(
@@ -322,7 +324,6 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   }
 
   Widget dogRegister2() {
-    final TextEditingController dogWeightController = TextEditingController();
 
     return SingleChildScrollView(
       child: Column(
@@ -345,7 +346,6 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
   }
 
   Widget dogRegister3() {
-    TextEditingController significantController = TextEditingController();
 
     return SingleChildScrollView(
       child: Column(
