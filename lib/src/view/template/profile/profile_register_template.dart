@@ -219,7 +219,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
               pageIndex += 1;
             });
           }
-      ).filledButton1(),
+      ).filledButton1m(),
     );
   }
 
@@ -380,7 +380,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
                 onTap: () {
 
                 }
-            ).filledButton1(),
+            ).filledButton1m(),
           )
         ],
       ),
