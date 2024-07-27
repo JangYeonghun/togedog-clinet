@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
@@ -67,8 +66,6 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
 
   @override
   void initState() {
-    dogHashTagListener();
-    dogHashTagController.text = "#";
     super.initState();
   }
 
@@ -175,6 +172,71 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
             dogInfo[type]!['value'] = i;
           });
         },
+      ),
+    );
+  }
+
+  Widget hashTagInputBox() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16),
+      child: TextField(
+        controller: dogHashTagController,
+        style: const TextStyle(
+            color: Colors.black,
+            fontSize: 12,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w500
+        ),
+        textInputAction: TextInputAction.go,
+        onChanged: (value) {
+          if (value.startsWith('#')) {
+            if (value.replaceAll('#', '').length > 5) {
+              dogHashTagController.text = value.substring(0, 6);
+            }
+          } else {
+            if (value.replaceAll('#', '').length > 4) {
+              dogHashTagController.text = value.substring(0, 5);
+            }
+          }
+        },
+        onSubmitted: (value) {
+          if (hashTags.length < 4) {
+            setState(() {
+              hashTags.add('#${value.replaceAll(' ', '').replaceAll('#', '')}');
+              dogHashTagController.text = '';
+            });
+          } else {
+            // 해쉬태그는 4개까지!
+          }
+        },
+        keyboardType: TextInputType.text,
+        decoration: const InputDecoration(
+            hintText: '성격 해시태그를 등록하세요 (최대4개)',
+            hintStyle: TextStyle(
+                color: Palette.darkFont2,
+                fontSize: 12,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w500
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              ),
+              borderSide: BorderSide(
+                color: Palette.outlinedButton1,
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(10),
+              ),
+              borderSide: BorderSide(
+                color: Palette.outlinedButton1,
+                width: 1,
+              ),
+            )
+        ),
       ),
     );
   }
@@ -357,12 +419,7 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
           titleBox(title: '거주 지역 선택'),
           locationDropdown(),
           titleBox(title: '반려견 성격 태그'),
-          textInputBox(
-              controller: dogHashTagController,
-              hintText: "성격 해시태그를 등록하세요 (최대4개)",
-              onChanged: hashTagHandler,
-              padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16)
-          ),
+          hashTagInputBox(),
           hashTagList(),
           const SizedBox(height: 35),
           titleBox(title: '반려견 특이사항'),
@@ -386,90 +443,6 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
         ],
       ),
     );
-  }
-
-  // 해쉬태그 및 텍스트 관리
-  void hashTagHandler(String value) {
-    if (dogHashTagController.text == "") {
-      dogHashTagController.text = "#";
-    }
-    List<String> split = value.replaceAll(" ", "").replaceAll(",", "").split('#');
-    split.removeAt(0);
-
-    // 해쉬태그 수 4개로 제한
-    if (split.length > 4) {
-      split.removeLast();
-      dogHashTagController.text = dogHashTagController.text.substring(0, dogHashTagController.text.length - 1);
-    }
-
-    // #앞에 자동으로 띄어쓰기 추가, #앞의 띄어쓰기 한칸으로 변경
-    if (dogHashTagController.text.endsWith('#') && !dogHashTagController.text.endsWith('# ') && previousHashTagTextLen < dogHashTagController.text.length) {
-      dogHashTagController.text = "${dogHashTagController.text.substring(0, dogHashTagController.text.length - 1)} #";
-    }
-
-    // #뒤의 공백 제어
-    if (dogHashTagController.text.endsWith('# ')) {
-      dogHashTagController.text = dogHashTagController.text.substring(0, dogHashTagController.text.length - 1);
-    }
-
-    // 스페이스바 시 #추가
-    if (dogHashTagController.text.endsWith(' ') && !dogHashTagController.text.endsWith('# ') && previousHashTagTextLen < dogHashTagController.text.length) {
-      dogHashTagController.text = "${dogHashTagController.text.substring(0, dogHashTagController.text.length)}#";
-    }
-
-    // 각 태그 글자수 5글자로 제한
-    if (split.isNotEmpty) {
-      if (split.last.length > 5) {
-        dogHashTagController.text = dogHashTagController.text.substring(0, dogHashTagController.text.length - 1);
-        split.last = split.last.substring(0, 5);
-      }
-    }
-
-    // #만 있는 빈 해쉬태그는 위젯 생성할 목록에서 제거
-    split.remove("");
-
-    setState(() {
-      hashTags = split;
-      previousHashTagTextLen = dogHashTagController.text.length;
-    });
-  }
-
-  // 입력 커서 항상 맨 뒤로 유지
-  void dogHashTagListener() {
-    dogHashTagController.addListener(() {
-      final text = dogHashTagController.text;
-      final selection = TextSelection.fromPosition(
-        TextPosition(offset: text.length),
-      );
-      dogHashTagController.value = dogHashTagController.value.copyWith(
-        selection: selection,
-      );
-    });
-  }
-
-  // 해쉬태그 제거
-  void hashTagRemoveHandler({required String hashTag}) {
-    String hashTagString = dogHashTagController.text;
-
-    final RegExp regExp = RegExp(r"#([A-Za-z가-힣]+)");
-    final Iterable<RegExpMatch> matches = regExp.allMatches(hashTagString);
-    final List<String> matchList = matches.map((e) => e.group(0) ?? '').toList();
-
-    hashTagString = "";
-    matchList.remove("#$hashTag");
-
-    for (String tag in matchList) {
-      hashTagString += "$tag ";
-    }
-
-    setState(() {
-      dogHashTagController.text = matchList.isNotEmpty ? hashTagString.substring(0, hashTagString.length - 1) : "";
-      hashTags.remove(hashTag);
-      if (hashTags.isEmpty) {
-        dogHashTagController.text = "#";
-      }
-      previousHashTagTextLen = dogHashTagController.text.length;
-    });
   }
 
   Widget hashTagItem({required String hashTag}) {
@@ -511,6 +484,14 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
         ],
       ),
     );
+  }
+
+  void hashTagRemoveHandler({
+    required String hashTag
+  }) {
+    setState(() {
+      hashTags.remove(hashTag);
+    });
   }
 
   Widget hashTagList() {
