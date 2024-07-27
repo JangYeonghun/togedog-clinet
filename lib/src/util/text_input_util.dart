@@ -15,6 +15,7 @@ class TextInputUtil {
     required
   }) {
     return InputDecoration(
+      counterText: '',
       hintText: hintText,
       hintStyle: const TextStyle(
           color: Palette.darkFont2,

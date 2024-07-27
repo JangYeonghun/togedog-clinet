@@ -1,5 +1,4 @@
 import 'package:dog/src/config/palette.dart';
-import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/hash_tag_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
