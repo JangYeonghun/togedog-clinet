@@ -3,8 +3,8 @@ import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/view/component/home/home_grid_text.dart';
 import 'package:dog/src/view/component/home/home_profile_list.dart';
-import 'package:dog/src/view/component/profile_grid.dart';
 import 'package:dog/src/view/component/home/slide_tab.dart';
+import 'package:dog/src/view/component/profile_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
