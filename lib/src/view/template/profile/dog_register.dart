@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_dto.dart';
+import 'package:dog/src/repository/profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:flutter/material.dart';
@@ -397,7 +399,34 @@ class _DogRegisterState extends State<DogRegister> {
                 height: (deviceWidth - 40) / 335 * 55,
                 title: '완료',
                 onTap: () {
+                  final DogProfileDTO dto = DogProfileDTO(
+                      name: nameController.text,
+                      breed: speciesController.text,
+                      vaccine: dogInfo['vaccine']!['value'] == 1,
+                      dogGender: dogInfo['gender'] == 1,
+                      neutered: dogInfo['neuter'] == 1,
+                      weight: double.parse(weightController.text),
+                      region: selectedLocation!,
+                      notes: significantController.text,
+                      tags: hashTags,
+                      age: int.parse(ageController.text)
+                  );
 
+                  debugPrint('테스뚜');
+                  debugPrint('''
+                  ${dto.name}
+                  ${dto.breed}
+                  ${dto.vaccine}
+                  ${dto.dogGender}
+                  ${dto.neutered}
+                  ${dto.weight}
+                  ${dto.region}
+                  ${dto.notes}
+                  ${dto.tags}
+                  ${dto.age}
+                  ''');
+
+                  ProfileRepository().postDogProfile(dto: dto);
                 }
             ).filledButton1m(),
           )

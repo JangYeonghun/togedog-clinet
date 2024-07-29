@@ -1,9 +1,13 @@
+import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/view/component/profile_grid.dart';
+import 'package:dog/src/view/component/walking/posting_page.dart';
 import 'package:dog/src/view/component/walking/walking_profile_list.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:transition/transition.dart';
 
 class WalkingBody extends StatefulWidget {
   const WalkingBody({super.key});
@@ -58,6 +62,23 @@ class _WalkingBodyState extends State<WalkingBody> {
     );
   }
 
+  Widget customFloatingButton(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          Transition(
+            child: const PostingPage(),
+            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+          ),
+        );
+      },
+      backgroundColor: Palette.outlinedButton1,
+      shape: const CircleBorder(),
+      child: Image.asset('assets/images/posting_image.png', width: 30.w),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +91,17 @@ class _WalkingBodyState extends State<WalkingBody> {
           backgroundColor: Colors.white,
           appBar: PopHeader(title: mode ? '산책메이트 찾기' : '산책하기'),
           body: SingleChildScrollView(
-            child: mode ? ownerWalking() : walkerWalking(),
+            child: mode ? Stack(
+              children: [
+                ownerWalking(),
+                Positioned(
+                  left: 0.74.sw,
+                  right: 0,
+                  top: 0.67.sh,
+                  child: customFloatingButton(context),
+                ),
+              ],
+            ) : walkerWalking(),
           ),
         );
       },
