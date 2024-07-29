@@ -1,3 +1,4 @@
+import 'package:dog/src/util/pop_close_button.dart';
 import 'package:dog/src/view/component/profile_details_bottom_sheet.dart';
 import 'package:dog/src/view/component/profile_details_circle_image.dart';
 import 'package:dog/src/view/component/profile_header_image.dart';
@@ -58,6 +59,20 @@ class ProfileDetailsFlipSide extends StatelessWidget {
                 top: (285 / 812).sh,
                 child: Center(
                   child: profileCircleImage(),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 57.h,
+                child: Center(
+                  child: PopCloseButton(
+                    color: Colors.white,
+                    onTap: () {
+                      trigger = !trigger;
+                      Navigator.of(context).pop();
+                    },
+                  ),
                 ),
               ),
             ],
