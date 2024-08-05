@@ -2,8 +2,8 @@ import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
-import 'package:dog/src/view/template/profile/dog_register.dart';
-import 'package:dog/src/view/template/profile/walker_register.dart';
+import 'package:dog/src/view/template/profile/dog_register_template.dart';
+import 'package:dog/src/view/template/profile/walker_register_template.dart';
 import 'package:flutter/material.dart';
 
 class ProfileRegisterTemplate extends StatefulWidget {
@@ -74,8 +74,8 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
             child: TabBarView(
               controller: widget.tabController,
               children: const [
-                DogRegister(),
-                WalkerRegister()
+                DogRegisterTemplate(),
+                WalkerRegisterTemplate()
               ],
             ),
           ),
@@ -83,6 +83,4 @@ class _ProfileRegisterTemplateState extends State<ProfileRegisterTemplate> {
       )
     );
   }
-
-
 }
