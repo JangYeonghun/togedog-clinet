@@ -8,14 +8,14 @@ import 'package:dog/src/util/text_input_util.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class WalkerRegister extends StatefulWidget {
-  const WalkerRegister({super.key});
+class WalkerRegisterTemplate extends StatefulWidget {
+  const WalkerRegisterTemplate({super.key});
 
   @override
-  State<WalkerRegister> createState() => _WalkerRegisterState();
+  State<WalkerRegisterTemplate> createState() => _WalkerRegisterTemplateState();
 }
 
-class _WalkerRegisterState extends State<WalkerRegister> {
+class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final TextEditingController nicknameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();

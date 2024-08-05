@@ -11,8 +11,6 @@ class ProfileRepository {
   }) async {
     final String? accessToken = await const FlutterSecureStorage().read(key: 'accessToken');
 
-    debugPrint("이이이이이잉");
-
     final Response response = await post(
       Uri.http('175.106.99.104:8080', 'api/v1/dog'),
       headers: <String, String>{
@@ -33,9 +31,6 @@ class ProfileRepository {
       })
     );
 
-    debugPrint("웨안댐?");
-
-    debugPrint(response.body);
     return response;
   }
 }

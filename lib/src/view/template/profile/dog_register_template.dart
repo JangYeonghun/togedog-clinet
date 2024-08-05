@@ -10,14 +10,14 @@ import 'package:dog/src/util/text_input_util.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class DogRegister extends StatefulWidget {
-  const DogRegister({super.key});
+class DogRegisterTemplate extends StatefulWidget {
+  const DogRegisterTemplate({super.key});
 
   @override
-  State<DogRegister> createState() => _DogRegisterState();
+  State<DogRegisterTemplate> createState() => _DogRegisterTemplateState();
 }
 
-class _DogRegisterState extends State<DogRegister> {
+class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final TextEditingController hashTagController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
