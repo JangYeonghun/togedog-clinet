@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/view/component/bottom_navigation.dart';
+import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 
 class DogProfileDetailTemplate extends StatefulWidget {
@@ -14,13 +16,13 @@ class DogProfileDetailTemplate extends StatefulWidget {
 class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> with SingleTickerProviderStateMixin {
   final double deviceHeight = GlobalVariables.height;
   final double deviceWidth = GlobalVariables.width;
-  late final TabController tabController;
+  late final TabController _tabController;
   late Map<String, dynamic> dogProfile;
 
   @override
   void initState() {
     dogProfile = widget.dogProfile;
-    tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
@@ -229,14 +231,6 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
           children: [
             additionalInfo(),
             miniProfile(),
-            Positioned(
-              top: 50,
-              left: 8,
-              child: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40)
-              ),
-            )
           ],
         )
       ],
@@ -267,14 +261,6 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
             ),
           ],
         ),
-        Positioned(
-          top: 50,
-          left: 8,
-          child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40)
-          ),
-        )
       ],
     );
   }
@@ -284,14 +270,15 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     return SafeArea(
       bottom: false,
       child: Scaffold(
+        appBar: const PopHeader(title: '프로필', useBackButton: true),
         body: TabBarView(
-          controller: tabController,
+          controller: _tabController,
           children: [
             dogProfileFront(),
             dogProfileBack()
           ],
-        )
-      )
+        ),
+      ),
     );
   }
 }
