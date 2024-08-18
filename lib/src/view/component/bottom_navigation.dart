@@ -30,15 +30,15 @@ class BottomNavigation extends ConsumerWidget {
     },
     {
       'index': 3,
-      'route': '/profile',
-      'name': '프로필',
+      'route': '/my_page',
+      'name': '채팅',
       'image': 'assets/images/nav_btn_profile.png',
       'selectedImage': 'assets/images/nav_btn_profile_active.png'
     },
     {
       'index': 4,
-      'route': '/my_page',
-      'name': '마이페이지',
+      'route': '/profile',
+      'name': '프로필',
       'image': 'assets/images/nav_btn_my_page.png',
       'selectedImage': 'assets/images/nav_btn_my_page_active.png'
     },
