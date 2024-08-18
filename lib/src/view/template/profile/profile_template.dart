@@ -1,14 +1,15 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/profile/dog_profile_detail_template.dart';
 import 'package:dog/src/view/template/profile/profile_register_template.dart';
+import 'package:dog/src/view/template/profile/walker_profile_detail_template.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transition/transition.dart';
 
 class ProfileTemplate extends StatefulWidget {
@@ -22,6 +23,37 @@ class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProv
   late final TabController _tabController;
   final double deviceWidth = GlobalVariables.width;
   final String nickname = '닉네임';
+
+  final Map<String, dynamic> testWalkerProfile = {
+    'name' : '니니님',
+    'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzHrUbueWGNaL9RjJrP6gBl1wGYtC0Y1Qwlg&s',
+    'gender' : '여자',
+    'age' : 23,
+    'region' : '서울',
+    'hashTags' : [
+      '#여유로운',
+      '#교감하는',
+      '#조깅'
+    ],
+    'availableTimes' : [
+      '월요일',
+      '수요일'
+    ],
+    'preferences' : {
+      'region' : [
+        '서울'
+      ],
+      'time' : [
+        '오전'
+      ],
+      'size' : [
+        '중형견',
+        '대형'
+      ]
+    },
+    'maxAllowedPets' : 2,
+    'notes' : '13살부터 19살까지 강아지를 키운 경험이 있고, 애견 미용 전공자이기 때문에 강아지들을 잘 컨트롤 하고, 처음 보는 강아지들도 저를 잘 따르는 편이에요. 강아지를 너무 좋아해서 유기견 봉사도 꾸준히 다니고 있으니 믿고 맏기셔도 됩니다. :)'
+  };
 
   final List<Map<String, dynamic>> testDogProfiles = [
     {
@@ -390,60 +422,17 @@ class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
-        appBar: const PopHeader(title: '프로필 등록'),
-        body: Column(
-          children: [
-            TabBar(
-              controller: _tabController,
-              labelColor: Palette.darkFont4,
-              unselectedLabelColor: Palette.darkFont2,
-              indicatorColor: Palette.green6,
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicatorWeight: 3,
-              overlayColor: const WidgetStatePropertyAll(
-                  Colors.transparent
-              ),
-              tabs: [
-                Container(
-                  alignment: Alignment.center,
-                  width: deviceWidth / 2,
-                  height: 50,
-                  child: const Text(
-                    '반려견 프로필',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w600,
-                      height: 0,
-                    ),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  width: deviceWidth / 2,
-                  height: 50,
-                  child: const Text(
-                    '산책메이트 프로필',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Pretendard',
-                      fontWeight: FontWeight.w600,
-                      height: 0,
-                    ),
-                  ),
-                )
-              ]
-            ),
-            Flexible(
-              child: TabBarView(
-                controller: _tabController,
-                children: [
-                  testDogProfiles.isEmpty ? emptyProfile(isDogProfile: true) : dogProfile(),
-                  emptyProfile(isDogProfile: false),
-                ],
-              ),
-            ),
-          ],
+
+        body: Consumer(
+          builder: (context, ref, _) {
+            final mode = ref.watch(modeProvider);
+            return CommonScaffoldUtil(
+                appBar: PopHeader(title: !mode && testWalkerProfile.isNotEmpty ? '프로필' : '프로필 등록'),
+                body: mode ?
+                testDogProfiles.isEmpty ? emptyProfile(isDogProfile: true) : dogProfile() :
+                testWalkerProfile.isEmpty ? emptyProfile(isDogProfile: false) : WalkerProfileDetailTemplate(walkerProfile: testWalkerProfile)
+            );
+          },
         )
     );
   }
