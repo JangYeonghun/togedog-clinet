@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
-import 'package:dog/src/view/component/bottom_navigation.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 

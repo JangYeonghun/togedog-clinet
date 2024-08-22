@@ -6,8 +6,9 @@ import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/profile/dog_profile_detail_template.dart';
-import 'package:dog/src/view/template/profile/profile_register_template.dart';
+import 'package:dog/src/view/template/profile/dog_register_template.dart';
 import 'package:dog/src/view/template/profile/walker_profile_detail_template.dart';
+import 'package:dog/src/view/template/profile/walker_register_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:transition/transition.dart';
@@ -19,12 +20,11 @@ class ProfileTemplate extends StatefulWidget {
   State<ProfileTemplate> createState() => _ProfileTemplateState();
 }
 
-class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+class _ProfileTemplateState extends State<ProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final String nickname = '닉네임';
 
-  final Map<String, dynamic> testWalkerProfile = {
+  final Map<String, dynamic> testWalkerProfile = {}/*{
     'name' : '니니님',
     'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzHrUbueWGNaL9RjJrP6gBl1wGYtC0Y1Qwlg&s',
     'gender' : '여자',
@@ -53,10 +53,10 @@ class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProv
     },
     'maxAllowedPets' : 2,
     'notes' : '13살부터 19살까지 강아지를 키운 경험이 있고, 애견 미용 전공자이기 때문에 강아지들을 잘 컨트롤 하고, 처음 보는 강아지들도 저를 잘 따르는 편이에요. 강아지를 너무 좋아해서 유기견 봉사도 꾸준히 다니고 있으니 믿고 맏기셔도 됩니다. :)'
-  };
+  }*/;
 
   final List<Map<String, dynamic>> testDogProfiles = [
-    {
+    /*{
       'name' : '뽀삐',
       'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
       'gender' : '수컷',
@@ -125,68 +125,71 @@ class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProv
       'vaccine' : true,
       'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
       'note' : '꼬리 만지는 것을 싫어해요'
-    }
+    }*/
   ];
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
-  Widget emptyProfile({required bool isDogProfile}) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text.rich(
-          textAlign: TextAlign.center,
-          TextSpan(
-            style: const TextStyle(
-              fontSize: 12,
-              fontFamily: 'Pretendard',
+  Widget emptyProfile() {
+    return Consumer(
+        builder: (context, ref, _) {
+          final mode = ref.watch(modeProvider);
+          return SizedBox(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text.rich(
+                    textAlign: TextAlign.center,
+                    TextSpan(
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'Pretendard',
+                        ),
+                        children: [
+                          TextSpan(
+                              text: "아직 ${mode ? '등록된 반려견' : '$nickname님의 프로필'}이 없어요",
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600
+                              )
+                          ),
+                          const TextSpan(
+                              text: "\n\n",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700
+                              )
+                          ),
+                          TextSpan(
+                              text: "${mode ? '반려견' : '프로필'}을 등록하고 산책메이트를 찾아보세요!",
+                              style: const TextStyle(
+                                  color: Palette.darkFont2,
+                                  fontWeight: FontWeight.w500
+                              )
+                          ),
+                        ]
+                    )
+                ),
+                const SizedBox(height: 70),
+                ButtonUtil(
+                    width: deviceWidth - 90,
+                    height: (deviceWidth - 90) / 285 * 55,
+                    title: '${mode ? '반려견' : '산책메이트'} 프로필 등록하기',
+                    onTap: () => Navigator.push(
+                      context,
+                      Transition(
+                          transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+                          child: mode ? const DogRegisterTemplate() : const WalkerRegisterTemplate()
+                      )
+                  )
+                ).filledButton1m()
+              ],
             ),
-            children: [
-              TextSpan(
-                text: "아직 ${isDogProfile ? '등록된 반려견' : '$nickname님의 프로필'}이 없어요",
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w600
-                )
-              ),
-              const TextSpan(
-                text: "\n\n",
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700
-                )
-              ),
-              TextSpan(
-                text: "${isDogProfile ? '반려견' : '프로필'}을 등록하고 산책메이트를 찾아보세요!",
-                style: const TextStyle(
-                    color: Palette.darkFont2,
-                    fontWeight: FontWeight.w500
-                )
-              ),
-            ]
-          )
-        ),
-        const SizedBox(height: 70),
-        ButtonUtil(
-            width: deviceWidth - 90,
-            height: (deviceWidth - 90) / 285 * 55,
-            title: '${isDogProfile ? '반려견' : '산책메이트'} 프로필 등록하기',
-            onTap: () => profileRegister()
-        ).filledButton1m()
-      ],
-    );
-  }
-
-  void profileRegister() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return ProfileRegisterTemplate(
-              tabController: _tabController
           );
         }
     );
@@ -345,33 +348,44 @@ class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProv
           if (index < testDogProfiles.length) {
             return dogProfileItem(item: testDogProfiles[index]);
           } else {
-            return InkWell(
-              onTap: () => testDogProfiles.length >= 5 ? showProfileLimitAlert() : profileRegister(),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white
-                ),
-                margin: const EdgeInsets.only(top: 6, bottom: 6),
-                width: deviceWidth - 28,
-                height: (deviceWidth - 28) / 347 * 80,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.add, color: Color(0xFF818181), size: 20),
-                    SizedBox(width: 4),
-                    Text(
-                      '추가하기',
-                      style: TextStyle(
-                        color: Color(0xFF818181),
-                        fontSize: 16,
-                        fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w500
+            return Consumer(
+                builder: (context, ref, _) {
+                  final mode = ref.watch(modeProvider);
+                  return InkWell(
+                    onTap: () => testDogProfiles.length >= 5 ? showProfileLimitAlert() : Navigator.push(
+                        context,
+                        Transition(
+                            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+                            child: mode ? const DogRegisterTemplate() : const WalkerRegisterTemplate()
+                        )
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white
                       ),
-                    )
-                  ],
-                ),
-              ),
+                      margin: const EdgeInsets.only(top: 6, bottom: 6),
+                      width: deviceWidth - 28,
+                      height: (deviceWidth - 28) / 347 * 80,
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, color: Color(0xFF818181), size: 20),
+                          SizedBox(width: 4),
+                          Text(
+                            '추가하기',
+                            style: TextStyle(
+                                color: Color(0xFF818181),
+                                fontSize: 16,
+                                fontFamily: 'Pretendard',
+                                fontWeight: FontWeight.w500
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }
             );
           }
         }
@@ -429,8 +443,8 @@ class _ProfileTemplateState extends State<ProfileTemplate> with SingleTickerProv
             return CommonScaffoldUtil(
                 appBar: PopHeader(title: !mode && testWalkerProfile.isNotEmpty ? '프로필' : '프로필 등록'),
                 body: mode ?
-                testDogProfiles.isEmpty ? emptyProfile(isDogProfile: true) : dogProfile() :
-                testWalkerProfile.isEmpty ? emptyProfile(isDogProfile: false) : WalkerProfileDetailTemplate(walkerProfile: testWalkerProfile)
+                testDogProfiles.isEmpty ? emptyProfile() : dogProfile() :
+                testWalkerProfile.isEmpty ? emptyProfile() : WalkerProfileDetailTemplate(walkerProfile: testWalkerProfile)
             );
           },
         )

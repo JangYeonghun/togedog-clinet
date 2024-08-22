@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:dog/src/dto/dog_profile_dto.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
