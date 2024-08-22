@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 
 class WalkingProfileListItem extends StatelessWidget {
@@ -34,7 +35,7 @@ class WalkingProfileListItem extends StatelessWidget {
       width: 347,
       height: 220,
       clipBehavior: Clip.antiAlias,
-      padding: EdgeInsets.fromLTRB(25, 34, 25, 20),
+      padding: const EdgeInsets.fromLTRB(25, 34, 25, 20),
       decoration: ShapeDecoration(
         color: Colors.white,
         shape: RoundedRectangleBorder(
@@ -59,7 +60,7 @@ class WalkingProfileListItem extends StatelessWidget {
             style: const TextStyle(
               color: Color(0xFF818181),
               fontSize: 12,
-              fontFamily: 'NotoSansKR',
+              fontFamily: 'Pretendard',
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -68,15 +69,11 @@ class WalkingProfileListItem extends StatelessWidget {
             style: const TextStyle(
               color: Color(0xFF818181),
               fontSize: 12,
-              fontFamily: 'NotoSansKR',
+              fontFamily: 'Pretendard',
               fontWeight: FontWeight.w500,
             ),
           ),
-          Container(
-            height: 1,
-            color: Palette.darkFont2,
-            margin: const EdgeInsets.only(top: 13, bottom: 13),
-          ),
+          horizontalDivider(margin: 13),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

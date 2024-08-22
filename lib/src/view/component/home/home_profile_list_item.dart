@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 
 class ProfileListItem extends StatelessWidget {
@@ -74,11 +75,7 @@ class ProfileListItem extends StatelessWidget {
               )
             ],
           ),
-          Container(
-            height: 1,
-            color: Palette.darkFont2,
-            margin: const EdgeInsets.only(top: 7, bottom: 7),
-          ),
+          horizontalDivider(margin: 7),
           Padding(
             padding: const EdgeInsets.only(left: 62),
             child: Text(

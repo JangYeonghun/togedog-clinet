@@ -4,6 +4,7 @@ import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/profile/dog_profile_detail_template.dart';
 import 'package:dog/src/view/template/profile/dog_register_template.dart';
@@ -24,7 +25,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final String nickname = '닉네임';
 
-  final Map<String, dynamic> testWalkerProfile = {}/*{
+  final Map<String, dynamic> testWalkerProfile = /*{}*/{
     'name' : '니니님',
     'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzHrUbueWGNaL9RjJrP6gBl1wGYtC0Y1Qwlg&s',
     'gender' : '여자',
@@ -53,37 +54,9 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
     },
     'maxAllowedPets' : 2,
     'notes' : '13살부터 19살까지 강아지를 키운 경험이 있고, 애견 미용 전공자이기 때문에 강아지들을 잘 컨트롤 하고, 처음 보는 강아지들도 저를 잘 따르는 편이에요. 강아지를 너무 좋아해서 유기견 봉사도 꾸준히 다니고 있으니 믿고 맏기셔도 됩니다. :)'
-  }*/;
+  };
 
   final List<Map<String, dynamic>> testDogProfiles = [
-    /*{
-      'name' : '뽀삐',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 2,
-      'weight' : 8,
-      'size' : '소형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    },
-    {
-      'name' : '봅비',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 4,
-      'weight' : 8,
-      'size' : '중형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    },
     {
       'name' : '뽀삐',
       'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
@@ -113,6 +86,20 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
       'note' : '꼬리 만지는 것을 싫어해요'
     },
     {
+      'name' : '뽀삐',
+      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
+      'gender' : '수컷',
+      'age' : 2,
+      'weight' : 8,
+      'size' : '소형견',
+      'breed' : '웰시코기',
+      'region' : '서울',
+      'neuter' : true,
+      'vaccine' : true,
+      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
+      'note' : '꼬리 만지는 것을 싫어해요'
+    },
+    {
       'name' : '봅비',
       'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
       'gender' : '수컷',
@@ -125,7 +112,21 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
       'vaccine' : true,
       'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
       'note' : '꼬리 만지는 것을 싫어해요'
-    }*/
+    },
+    {
+      'name' : '봅비',
+      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
+      'gender' : '수컷',
+      'age' : 4,
+      'weight' : 8,
+      'size' : '중형견',
+      'breed' : '웰시코기',
+      'region' : '서울',
+      'neuter' : true,
+      'vaccine' : true,
+      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
+      'note' : '꼬리 만지는 것을 싫어해요'
+    }
   ];
 
   @override
@@ -315,11 +316,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
                 )
               ],
             ),
-            Container(
-              height: 1,
-              color: Palette.darkFont2,
-              margin: const EdgeInsets.only(top: 7, bottom: 7),
-            ),
+            horizontalDivider(margin: 7),
             Padding(
               padding: EdgeInsets.only(left: 18.5 + (deviceWidth - 28) / 347 * 53),
               child: Text(
