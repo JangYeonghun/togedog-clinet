@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 
@@ -76,11 +77,8 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
                   ),
                 ),
               ),
-              Container(
-                height: 1,
-                color: const Color(0xFFC2C2C2),
-                margin: const EdgeInsets.only(top: 7, bottom: 10),
-              ),
+              horizontalDivider(margin: 7),
+              const SizedBox(height: 3),
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
@@ -198,11 +196,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
               ),
             ),
           ),
-          Container(
-            height: 1,
-            color: Palette.outlinedButton3,
-            margin: const EdgeInsets.only(top: 14, bottom: 14),
-          ),
+          horizontalDivider(margin: 14),
           Padding(
             padding: const EdgeInsets.only(left: 2),
             child: Text(

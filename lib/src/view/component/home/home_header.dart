@@ -1,8 +1,10 @@
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
+import 'package:dog/src/view/template/menu_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:transition/transition.dart';
 
 class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
   const HomeHeader({super.key});
@@ -15,7 +17,7 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
     return Container(
       height: 55,
       color: Colors.white,
-      padding: const EdgeInsets.only(left: 16, right: 10),
+      padding: const EdgeInsets.only(left: 16, right: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -23,7 +25,7 @@ class HomeHeader extends StatelessWidget implements PreferredSizeWidget {
           const Row(
             children: [
               ModeSlider(),
-              SizedBox(width: 9.5),
+              SizedBox(width: 2.5),
               NotificationIcon()
             ],
           )
@@ -89,38 +91,32 @@ class NotificationIcon extends StatefulWidget {
 }
 
 class _NotificationIconState extends State<NotificationIcon> {
-  int noti = 1;
+
+  void showMenu() {
+    Navigator.push(
+      context,
+      Transition(
+        transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+        child: const MenuTemplate()
+      )
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 24,
-      child: Stack(
-        children: [
-          Image.asset('assets/images/notification_icon.png', height: 22),
-          Positioned(
-            top: 3,
-            right: 0,
-            child: Container(
-              width: 7,
-              height: 7,
-              decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Palette.green6
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                noti.toString(),
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 6,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w400
-                ),
-              ),
-            ),
-          )
-        ],
+    return InkWell(
+      onTap: () {
+        showMenu();
+      },
+      child: Container(
+        width: 44,
+        height: 44,
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.menu,
+          size: 20,
+          color: Palette.outlinedButton3
+        )
       ),
     );
   }

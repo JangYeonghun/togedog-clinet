@@ -1,5 +1,6 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/button_util.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -73,11 +74,7 @@ class ProfileInfoCard extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            Container(
-              height: 1,
-              color: Palette.darkFont2,
-              margin: EdgeInsets.only(top: 7.h, bottom: 7.h),
-            ),
+            horizontalDivider(margin: 7.h),
             Text(
               location,
               style: TextStyle(

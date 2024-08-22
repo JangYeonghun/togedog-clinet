@@ -1,5 +1,6 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/hash_tag_util.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -64,11 +65,8 @@ class ProfileDetailsBottomSheet extends StatelessWidget {
         _buildProfileInfoItem('산책 가능 시간', profileData['walkTime'] ?? ''),
         _buildProfileInfoItem('선호 지역', profileData['preferredArea'] ?? ''),
         _buildProfileInfoItem('선호 시간', profileData['preferredTime'] ?? ''),
-        Container(
-          height: 1,
-          color: Palette.darkFont2,
-          margin: EdgeInsets.only(bottom: 14.h),
-        ),
+        horizontalDivider(margin: 0),
+        SizedBox(height: 14.h),
         _buildProfileInfoItem('선호 견종 크기', profileData['preferredDogSize'] ?? ''),
         _buildProfileInfoItem('동반 가능한 반려견 수', profileData['companionDogCount'] ?? ''),
       ],
@@ -88,11 +86,7 @@ class ProfileDetailsBottomSheet extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        Container(
-          height: 1,
-          color: Palette.darkFont2,
-          margin: EdgeInsets.only(top: 14.h, bottom: 14.h),
-        ),
+        horizontalDivider(margin: 14.h),
         Text(
           profileData['experience'] ?? '',
           style: TextStyle(

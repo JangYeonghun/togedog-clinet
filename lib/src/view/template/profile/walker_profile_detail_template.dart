@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 
 class WalkerProfileDetailTemplate extends StatefulWidget {
@@ -106,11 +107,8 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
                   ),
                 ),
               ),
-              Container(
-                height: 1,
-                color: const Color(0xFFC2C2C2),
-                margin: const EdgeInsets.only(top: 7, bottom: 10),
-              ),
+              horizontalDivider(margin: 7),
+              const SizedBox(height: 3),
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
@@ -148,10 +146,9 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
           infoItem(title: '산책 가능 시간', content: walkerProfile['availableTimes'].join(', ')),
           infoItem(title: '선호 지역', content: walkerProfile['preferences']['region'].join(', ')),
           infoItem(title: '선호 시간', content: walkerProfile['preferences']['time'].join(', ')),
-          Container(
-            height: 1,
-            color: Palette.outlinedButton3,
-            margin: const EdgeInsets.only(top: 8, bottom: 8, right: 39, left: 3),
+          Padding(
+            padding: const EdgeInsets.only(left: 3, right: 39),
+            child: horizontalDivider(margin: 8)
           ),
           infoItem(title: '선호 견종 크기', content: walkerProfile['preferences']['size'].join(', ')),
           infoItem(title: '동반 가능한 반려견 수 ', content: '${walkerProfile['maxAllowedPets']}마리')
@@ -228,11 +225,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
               ),
             ),
           ),
-          Container(
-            height: 1,
-            color: Palette.outlinedButton3,
-            margin: const EdgeInsets.only(top: 14, bottom: 14),
-          ),
+          horizontalDivider(margin: 14),
           Padding(
             padding: const EdgeInsets.only(left: 2),
             child: Text(
@@ -285,8 +278,8 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
           top: 50,
           left: 8,
           child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40)
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40)
           ),
         )
       ],
