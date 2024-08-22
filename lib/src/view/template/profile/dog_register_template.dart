@@ -6,7 +6,9 @@ import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/repository/profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
+import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/text_input_util.dart';
+import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -114,7 +116,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
                 ),
               ),
             ),
-            Image.asset('assets/images/camera_icon.png', width: 22),
+            Image.asset('assets/images/camera_icon.png', width: 22)
           ],
         ),
       ),
@@ -497,6 +499,9 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
 
   @override
   Widget build(BuildContext context) {
-    return dogRegister();
+    return CommonScaffoldUtil(
+      appBar: const PopHeader(title: '프로필 등록', useBackButton: true),
+      body: dogRegister()
+    );
   }
 }

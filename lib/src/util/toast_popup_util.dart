@@ -12,26 +12,63 @@ class ToastPopupUtil {
   }) {
     showDialog(
       context: context,
+      useRootNavigator: false,
       builder: (_) {
         return FutureBuilder(
-          future: Future.delayed(const Duration(milliseconds: 3000)).then((value) => true),
+          future: Future.delayed(const Duration(milliseconds: 2000)).then((value) => true),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            return Container(
-              width: deviceWidth - 20,
-              height: (deviceWidth - 20) / 455 * 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: backgroundColor
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                content,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 13,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400,
+            if (snapshot.hasData) {
+              Navigator.pop(context);
+            }
+            final double width = deviceWidth - 50;
+            final double height = width / 250 * 40;
+            final double circleSize = width / 250 * 24;
+
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              insetPadding: const EdgeInsets.only(left: 25, right: 25),
+              child: Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  color: backgroundColor
+                ),
+                padding: EdgeInsets.fromLTRB(
+                    (height - circleSize) / 2 + 1,
+                    (height - circleSize) / 2,
+                    (height - circleSize) / 2 + 1,
+                    (height - circleSize) / 2
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: circleSize,
+                      width: circleSize,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Palette.green6
+                      ),
+                      child: Icon(
+                        Icons.check,
+                        size: circleSize - 4,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        content,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: circleSize - 15,
+                          fontFamily: 'Pretendard',
+                          fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
@@ -48,7 +85,7 @@ class ToastPopupUtil {
     _base(
       context: context,
       content: content,
-      backgroundColor: Palette.green6
+      backgroundColor: const Color(0xFF828282)
     );
   }
 }

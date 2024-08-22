@@ -1,12 +1,9 @@
-import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/pop_close_button.dart';
 import 'package:dog/src/view/component/profile_details_bottom_sheet.dart';
 import 'package:dog/src/view/component/profile_header_image.dart';
 import 'package:dog/src/view/component/profile_info_card.dart';
-import 'package:dog/src/view/component/walking/posting_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:transition/transition.dart';
 
 class ProfileDetail extends StatelessWidget {
   final int id;
