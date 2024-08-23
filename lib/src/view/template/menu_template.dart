@@ -1,10 +1,12 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
+import 'package:dog/src/view/template/notification_template.dart';
 import 'package:dog/src/view/template/onboarding_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:transition/transition.dart';
 
 class MenuTemplate extends StatefulWidget {
   const MenuTemplate({super.key});
@@ -87,7 +89,13 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget alarm() {
     return menuItem(
       onTap: () {
-
+        Navigator.push(
+          context,
+          Transition(
+            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+            child: const NotificationTemplate()
+          )
+        );
       },
       seperator: false,
       child: Row(
