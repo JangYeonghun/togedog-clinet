@@ -23,7 +23,17 @@ class PopHeader extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       height: 55.h,
-      color: color,
+      decoration: BoxDecoration(
+        color: color,
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0C000000),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
+          )
+        ],
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
