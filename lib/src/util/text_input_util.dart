@@ -37,7 +37,7 @@ class TextInputUtil {
             Radius.circular(10),
           ),
           borderSide: BorderSide(
-          color: Palette.outlinedButton1,
+          color: Palette.green6,
           width: 1,
         ),
       )

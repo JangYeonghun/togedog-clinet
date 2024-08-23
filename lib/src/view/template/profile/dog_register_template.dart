@@ -11,6 +11,7 @@ import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DogRegisterTemplate extends StatefulWidget {
@@ -29,6 +30,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   final TextEditingController significantController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
+  late final double columnHeight;
   String? selectedLocation;
   int pageIndex = 0;
   XFile? profileImage;
@@ -323,28 +325,34 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   Widget dogRegister1() {
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(height: 27),
-        titleBox(title: '프로필 사진 등록'),
-        profileUpload(),
-        titleBox(title: '반려견 이름 입력'),
-        textInputBox(
-            controller: nameController,
-            hintText: '반려견의 이름을 입력하세요'
+        SizedBox(
+          height: columnHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 27),
+              titleBox(title: '프로필 사진 등록'),
+              profileUpload(),
+              titleBox(title: '반려견 이름 입력'),
+              textInputBox(
+                  controller: nameController,
+                  hintText: '반려견의 이름을 입력하세요'
+              ),
+              titleBox(title: '견종 입력'),
+              textInputBox(
+                  controller: speciesController,
+                  hintText: '반려견의 종을 입력하세요'
+              ),
+              titleBox(title: '나이 입력'),
+              numberInputBox(
+                  controller: ageController,
+                  hintText: '반려견의 나이를 입력하세요'
+              ),
+            ],
+          ),
         ),
-        titleBox(title: '견종 입력'),
-        textInputBox(
-            controller: speciesController,
-            hintText: '반려견의 종을 입력하세요'
-        ),
-        titleBox(title: '나이 입력'),
-        numberInputBox(
-            controller: ageController,
-            hintText: '반려견의 나이를 입력하세요'
-        ),
-        const SizedBox(height: 70),
         nextButton()
       ],
     );
@@ -353,18 +361,25 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   Widget dogRegister2() {
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(height: 28),
-        titleBox(title: '성별'),
-        toggle(type: 'gender'),
-        titleBox(title: '중성화 여부'),
-        toggle(type: 'neuter'),
-        titleBox(title: '예방접종 여부'),
-        toggle(type: 'vaccine'),
-        titleBox(title: '무게 입력'),
-        numberInputBox(controller: weightController, hintText: '반려견의 무게를 입력하세요'),
-        const SizedBox(height: 71),
+        SizedBox(
+          height: columnHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 28),
+              titleBox(title: '성별'),
+              toggle(type: 'gender'),
+              titleBox(title: '중성화 여부'),
+              toggle(type: 'neuter'),
+              titleBox(title: '예방접종 여부'),
+              toggle(type: 'vaccine'),
+              titleBox(title: '무게 입력'),
+              numberInputBox(controller: weightController, hintText: '반려견의 무게를 입력하세요'),
+            ],
+          ),
+        ),
         nextButton()
       ],
     );
@@ -374,23 +389,29 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 27),
-        titleBox(title: '거주 지역 선택'),
-        locationDropdown(),
-        titleBox(title: '반려견 성격 태그'),
-        hashTagInputBox(),
-        hashTagList(),
-        const SizedBox(height: 35),
-        titleBox(title: '반려견 특이사항'),
-        textInputBox(
-            controller: significantController,
-            hintText: '반려견의 특이사항을 입력하세요 (최대500자)',
-            maxLines: 7,
-            maxLength: 500
+        SizedBox(
+          height: columnHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 27),
+              titleBox(title: '거주 지역 선택'),
+              locationDropdown(),
+              titleBox(title: '반려견 성격 태그'),
+              hashTagInputBox(),
+              hashTagList(),
+              const SizedBox(height: 35),
+              titleBox(title: '반려견 특이사항'),
+              textInputBox(
+                  controller: significantController,
+                  hintText: '반려견의 특이사항을 입력하세요 (최대500자)',
+                  maxLines: 7,
+                  maxLength: 500
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 78),
         Center(
           child: ButtonUtil(
               width: deviceWidth - 40,
@@ -496,14 +517,23 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
       appBar: const PopHeader(title: '프로필 등록', useBackButton: true),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
-            dogRegister(),
-          ],
-        ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          try {
+            columnHeight = constraints.maxHeight - 80 - (deviceWidth - 40) / 335 * 55;
+          } catch(e) {
+            debugPrint(e.toString());
+          }
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
+                dogRegister(),
+              ],
+            ),
+          );
+        },
       )
     );
   }
