@@ -85,13 +85,13 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
           await launchUrl(
             Uri(
               scheme: 'http',
-              host: '175.106.99.104',
-              port: 8080,
+              host: GlobalVariables.domain,
+              port: GlobalVariables.port,
               path: 'oauth2/authorization/$social',
             ),
           );
         },
-        child: Image.asset('assets/images/sign_with_$social.png', width: deviceWidth - 80)
+        child: Image.asset('assets/images/sign_with_$social.png', width: deviceWidth - 28)
     );
   }
 
@@ -111,7 +111,7 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
           Image.asset('assets/images/onboarding_$index.png', height: 146),
           if (index == 3)
             Container(
-                padding: const EdgeInsets.only(top: 85, left: 40, right: 40),
+                padding: const EdgeInsets.only(top: 85, left: 14, right: 14),
                 color: Colors.white,
                 child: Column(
                   children: [

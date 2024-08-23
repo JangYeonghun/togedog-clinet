@@ -1,8 +1,10 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
+import 'package:dog/src/view/template/onboarding_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MenuTemplate extends StatefulWidget {
   const MenuTemplate({super.key});
@@ -41,7 +43,9 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget logOut() {
     return menuItem(
         onTap: () {
-          debugPrint("test");
+          const FlutterSecureStorage().delete(key: 'accessToken').whenComplete(() {
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+          });
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
