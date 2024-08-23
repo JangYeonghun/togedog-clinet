@@ -8,7 +8,7 @@ class ToastPopupUtil {
   static void _base({
     required BuildContext context,
     required String content,
-    required Color backgroundColor
+    required Color circleColor
   }) {
     showDialog(
       context: context,
@@ -32,7 +32,7 @@ class ToastPopupUtil {
                 height: height,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),
-                  color: backgroundColor
+                  color: const Color(0xFF828282)
                 ),
                 padding: EdgeInsets.fromLTRB(
                     (height - circleSize) / 2 + 1,
@@ -46,9 +46,9 @@ class ToastPopupUtil {
                     Container(
                       height: circleSize,
                       width: circleSize,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Palette.green6
+                        color: circleColor
                       ),
                       child: Icon(
                         Icons.check,
@@ -85,7 +85,19 @@ class ToastPopupUtil {
     _base(
       context: context,
       content: content,
-      backgroundColor: const Color(0xFF828282)
+      circleColor: Palette.green6
     );
   }
+
+  static void error({
+    required BuildContext context,
+    required String content
+  }) {
+    _base(
+        context: context,
+        content: content,
+        circleColor: const Color(0xFFFF354D)
+    );
+  }
+
 }
