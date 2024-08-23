@@ -25,7 +25,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final String nickname = '닉네임';
 
-  final Map<String, dynamic> testWalkerProfile = /*{}*/{
+  final Map<String, dynamic> testWalkerProfile = {}/*{
     'name' : '니니님',
     'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzHrUbueWGNaL9RjJrP6gBl1wGYtC0Y1Qwlg&s',
     'gender' : '여자',
@@ -54,10 +54,10 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
     },
     'maxAllowedPets' : 2,
     'notes' : '13살부터 19살까지 강아지를 키운 경험이 있고, 애견 미용 전공자이기 때문에 강아지들을 잘 컨트롤 하고, 처음 보는 강아지들도 저를 잘 따르는 편이에요. 강아지를 너무 좋아해서 유기견 봉사도 꾸준히 다니고 있으니 믿고 맏기셔도 됩니다. :)'
-  };
+  }*/;
 
   final List<Map<String, dynamic>> testDogProfiles = [
-    {
+    /*{
       'name' : '뽀삐',
       'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
       'gender' : '수컷',
@@ -126,7 +126,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
       'vaccine' : true,
       'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
       'note' : '꼬리 만지는 것을 싫어해요'
-    }
+    }*/
   ];
 
   @override

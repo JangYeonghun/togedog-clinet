@@ -5,6 +5,7 @@ import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
@@ -605,7 +606,12 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
     return CommonScaffoldUtil(
       appBar: const PopHeader(title: '프로필 등록', useBackButton: true),
       body: SingleChildScrollView(
-        child: walkerRegister()
+        child: Column(
+          children: [
+            StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
+            walkerRegister(),
+          ],
+        )
       )
     );
   }
