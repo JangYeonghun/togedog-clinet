@@ -14,7 +14,6 @@ class NotificationTemplate extends StatefulWidget {
 
 class _NotificationTemplateState extends State<NotificationTemplate> {
   bool isSelectMode = false;
-  int newNoti = 3;
   List<Map<String, dynamic>> testNoti = [
     {
       'title' : '산책 매칭 수락',
@@ -324,7 +323,7 @@ class _NotificationTemplateState extends State<NotificationTemplate> {
                   ),
                   children:[
                     TextSpan(
-                        text: newNoti.toString(),
+                        text: testNewNoti.length.toString(),
                         style: const TextStyle(
                           color: Palette.darkFont4,
                           fontWeight: FontWeight.w600,
