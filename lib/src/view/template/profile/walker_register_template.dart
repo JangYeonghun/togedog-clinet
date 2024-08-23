@@ -7,6 +7,7 @@ import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
+import 'package:dog/src/util/toast_popup_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -224,16 +225,20 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
     );
   }
 
-  Widget nextButton() {
+  Widget nextButton({bool isFilled = true}) {
     return Center(
       child: ButtonUtil(
           width: deviceWidth - 40,
           height: (deviceWidth - 40) / 335 * 55,
           title: '다음',
           onTap: () {
-            setState(() {
-              pageIndex += 1;
-            });
+            if (isFilled) {
+              setState(() {
+                pageIndex += 1;
+              });
+            } else {
+              ToastPopupUtil.error(context: context, content: '정보를 모두 입력하세요.');
+            }
           }
       ).filledButton1m(),
     );
@@ -297,47 +302,64 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   }
 
   Widget ageBox() {
-    return isAgeEditing ? Padding(
-      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16),
-      child: TextInputUtil().number(
-        controller: ageController,
-        hintText: '생년월일을 입력하세요 (ex.20240101)',
-        onChanged: (value) {
-          final String ymd = ageController.text.replaceAll('-', '').replaceAll('.', '').replaceAll(',', '');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        isAgeEditing ? Padding(
+          padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16),
+          child: TextInputUtil().number(
+            controller: ageController,
+            hintText: '생년월일을 입력하세요 (ex.20240101)',
+            onChanged: (value) {
+              final String ymd = ageController.text.replaceAll('-', '').replaceAll('.', '').replaceAll(',', '');
 
-          setState(() {
-            if (ymd.length > 8) {
-              ageController.text = ageController.text.substring(0, ageController.text.length - 1);
-              isAgeEditing = false;
-              birth = DateTime.parse(ageController.text);
-            } else if (ymd.length == 8) {
-              isAgeEditing = false;
-              birth = DateTime.parse(ymd);
+              setState(() {
+                if (ymd.length > 8) {
+                  ageController.text = ageController.text.substring(0, ageController.text.length - 1);
+                  isAgeEditing = false;
+                  birth = DateTime.parse(ageController.text);
+                } else if (ymd.length == 8) {
+                  isAgeEditing = false;
+                  birth = DateTime.parse(ymd);
+                }
+              });
             }
-          });
-        }
-      ),
-    ) : InkWell(
-      onTap: () => setState(() => isAgeEditing = true),
-      child: Container(
-        margin: const EdgeInsets.only(left: 16, top: 10),
-        width: deviceWidth - 32,
-        height: (deviceWidth - 32) / 345 * 45,
-        decoration: BoxDecoration(
-            border: Border.all(width: 1, color: Palette.green6),
-            borderRadius: BorderRadius.circular(10)
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          '${birth.year} . ${birth.month} . ${birth.day} (만 ${DateTime.now().difference(birth).inDays ~/ 365}세)',
-          style: const TextStyle(
-              color: Palette.darkFont4,
-              fontSize: 12,
-              fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w500
+          ),
+        ) : InkWell(
+          onTap: () => setState(() => isAgeEditing = true),
+          child: Container(
+            margin: const EdgeInsets.only(left: 16, top: 10, bottom: 6),
+            width: deviceWidth - 32,
+            height: (deviceWidth - 32) / 345 * 45,
+            decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Palette.green6),
+                borderRadius: BorderRadius.circular(10)
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              '${birth.year} . ${birth.month} . ${birth.day} (만 ${DateTime.now().difference(birth).inDays ~/ 365}세)',
+              style: const TextStyle(
+                  color: Palette.darkFont4,
+                  fontSize: 12,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500
+              ),
+            ),
           ),
         ),
-      ),
+        const Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: Text(
+            '정확한 정보를 입력하지 않을 경우, 서비스 이용에 제한이 있을 수 있습니다',
+            style: TextStyle(
+              color: Color(0xFFF30000),
+              fontSize: 10,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w400
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -563,7 +585,9 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
             ],
           ),
         ),
-        nextButton()
+        nextButton(
+          isFilled: nicknameController.text.isNotEmpty && ageController.text.isNotEmpty
+        )
       ],
     );
   }
