@@ -24,7 +24,11 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController experienceController = TextEditingController();
   final TextEditingController hashTagController = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
+  late final double columnHeight;
+  late DateTime birth;
+  bool isAgeEditing = true;
   String? selectedLocation;
   List<String> hashTags = [];
   XFile? profileImage;
@@ -293,22 +297,45 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   }
 
   Widget ageBox() {
-    return Container(
-      margin: const EdgeInsets.only(left: 14, top: 10),
-      width: deviceWidth - 28,
-      height: (deviceWidth - 28) / 345 * 45,
-      decoration: BoxDecoration(
-        border: Border.all(width: 1, color: Palette.green6),
-        borderRadius: BorderRadius.circular(10)
+    return isAgeEditing ? Padding(
+      padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16),
+      child: TextInputUtil().number(
+        controller: ageController,
+        hintText: '생년월일을 입력하세요 (ex.20240101)',
+        onChanged: (value) {
+          final String ymd = ageController.text.replaceAll('-', '').replaceAll('.', '').replaceAll(',', '');
+
+          setState(() {
+            if (ymd.length > 8) {
+              ageController.text = ageController.text.substring(0, ageController.text.length - 1);
+              isAgeEditing = false;
+              birth = DateTime.parse(ageController.text);
+            } else if (ymd.length == 8) {
+              isAgeEditing = false;
+              birth = DateTime.parse(ymd);
+            }
+          });
+        }
       ),
-      alignment: Alignment.center,
-      child: const Text(
-        '2001 . 01 . 31 (만 23세)',
-        style: TextStyle(
-          color: Color(0xFF222222),
-          fontSize: 12,
-          fontFamily: 'Pretendard',
-          fontWeight: FontWeight.w500
+    ) : InkWell(
+      onTap: () => setState(() => isAgeEditing = true),
+      child: Container(
+        margin: const EdgeInsets.only(left: 16, top: 10),
+        width: deviceWidth - 32,
+        height: (deviceWidth - 32) / 345 * 45,
+        decoration: BoxDecoration(
+            border: Border.all(width: 1, color: Palette.green6),
+            borderRadius: BorderRadius.circular(10)
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          '${birth.year} . ${birth.month} . ${birth.day} (만 ${DateTime.now().difference(birth).inDays ~/ 365}세)',
+          style: const TextStyle(
+              color: Palette.darkFont4,
+              fontSize: 12,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w500
+          ),
         ),
       ),
     );
@@ -514,21 +541,28 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   
   Widget walkerRegister1() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(height: 27),
-        titleBox(title: '프로필 사진 등록'),
-        profileUpload(),
-        titleBox(title: '닉네임 입력'),
-        nicknameInputBox(),
-        // 닉네임 체크 결과 텍스트 추가
-        const SizedBox(height: 30),
-        titleBox(title: '성별 입력'),
-        toggle(),
-        const SizedBox(height: 30),
-        titleBox(title: '나이'),
-        ageBox(),
-        const SizedBox(height: 41),
+        SizedBox(
+          height: columnHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 27),
+              titleBox(title: '프로필 사진 등록'),
+              profileUpload(),
+              titleBox(title: '닉네임 입력'),
+              nicknameInputBox(),
+              // 닉네임 체크 결과 텍스트 추가
+              const SizedBox(height: 30),
+              titleBox(title: '성별 입력'),
+              toggle(),
+              const SizedBox(height: 30),
+              titleBox(title: '나이'),
+              ageBox(),
+            ],
+          ),
+        ),
         nextButton()
       ],
     );
@@ -536,27 +570,34 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
 
   Widget walkerRegister2() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(height: 27),
-        titleBox(title: '연락처 입력'),
-        Padding(
-          padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 30),
-          child: TextInputUtil().number(controller: phoneController, hintText: '\'-\' 제외하고 숫자만 입력'),
+        SizedBox(
+          height: columnHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 27),
+              titleBox(title: '연락처 입력'),
+              Padding(
+                padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 30),
+                child: TextInputUtil().number(controller: phoneController, hintText: '\'-\' 제외하고 숫자만 입력'),
+              ),
+              titleBox(title: '경력 및 경험 추가'),
+              experienceInputBox(),
+              titleBox(title: '선호 견종 크기 선택'),
+              preferenceSelection(
+                  preference: dogSizePreference,
+                  gap: 9,
+                  height: 40,
+                  borderRadius: BorderRadius.circular(10)
+              ),
+              titleBox(title: '산책 스타일 및 선호사항 태그'),
+              hashTagInputBox(),
+              hashTagList(),
+            ],
+          ),
         ),
-        titleBox(title: '경력 및 경험 추가'),
-        experienceInputBox(),
-        titleBox(title: '선호 견종 크기 선택'),
-        preferenceSelection(
-          preference: dogSizePreference,
-          gap: 9,
-          height: 40,
-          borderRadius: BorderRadius.circular(10)
-        ),
-        titleBox(title: '산책 스타일 및 선호사항 태그'),
-        hashTagInputBox(),
-        hashTagList(),
-        const SizedBox(height: 40),
         nextButton()
       ],
     );
@@ -564,16 +605,23 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   
   Widget walkerRegister3() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const SizedBox(height: 27),
-        titleBox(title: '거주 지역 선택'),
-        locationDropdown(),
-        titleBox(title: '선호 요일 선택'),
-        preferenceSelection(preference: dayPreference, height: 30, gap: 5),
-        titleBox(title: '선호 시간 선택(2개)'),
-        preferenceSelection(preference: timePreference, height: 35, gap: 5, maxSelection: 2),
-        const SizedBox(height: 158),
+        SizedBox(
+          height: columnHeight,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 27),
+              titleBox(title: '거주 지역 선택'),
+              locationDropdown(),
+              titleBox(title: '선호 요일 선택'),
+              preferenceSelection(preference: dayPreference, height: 30, gap: 5),
+              titleBox(title: '선호 시간 선택(2개)'),
+              preferenceSelection(preference: timePreference, height: 35, gap: 5, maxSelection: 2),
+            ],
+          ),
+        ),
         Center(
           child: ButtonUtil(
               width: deviceWidth - 40,
@@ -605,13 +653,22 @@ class _WalkerRegisterTemplateState extends State<WalkerRegisterTemplate> {
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
       appBar: const PopHeader(title: '프로필 등록', useBackButton: true),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
-            walkerRegister(),
-          ],
-        )
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          try {
+            columnHeight = constraints.maxHeight - 80 - (deviceWidth - 40) / 335 * 55;
+          } catch(e) {
+            debugPrint(e.toString());
+          }
+          return SingleChildScrollView(
+              child: Column(
+                children: [
+                  StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
+                  walkerRegister(),
+                ],
+              )
+          );
+        },
       )
     );
   }
