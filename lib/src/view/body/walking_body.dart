@@ -1,7 +1,7 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/view/component/profile_grid.dart';
-import 'package:dog/src/view/component/walking/posting_page.dart';
+import 'package:dog/src/view/template/walking/posting_template.dart';
 import 'package:dog/src/view/component/walking/walking_profile_list.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
@@ -63,19 +63,23 @@ class _WalkingBodyState extends State<WalkingBody> {
   }
 
   Widget customFloatingButton(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          Transition(
-            child: const PostingPage(),
-            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-          ),
-        );
-      },
-      backgroundColor: Palette.outlinedButton1,
-      shape: const CircleBorder(),
-      child: Image.asset('assets/images/posting_image.png', width: 30.w),
+    return SizedBox(
+      width: 70.w,
+      height: 70.h,
+      child: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            Transition(
+              child: const PostingTemplate(),
+              transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+            ),
+          );
+        },
+        backgroundColor: Palette.outlinedButton1,
+        shape: const CircleBorder(),
+        child: Image.asset('assets/images/posting_image.png', width: 30.w),
+      ),
     );
   }
 
