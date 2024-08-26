@@ -34,7 +34,7 @@ class StepProgressBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: list.map((e) => indicator(
-            width: (GlobalVariables.width - (totalStep - 1) * 6.65 - 32).w / totalStep,
+            width: (1.sw - ((totalStep - 1) * 6.65).w - 32.w) / totalStep,
             active: e
         )).toList(),
       ),

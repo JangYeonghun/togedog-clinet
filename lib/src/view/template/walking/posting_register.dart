@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/button_util.dart';
+import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/view/component/walking/posting_calendar.dart';
+import 'package:dog/src/view/template/place_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -47,7 +49,7 @@ class _PostingRegisterState extends State<PostingRegister> {
   String _startTime = '시작';
   String _endTime = '종료';
 
-  int pageNum = 1;
+  int pageNum = 0;
   int selectedIndex = 0;
 
   List<String> hashTagList = [];
@@ -71,15 +73,15 @@ class _PostingRegisterState extends State<PostingRegister> {
   // 번호당 각 화면
   Widget postingRegister() {
     switch (pageNum) {
-      case 1:
+      case 0:
         return postRegister1();
-      case 2:
+      case 1:
         return postRegister2();
-      case 3:
+      case 2:
         return postRegister3();
-      case 4:
+      case 3:
         return postRegister4();
-      case 5:
+      case 4:
         return postRegister5();
       default:
         return postRegister1();
@@ -88,6 +90,7 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   Widget postRegister1() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         topInfo(text: '글 작성'),
@@ -104,7 +107,6 @@ class _PostingRegisterState extends State<PostingRegister> {
         showHashTagList(),
         textInfo(text: '픽업 지역'),
         locationDropdown(),
-        nextButton(space: 128.h),
       ],
     );
   }
@@ -112,8 +114,7 @@ class _PostingRegisterState extends State<PostingRegister> {
   Widget postRegister2() {
     return Column(
       children: [
-        nextButton(space: 128.h),
-
+        PlaceMap(),
       ],
     );
   }
@@ -125,7 +126,6 @@ class _PostingRegisterState extends State<PostingRegister> {
         topInfo(text: "반려견 선택"),
         selectAllButton(),
         buildDogProfileList(),
-        nextButton(space: 172.h),
       ],
     );
   }
@@ -140,7 +140,6 @@ class _PostingRegisterState extends State<PostingRegister> {
         ),
         textInfo(text: '시간'),
         selectTime(),
-        nextButton(space: 109.h),
       ],
     );
   }
@@ -158,7 +157,6 @@ class _PostingRegisterState extends State<PostingRegister> {
               hintText: '연락처'
           ),
         ),
-        nextButton(space: 268.h),
       ],
     );
   }
@@ -388,11 +386,9 @@ class _PostingRegisterState extends State<PostingRegister> {
     );
   }
 
-  Widget nextButton({
-    double space = 0
-  }) {
+  Widget nextButton() {
     return Padding(
-      padding: EdgeInsets.only(top: space.h),
+      padding: EdgeInsets.only(bottom: 40.h),
       child: Center(
         child: ButtonUtil(
             width: 347.w,
@@ -817,6 +813,17 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return postingRegister();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          children: [
+            StepProgressBar(currentStep: pageNum + 1, totalStep: 5),
+            postingRegister(),
+          ],
+        ),
+        nextButton(),
+      ],
+    );
   }
 }
