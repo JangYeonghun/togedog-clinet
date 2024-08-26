@@ -20,6 +20,7 @@ dependencies:
   # google firebase
 
   # sensor
+  geolocator:
 
   # ui
   go_router: ^14.2.0
