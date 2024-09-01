@@ -1,9 +1,9 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/view/component/profile_grid.dart';
-import 'package:dog/src/view/template/walking/posting_template.dart';
 import 'package:dog/src/view/component/walking/walking_profile_list.dart';
 import 'package:dog/src/view/header/pop_header.dart';
+import 'package:dog/src/view/template/walking/posting_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

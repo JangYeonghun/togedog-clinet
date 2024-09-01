@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/button_util.dart';

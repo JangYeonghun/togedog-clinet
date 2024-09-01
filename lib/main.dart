@@ -40,8 +40,8 @@ class MyApp extends StatelessWidget {
           ),
           initialRoute: '/',
           routes: {
-            // '/': (context) => const OnboardingTemplate(),
-            '/': (context) => const MainTemplate(),
+            '/': (context) => const OnboardingTemplate(),
+            '/main': (context) => const MainTemplate(),
             // '/terms': (context) => const SignTermsTemplate(),
             // '/home': (context) => const MainTemplate(),
           },

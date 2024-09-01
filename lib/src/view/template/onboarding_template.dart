@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
@@ -27,9 +29,11 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   );
 
   Future<void> checkAccessToken() async {
-    await storage.read(key: 'accessToken').then((value) {
-      if (value != null) {
+    await storage.read(key: 'accessToken').then((accessToken) {
+      if (accessToken != null) {
         Navigator.pushReplacementNamed(context, '/main');
+      } else {
+        initAppLinks();
       }
     });
   }
@@ -68,7 +72,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   void initState() {
     checkAccessToken();
     _tabController = TabController(length: 3, vsync: this);
-    initAppLinks();
     super.initState();
   }
 
