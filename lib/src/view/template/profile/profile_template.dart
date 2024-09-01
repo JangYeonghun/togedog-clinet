@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/provider/mode_provider.dart';
+import 'package:dog/src/repository/profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
+import 'package:dog/src/util/loading_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/profile/dog_profile_detail_template.dart';
 import 'package:dog/src/view/template/profile/dog_register_template.dart';
@@ -12,6 +17,7 @@ import 'package:dog/src/view/template/profile/walker_profile_detail_template.dar
 import 'package:dog/src/view/template/profile/walker_register_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart';
 import 'package:transition/transition.dart';
 
 class ProfileTemplate extends StatefulWidget {
@@ -24,6 +30,7 @@ class ProfileTemplate extends StatefulWidget {
 class _ProfileTemplateState extends State<ProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final String nickname = '닉네임';
+  final ProfileRepository profileRepository = ProfileRepository();
 
   final Map<String, dynamic> testWalkerProfile = {}/*{
     'name' : '니니님',
@@ -56,81 +63,18 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
     'notes' : '13살부터 19살까지 강아지를 키운 경험이 있고, 애견 미용 전공자이기 때문에 강아지들을 잘 컨트롤 하고, 처음 보는 강아지들도 저를 잘 따르는 편이에요. 강아지를 너무 좋아해서 유기견 봉사도 꾸준히 다니고 있으니 믿고 맏기셔도 됩니다. :)'
   }*/;
 
-  final List<Map<String, dynamic>> testDogProfiles = [
-    /*{
-      'name' : '뽀삐',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 2,
-      'weight' : 8,
-      'size' : '소형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    },
-    {
-      'name' : '봅비',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 4,
-      'weight' : 8,
-      'size' : '중형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    },
-    {
-      'name' : '뽀삐',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 2,
-      'weight' : 8,
-      'size' : '소형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    },
-    {
-      'name' : '봅비',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 4,
-      'weight' : 8,
-      'size' : '중형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    },
-    {
-      'name' : '봅비',
-      'imgUrl' : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkkGUrLOWE58fO0RbchUAP2D4McJUiJhmeDw&s',
-      'gender' : '수컷',
-      'age' : 4,
-      'weight' : 8,
-      'size' : '중형견',
-      'breed' : '웰시코기',
-      'region' : '서울',
-      'neuter' : true,
-      'vaccine' : true,
-      'hashTags' : ['#잘 따르는', '#활발한', '#귀여운'],
-      'note' : '꼬리 만지는 것을 싫어해요'
-    }*/
-  ];
+  late final Future<List<DogProfileDTO>> dogProfiles;
+
+  Future<List<DogProfileDTO>> getDogProfiles() async {
+    final Response response = await profileRepository.getDogProfileList(context: context);
+    final List<dynamic> list = jsonDecode(response.body);
+    final List<DogProfileDTO> result = list.map((e) => DogProfileDTO.fromJson(e)).toList();
+    return result;
+  }
 
   @override
   void initState() {
+    dogProfiles = getDogProfiles();
     super.initState();
   }
 
@@ -138,7 +82,8 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
     return Consumer(
         builder: (context, ref, _) {
           final mode = ref.watch(modeProvider);
-          return SizedBox(
+          return Container(
+            color: Colors.white,
             width: double.infinity,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -196,14 +141,14 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
     );
   }
 
-  Widget dogProfileItem({required Map<String, dynamic> item}) {
+  Widget dogProfileItem({required DogProfileDTO profile}) {
     return InkWell(
       onTap: () {
         Navigator.push(
             context,
             Transition(
               transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-              child: DogProfileDetailTemplate(dogProfile: item)
+              child: DogProfileDetailTemplate(profile: profile)
             )
         );
       },
@@ -236,7 +181,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
                   height: (deviceWidth - 28) / 347 * 53,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(500),
-                    child: CachedNetworkImage(imageUrl: item['imgUrl'], fit: BoxFit.cover)
+                    child: CachedNetworkImage(imageUrl: profile.dogImage, fit: BoxFit.cover)
                   ),
                 ),
                 Container(
@@ -250,7 +195,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            item['name'],
+                            profile.name,
                             style: const TextStyle(
                               color: Palette.darkFont4,
                               fontSize: 20,
@@ -280,7 +225,16 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  //삭제 콜백
+                                  profileRepository.deleteDogProfile(
+                                    context: context,
+                                    dogId: profile.dogId
+                                  ).then((response) {
+                                    if (response.statusCode ~/ 100 == 2) {
+                                      setState(() {
+                                        dogProfiles = getDogProfiles();
+                                      });
+                                    }
+                                  });
                                 },
                                 child: const Padding(
                                   padding: EdgeInsets.only(left: 6, right: 10),
@@ -303,7 +257,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        '${item['gender']} | ${item['age']}살 | ${item['size']} | ${item['breed']}',
+                        '${profile.dogGender ? '수컷' : '암컷'} | ${profile.age}살 | ${profile.dogType} | ${profile.breed}',
                         style: const TextStyle(
                           color: Palette.darkFont2,
                           fontSize: 12,
@@ -320,7 +274,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
             Padding(
               padding: EdgeInsets.only(left: 18.5 + (deviceWidth - 28) / 347 * 53),
               child: Text(
-                item['region'],
+                profile.region,
                 style: const TextStyle(
                     color: Palette.darkFont2,
                     fontSize: 12,
@@ -338,55 +292,71 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
   Widget dogProfile() {
     return Container(
       color: const Color(0xFFF2F2F2),
-      child: ListView.builder(
-        padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
-        itemCount: testDogProfiles.length + 1,
-        itemBuilder: (context, index) {
-          if (index < testDogProfiles.length) {
-            return dogProfileItem(item: testDogProfiles[index]);
+      child: FutureBuilder(
+        future: dogProfiles,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            final List<DogProfileDTO> data = snapshot.data;
+
+            if (data.isNotEmpty) {
+              return ListView.builder(
+                  padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
+                  itemCount: data.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index < data.length) {
+                      return dogProfileItem(profile: data[index]);
+                    } else {
+                      return Consumer(
+                          builder: (context, ref, _) {
+                            final mode = ref.watch(modeProvider);
+                            return InkWell(
+                              onTap: () => data.length >= 5 ? showProfileLimitAlert() : Navigator.push(
+                                  context,
+                                  Transition(
+                                      transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+                                      child: mode ? const DogRegisterTemplate() : const WalkerRegisterTemplate()
+                                  )
+                              ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white
+                                ),
+                                margin: const EdgeInsets.only(top: 6, bottom: 6),
+                                width: deviceWidth - 28,
+                                height: (deviceWidth - 28) / 347 * 80,
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.add, color: Color(0xFF818181), size: 20),
+                                    SizedBox(width: 4),
+                                    Text(
+                                      '추가하기',
+                                      style: TextStyle(
+                                          color: Color(0xFF818181),
+                                          fontSize: 16,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w500
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          }
+                      );
+                    }
+                  }
+              );
+            } else {
+              return emptyProfile();
+            }
+
           } else {
-            return Consumer(
-                builder: (context, ref, _) {
-                  final mode = ref.watch(modeProvider);
-                  return InkWell(
-                    onTap: () => testDogProfiles.length >= 5 ? showProfileLimitAlert() : Navigator.push(
-                        context,
-                        Transition(
-                            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-                            child: mode ? const DogRegisterTemplate() : const WalkerRegisterTemplate()
-                        )
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.white
-                      ),
-                      margin: const EdgeInsets.only(top: 6, bottom: 6),
-                      width: deviceWidth - 28,
-                      height: (deviceWidth - 28) / 347 * 80,
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, color: Color(0xFF818181), size: 20),
-                          SizedBox(width: 4),
-                          Text(
-                            '추가하기',
-                            style: TextStyle(
-                                color: Color(0xFF818181),
-                                fontSize: 16,
-                                fontFamily: 'Pretendard',
-                                fontWeight: FontWeight.w500
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }
-            );
+            return const LoadingUtil();
           }
         }
-      ),
+      )
     );
   }
 
@@ -440,7 +410,7 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
             return CommonScaffoldUtil(
                 appBar: PopHeader(title: !mode && testWalkerProfile.isNotEmpty ? '프로필' : '프로필 등록'),
                 body: mode ?
-                testDogProfiles.isEmpty ? emptyProfile() : dogProfile() :
+                dogProfile() :
                 testWalkerProfile.isEmpty ? emptyProfile() : WalkerProfileDetailTemplate(walkerProfile: testWalkerProfile)
             );
           },

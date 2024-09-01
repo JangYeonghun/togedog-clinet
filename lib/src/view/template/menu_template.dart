@@ -16,6 +16,7 @@ class MenuTemplate extends StatefulWidget {
 
 class _MenuTemplateState extends State<MenuTemplate> {
   final String account = "dogmate@gmail.comㅁㅁㅁㅁㅁㅁㅁㅁㅁ";
+  final FlutterSecureStorage storage = const FlutterSecureStorage();
   int notiCount = 2;
 
   Widget menuItem({
@@ -44,7 +45,7 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget logOut() {
     return menuItem(
         onTap: () {
-          const FlutterSecureStorage().delete(key: 'accessToken').whenComplete(() {
+          storage.delete(key: 'accessToken').whenComplete(() {
             Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
           });
         },

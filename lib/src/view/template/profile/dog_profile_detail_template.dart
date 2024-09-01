@@ -1,13 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 
 class DogProfileDetailTemplate extends StatefulWidget {
-  final Map<String, dynamic> dogProfile;
-  const DogProfileDetailTemplate({super.key, required this.dogProfile});
+  final DogProfileDTO profile;
+  const DogProfileDetailTemplate({super.key, required this.profile});
 
   @override
   State<DogProfileDetailTemplate> createState() => _DogProfileDetailTemplateState();
@@ -17,11 +18,11 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
   final double deviceHeight = GlobalVariables.height;
   final double deviceWidth = GlobalVariables.width;
   late final TabController _tabController;
-  late Map<String, dynamic> dogProfile;
+  late DogProfileDTO profile;
 
   @override
   void initState() {
-    dogProfile = widget.dogProfile;
+    profile = widget.profile;
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
@@ -50,7 +51,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
           Row(
             children: [
               Text(
-                dogProfile['name'],
+                profile.name,
                 style: const TextStyle(
                     color: Palette.darkFont4,
                     fontSize: 20,
@@ -68,7 +69,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  '${dogProfile['gender']} | ${dogProfile['age']} | ${dogProfile['size']} | ${dogProfile['breed']}',
+                  '${profile.dogGender ? '수컷' : '암컷'} | ${profile.age} | ${profile.dogType} | ${profile.breed}',
                   style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -82,7 +83,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  dogProfile['region'],
+                  profile.region,
                   style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -141,12 +142,12 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
       child: Column(
         children: [
           Row(
-            children: dogProfile['hashTags'].map<Widget>((e) => hashTagItem(hashTag: e)).toList(),
+            children: profile.dogPersonalityTags.map<Widget>((e) => hashTagItem(hashTag: e)).toList(),
           ),
           const SizedBox(height: 25),
-          infoItem(title: '체중', content: '${dogProfile['weight']}kg'),
-          infoItem(title: '중성화', content: dogProfile['neuter'] ? 'O' : 'X'),
-          infoItem(title: '예방접종', content: dogProfile['vaccine'] ? 'O' : 'X')
+          infoItem(title: '체중', content: '${profile.weight}kg'),
+          infoItem(title: '중성화', content: profile.neutered ? 'O' : 'X'),
+          infoItem(title: '예방접종', content: profile.vaccine ? 'O' : 'X')
         ],
       ),
     );
@@ -200,7 +201,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
           Padding(
             padding: const EdgeInsets.only(left: 2),
             child: Text(
-              dogProfile['note'],
+              profile.notes,
               style: const TextStyle(
                   color: Palette.darkFont4,
                   fontSize: 12,
@@ -218,7 +219,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(imageUrl: dogProfile['imgUrl'], height: deviceHeight * 0.51, fit: BoxFit.fitHeight),
+        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.fitHeight),
         Stack(
           alignment: Alignment.center,
           children: [
@@ -234,7 +235,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(imageUrl: dogProfile['imgUrl'], height: deviceHeight * 0.51, fit: BoxFit.fitHeight),
+        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.fitHeight),
         Stack(
           alignment: Alignment.center,
           children: [
@@ -249,7 +250,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(500),
-                child: CachedNetworkImage(imageUrl: dogProfile['imgUrl'], fit: BoxFit.cover)
+                child: CachedNetworkImage(imageUrl: profile.dogImage, fit: BoxFit.cover)
               )
             ),
           ],
