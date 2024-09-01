@@ -1,5 +1,6 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/toast_popup_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/notification_template.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +143,22 @@ class _MenuTemplateState extends State<MenuTemplate> {
       )
     );
   }
+
+  //테스뚜버튼~~
+  Widget testButton() {
+    return InkWell(
+      onTap: () {
+        ToastPopupUtil.notice(context: context, content: '굿');
+      },
+      child: const Text(
+        'TEST',
+        style: TextStyle(
+          fontSize: 20,
+          color: Colors.black
+        ),
+      ),
+    );
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -150,7 +167,8 @@ class _MenuTemplateState extends State<MenuTemplate> {
       body: Column(
         children: [
           logOut(),
-          alarm()
+          alarm(),
+          testButton()
         ],
       )
     );

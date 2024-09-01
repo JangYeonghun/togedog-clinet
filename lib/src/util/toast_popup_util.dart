@@ -1,6 +1,7 @@
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ToastPopupUtil {
   static final double deviceWidth = GlobalVariables.width;
@@ -20,25 +21,26 @@ class ToastPopupUtil {
             if (snapshot.hasData) {
               Navigator.pop(context);
             }
-            final double width = deviceWidth - 50;
-            final double height = width / 250 * 40;
-            final double circleSize = width / 250 * 24;
+            final double width = 250.w;
+            final double height = 40.h;
+            final double circleSize = 24.h;
 
             return Dialog(
               backgroundColor: Colors.transparent,
-              insetPadding: const EdgeInsets.only(left: 25, right: 25),
+              insetPadding: EdgeInsets.only(left: 62.w, right: 62.w, bottom: 110.h),
+              alignment: Alignment.bottomCenter,
               child: Container(
                 width: width,
                 height: height,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(6.r),
                   color: const Color(0xFF828282)
                 ),
                 padding: EdgeInsets.fromLTRB(
-                    (height - circleSize) / 2 + 1,
-                    (height - circleSize) / 2,
-                    (height - circleSize) / 2 + 1,
-                    (height - circleSize) / 2
+                  8.w,
+                  7.h,
+                  8.w,
+                  7.h
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -52,7 +54,7 @@ class ToastPopupUtil {
                       ),
                       child: Icon(
                         Icons.check,
-                        size: circleSize - 4,
+                        size: circleSize - 4.h,
                         color: Colors.white,
                       ),
                     ),
@@ -62,7 +64,7 @@ class ToastPopupUtil {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: circleSize - 15,
+                          fontSize: 12.sp,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400
                         ),
