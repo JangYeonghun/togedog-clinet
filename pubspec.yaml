@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
 
   # google
+  geocoding:
   google_maps_flutter:
   google_maps_flutter_android:
   google_maps_flutter_platform_interface:

@@ -94,18 +94,19 @@ class _WalkingBodyState extends State<WalkingBody> {
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: PopHeader(title: mode ? '산책메이트 찾기' : '산책하기'),
-          body: SingleChildScrollView(
-            child: mode ? Stack(
-              children: [
-                ownerWalking(),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: mode ? ownerWalking() : walkerWalking(),
+              ),
+              if (mode)
                 Positioned(
                   left: 0.74.sw,
                   right: 0,
                   top: 0.67.sh,
                   child: customFloatingButton(context),
                 ),
-              ],
-            ) : walkerWalking(),
+            ],
           ),
         );
       },

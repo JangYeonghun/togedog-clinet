@@ -104,7 +104,7 @@ class _PostingCalendarState extends State<PostingCalendar> {
                 },
                 // 날짜 텍스트 스타일을 설정하는 부분
                 defaultBuilder: (context, date, _) {
-                  if (date.isBefore(DateTime.now().add(const Duration(days: -1)))) {
+                  if (date.isBefore(DateTime.now().add(const Duration(days: -0)))) {
                     // 이전 날짜인 경우 선택할 수 없도록 비활성화 처리합니다.
                     return Center(
                       child: Text(
