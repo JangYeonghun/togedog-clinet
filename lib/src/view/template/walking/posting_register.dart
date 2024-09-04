@@ -50,6 +50,9 @@ class _PostingRegisterState extends State<PostingRegister> {
   int pageNum = 0;
   int selectedIndex = 0;
 
+  bool isSelectStartTime = false;
+  bool isSelectEndTime = false;
+
   List<String> hashTagList = [];
   List<bool> isProfileSelected = List.filled(testData.length, false);
 
@@ -112,7 +115,11 @@ class _PostingRegisterState extends State<PostingRegister> {
   Widget postRegister2() {
     return Column(
       children: [
-        PlaceMap(),
+        SizedBox(
+            height: 580.h,
+            width: 1.sw,
+            child: const PlaceMap()
+        ),
       ],
     );
   }
@@ -132,7 +139,6 @@ class _PostingRegisterState extends State<PostingRegister> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        topInfo(text: '산책 일시 선택'),
         PostingCalendar(
           onDateSelected: _onDateSelected,
         ),
@@ -384,14 +390,16 @@ class _PostingRegisterState extends State<PostingRegister> {
     );
   }
 
-  Widget nextButton() {
+  Widget nextButton({
+    String text = '다음'
+  }) {
     return Padding(
       padding: EdgeInsets.only(bottom: 40.h),
       child: Center(
         child: ButtonUtil(
             width: 347.w,
             height: 51.h,
-            title: '다음',
+            title: text,
             onTap: () {
               setState(() {
                 pageNum += 1;
@@ -494,18 +502,18 @@ class _PostingRegisterState extends State<PostingRegister> {
     required VoidCallback onTap,
   }) {
     return Center(
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          width: 347.w,
-          height: 80.h,
-          decoration: ShapeDecoration(
-            color: isSelected ? Palette.green2 : Palette.outlinedButton1,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+      child: Container(
+        width: 347.w,
+        height: 80.h,
+        decoration: ShapeDecoration(
+          color: isSelected ? Palette.green2 : Palette.outlinedButton1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-          padding: EdgeInsets.only(left: 15.w, right: 24.w),
+        ),
+        padding: EdgeInsets.only(left: 15.w, right: 24.w),
+        child: InkWell(
+          onTap: onTap,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -609,13 +617,14 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   Widget selectTimeBox({
     required String text,
-    required String type
+    required String type,
+    required Color color
   }) {
     return Container(
       width: 156.w,
       height: 46.h,
       decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFF4C433F), width: 1),
+        border: Border.all(color: color, width: 1),
         borderRadius: BorderRadius.circular(10),
         color: Colors.white,
       ),
@@ -638,7 +647,7 @@ class _PostingRegisterState extends State<PostingRegister> {
                 ],
               ),
             ),
-            selectTimeMenu(type: type),
+            selectTimeMenu(type: type, color: color),
           ],
         )
     );
@@ -646,6 +655,7 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   Widget selectTimeMenu({
     required String type,
+    required Color color
   }) {
     List<String> getTimeSlots() {
       return type == 'start' ? startTimeSlots(_selectedDate) : endTimeSlots(_selectedDate);
@@ -653,8 +663,8 @@ class _PostingRegisterState extends State<PostingRegister> {
 
     return PopupMenuButton<String>(
       color: Colors.white,
-      icon: const Icon(Icons.keyboard_arrow_down_sharp, size: 25),
-      offset: type == 'start' ? const Offset(-120, 0) : const Offset(0, 0),
+      icon: Icon(Icons.keyboard_arrow_down_sharp, size: 25.w, color: color),
+      offset: type == 'start' ? const Offset(-120, 50) : const Offset(0, 50),
       onSelected: (String value) {
         setState(() {
           type == 'start'
@@ -662,18 +672,38 @@ class _PostingRegisterState extends State<PostingRegister> {
               : _endTime = value;
         });
       },
+      onCanceled: () {  // 팝업이 닫혔을 때 호출되는 콜백
+        setState(() {
+          if (type == 'start') {
+            isSelectStartTime = false;  // 선택 안하고 닫으면 색상 회색으로 변경
+          } else {
+            isSelectEndTime = false;  // 선택 안하고 닫으면 색상 회색으로 변경
+          }
+        });
+      },
       itemBuilder: (BuildContext context) {
+        setState(() {
+          if (type == 'start') {
+            isSelectStartTime = true;
+          } else {
+            isSelectEndTime = true;
+          }
+        });
         List<String> timeSlots = getTimeSlots();
         if (timeSlots.length >= 4) {
           return [
             PopupMenuItem<String>(
+              padding: EdgeInsets.zero,
               child: SizedBox(
-                width: 50.w,
+                width: 100.w,
                 height: 180.h,
                 child: SingleChildScrollView(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: timeSlots.map((String choice) {
                       return ListTile(
+                        dense: true,
                         title: Text(
                           choice,
                           style: TextStyle(
@@ -688,6 +718,13 @@ class _PostingRegisterState extends State<PostingRegister> {
                             type == 'start'
                                 ? _startTime = choice
                                 : _endTime = choice;
+
+                            if (type == 'start') {
+                              isSelectStartTime = false;
+                            } else {
+                              isSelectEndTime = false;
+                            }
+
                             Navigator.pop(context);
                           });
                         },
@@ -716,6 +753,13 @@ class _PostingRegisterState extends State<PostingRegister> {
                     type == 'start'
                         ? _startTime = choice
                         : _endTime = choice;
+
+                    if (type == 'start') {
+                      isSelectStartTime = false;
+                    } else {
+                      isSelectEndTime = false;
+                    }
+
                     Navigator.pop(context);
                   });
                 },
@@ -731,7 +775,7 @@ class _PostingRegisterState extends State<PostingRegister> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        selectTimeBox(text: _startTime, type: 'start'),
+        selectTimeBox(text: _startTime, type: 'start', color: isSelectStartTime ? Palette.green6 : const Color(0xFF4C433F)),
         SizedBox(
           width: 25.w,
           child: Align(
@@ -747,7 +791,7 @@ class _PostingRegisterState extends State<PostingRegister> {
             ),
           ),
         ),
-        selectTimeBox(text: _endTime, type: 'end'),
+        selectTimeBox(text: _endTime, type: 'end', color: isSelectEndTime ? Palette.green6 : const Color(0xFF4C433F)),
       ],
     );
   }
@@ -820,7 +864,7 @@ class _PostingRegisterState extends State<PostingRegister> {
             postingRegister(),
           ],
         ),
-        nextButton(),
+        pageNum == 1 ? nextButton(text: '픽업 장소로 설정') : nextButton(),
       ],
     );
   }
