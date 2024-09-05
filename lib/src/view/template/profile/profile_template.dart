@@ -353,7 +353,9 @@ class _ProfileTemplateState extends State<ProfileTemplate> {
             }
 
           } else {
-            return const LoadingUtil();
+            return const LoadingUtil(
+              animationColor: "grey",
+            );
           }
         }
       )
