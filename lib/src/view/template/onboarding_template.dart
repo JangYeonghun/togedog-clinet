@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -30,6 +31,7 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
   Future<void> checkAccessToken() async {
     await storage.read(key: 'accessToken').then((accessToken) {
+      FlutterNativeSplash.remove();
       if (accessToken != null) {
         Navigator.pushReplacementNamed(context, '/main');
       } else {

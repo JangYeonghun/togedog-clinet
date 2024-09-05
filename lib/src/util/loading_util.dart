@@ -5,14 +5,8 @@ class LoadingUtil extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Loading...',
-        style: TextStyle(
-          fontSize: 30,
-          color: Colors.black
-        ),
-      ),
+    return Center(
+      child: Image.asset('assets/images/loading_black.gif', width: 80),
     );
   }
 }
