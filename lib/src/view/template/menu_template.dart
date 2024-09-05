@@ -148,7 +148,7 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget testButton() {
     return InkWell(
       onTap: () {
-        ToastPopupUtil.notice(context: context, content: '굿');
+        ToastPopupUtil.notice(context: context, content: '굿굿');
       },
       child: const Text(
         'TEST',
