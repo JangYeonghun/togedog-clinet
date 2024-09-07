@@ -12,9 +12,9 @@ class API {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도
-  Future<Response> api({required Future<Response> Function() func, BuildContext? context}) async {
+  Future<Response> api({BuildContext? context, required Future<Response> Function() func}) {
 
-    return await func().then((response) async {
+    return func().then((response) {
       debugPrint('''
       
       /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
@@ -27,10 +27,9 @@ class API {
       ''');
 
       if (response.statusCode == 401) {
-        await AuthRepository().reissueToken().then((succeed) async {
+        return AuthRepository().reissueToken().then((succeed) async {
           if (succeed) {
-            final Response retryResponse = await api(func: () => func(), context: context);
-            return retryResponse;
+            return await api(func: () => func(), context: context);
           } else {
             await storage.deleteAll();
             throw Exception('Error: Token Expired');
@@ -42,9 +41,10 @@ class API {
 
       } else if (context != null) {
         _failureNotifier(response: response, context: context);
+        throw Exception("API call failed");
+      } else {
+        throw Exception("API call failed");
       }
-
-      throw Exception("API call failed");
     });
   }
 
@@ -54,18 +54,26 @@ class API {
     required BuildContext context
   }) {
 
+    final String errMsg;
+    final String errLog;
+
     switch (response.statusCode ~/ 100) {
       case 5:
-        ToastPopupUtil.error(context: context, content: '서버와의 통신에 실패했습니다.');
-        throw Exception('Server Connection Error: ${response.statusCode}');
+        errMsg = '서버와의 통신에 실패했습니다.';
+        errLog = 'Server Connection Error: ${response.statusCode}';
+        break;
       case 4:
-        ToastPopupUtil.error(context: context, content: '문제가 발생하였습니다.');
-        throw Exception('Error: ${response.statusCode}');
+        errMsg = '요청에 실패했습니다.';
+        errLog = 'Request Error: ${response.statusCode}';
+        break;
       default:
-        ToastPopupUtil.error(context: context, content: '문제가 발생하였습니다.');
-        throw Exception('Error: ${response.statusCode}');
+        errMsg = '알수없는 오류가 발생했습니다.';
+        errLog = 'Unknown Error: ${response.statusCode}';
+        break;
     }
 
+    ToastPopupUtil.error(context: context, content: errMsg);
+    throw Exception(errLog);
   }
 
 }

@@ -6,19 +6,20 @@ class UserProfileRepository extends API {
 
   Future<Response> getProfile({
     required BuildContext context
-  }) async {
-    return await storage.read(key: 'accessToken').then((accessToken) async {
-      return await api(
-          context: context,
-          func: () => get(
-              Uri.http('$domain:$port', '/api/v1/mate'),
-              headers: <String, String>{
-                'Content-type' : 'application/json',
-                'Authorization' : 'Bearer $accessToken'
-              }
-          )
-      );
-    });
+  }) {
+    return api(
+      func: () {
+        return storage.read(key: 'accessToken').then((accessToken) {
+          return get(
+            Uri.http('$domain:$port', '/api/v1/mate'),
+            headers: <String, String>{
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            }
+          );
+        });
+      }
+    );
   }
 
 }
