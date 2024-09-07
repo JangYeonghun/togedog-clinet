@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
-import 'package:dog/src/dto/mate_profile_dto.dart';
-import 'package:dog/src/repository/profile_repository.dart';
+import 'package:dog/src/dto/user_profile_dto.dart';
+import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/loading_util.dart';
 import 'package:dog/src/view/template/profile/user_profile_detail_template.dart';
@@ -21,12 +21,12 @@ class UserProfileTemplate extends StatefulWidget {
 
 class _UserProfileTemplateState extends State<UserProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
-  final ProfileRepository profileRepository = ProfileRepository();
+  final UserProfileRepository userProfileRepository = UserProfileRepository();
   late final Future<UserProfileDTO> userProfile;
   final String nickname = '닉네임';
 
   Future<UserProfileDTO> getMateProfiles() async {
-    final Response response = await profileRepository.getUserProfile(context: context);
+    final Response response = await userProfileRepository.getProfile(context: context);
     final dynamic json = jsonDecode(response.body);
     final UserProfileDTO result = UserProfileDTO.fromJson(json);
     return result;

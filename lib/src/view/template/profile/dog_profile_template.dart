@@ -1,9 +1,10 @@
 import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
-import 'package:dog/src/repository/profile_repository.dart';
+import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/util/loading_util.dart';
@@ -22,7 +23,7 @@ class DogProfileTemplate extends StatefulWidget {
 
 class _DogProfileTemplateState extends State<DogProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
-  final ProfileRepository profileRepository = ProfileRepository();
+  final DogProfileRepository profileRepository = DogProfileRepository();
   late final Future<List<DogProfileDTO>> dogProfiles;
 
   @override
@@ -32,7 +33,7 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
   }
 
   Future<List<DogProfileDTO>> getDogProfiles() async {
-    final Response response = await profileRepository.getDogProfileList(context: context);
+    final Response response = await profileRepository.getList(context: context);
     final List<dynamic> list = jsonDecode(response.body);
     final List<DogProfileDTO> result = list.map((e) => DogProfileDTO.fromJson(e)).toList();
     return result;
@@ -180,7 +181,7 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
                               ),
                               InkWell(
                                 onTap: () {
-                                  profileRepository.deleteDogProfile(
+                                  profileRepository.remove(
                                       context: context,
                                       dogId: profile.dogId
                                   ).then((response) {

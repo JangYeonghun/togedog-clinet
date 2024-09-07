@@ -4,7 +4,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_register_dto.dart';
-import 'package:dog/src/repository/profile_repository.dart';
+import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
@@ -444,7 +444,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
                 ${dto.file}
                 ''');
     
-                ProfileRepository().postDogProfile(
+                DogProfileRepository().register(
                   context: context,
                   dto: dto
                 );

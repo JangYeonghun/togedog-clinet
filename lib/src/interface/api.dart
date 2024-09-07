@@ -1,3 +1,4 @@
+import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/repository/auth_repository.dart';
 import 'package:dog/src/util/toast_popup_util.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
 class API {
+  final String domain = GlobalVariables.domain;
+  final int port = GlobalVariables.port;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도

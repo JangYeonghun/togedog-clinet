@@ -1,16 +1,13 @@
 import 'dart:convert';
 
-import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/dto/dog_profile_register_dto.dart';
 import 'package:dog/src/interface/api.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
-class ProfileRepository extends API {
-  final String domain = GlobalVariables.domain;
-  final int port = GlobalVariables.port;
+class DogProfileRepository extends API {
 
-  Future<Response> postDogProfile({
+  Future<Response> register({
     required BuildContext context,
     required DogProfileRegisterDTO dto
   }) async {
@@ -64,7 +61,7 @@ class ProfileRepository extends API {
     );
   }
 
-  Future<Response> updateDogProfile({
+  Future<Response> update({
     required DogProfileRegisterDTO dto
   }) async {
     final String? accessToken = await storage.read(key: 'accessToken');
@@ -93,7 +90,7 @@ class ProfileRepository extends API {
     return response;
   }
 
-  Future<Response> getDogProfileList({
+  Future<Response> getList({
     required BuildContext context
   }) async {
     return await storage.read(key: 'accessToken').then((accessToken) async {
@@ -110,7 +107,7 @@ class ProfileRepository extends API {
     });
   }
 
-  Future<Response> getDogProfile({
+  Future<Response> selectWithId({
     required int dogId
   }) async {
     final String? accessToken = await storage.read(key: 'accessToken');
@@ -126,7 +123,7 @@ class ProfileRepository extends API {
     return response;
   }
 
-  Future<Response> deleteDogProfile({
+  Future<Response> remove({
     required BuildContext context,
     required int dogId
   }) async {
@@ -135,23 +132,6 @@ class ProfileRepository extends API {
           context: context,
           func: () => delete(
               Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
-              headers: <String, String>{
-                'Content-type' : 'application/json',
-                'Authorization' : 'Bearer $accessToken'
-              }
-          )
-      );
-    });
-  }
-
-  Future<Response> getUserProfile({
-    required BuildContext context
-  }) async {
-    return await storage.read(key: 'accessToken').then((accessToken) async {
-      return await api(
-          context: context,
-          func: () => get(
-              Uri.http('$domain:$port', '/api/v1/mate'),
               headers: <String, String>{
                 'Content-type' : 'application/json',
                 'Authorization' : 'Bearer $accessToken'
