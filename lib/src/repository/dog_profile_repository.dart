@@ -10,53 +10,54 @@ class DogProfileRepository extends API {
   Future<Response> register({
     required BuildContext context,
     required DogProfileRegisterDTO dto
-  }) async {
-    final String? accessToken = await storage.read(key: 'accessToken');
+  }) {
+    return api(
+      context: context,
+      func: () {
+        return storage.read(key: 'accessToken').then((accessToken) async {
+          MultipartRequest request = MultipartRequest(
+              'POST',
+              Uri.http('$domain:$port', 'api/v1/dog')
+          )
+            ..headers.addAll({
+              "Content-Type": "multipart/form-data",
+              'Authorization': 'Bearer $accessToken'
+            })
+            ..fields['request'] = jsonEncode({
+              'name' : dto.name,
+              'breed' : dto.breed,
+              'neutered' : dto.neutered,
+              'dogGender' : dto.dogGender,
+              'weight' : dto.weight,
+              'region' : dto.region,
+              'notes' : dto.notes,
+              'tags' : dto.tags,
+              'vaccine' : dto.vaccine,
+              'age' : dto.age
+            });
 
-    return await api(
-      func: () async {
-        MultipartRequest request = MultipartRequest(
-            'POST',
-            Uri.http('$domain:$port', 'api/v1/dog')
-        )
-          ..headers.addAll({
-            "Content-Type": "multipart/form-data",
-            'Authorization': 'Bearer $accessToken'
-          })
-          ..fields['request'] = jsonEncode({
-            'name' : dto.name,
-            'breed' : dto.breed,
-            'neutered' : dto.neutered,
-            'dogGender' : dto.dogGender,
-            'weight' : dto.weight,
-            'region' : dto.region,
-            'notes' : dto.notes,
-            'tags' : dto.tags,
-            'vaccine' : dto.vaccine,
-            'age' : dto.age
-          });
+          if (dto.file != null) {
 
-        if (dto.file != null) {
+            request.files.add(await MultipartFile.fromPath(
+                'profileImage',
+                dto.file!.path,
+                filename: dto.file!.path.split('/').last
+            ));
 
-          request.files.add(await MultipartFile.fromPath(
-              'profileImage',
-              dto.file!.path,
-              filename: dto.file!.path.split('/').last
-          ));
+          }
 
-        }
+          debugPrint("필드: ${request.fields}");
+          debugPrint("파일: ${request.files[0].contentType} ${request.files[0].field} ${request.files[0].filename}");
+          debugPrint("헤더: ${request.headers}");
+          debugPrint("주소: ${request.url}");
+          debugPrint("메소드: ${request.method}");
 
-        debugPrint("필드: ${request.fields}");
-        debugPrint("파일: ${request.files[0].contentType} ${request.files[0].field} ${request.files[0].filename}");
-        debugPrint("헤더: ${request.headers}");
-        debugPrint("주소: ${request.url}");
-        debugPrint("메소드: ${request.method}");
+          StreamedResponse streamedResponse = await request.send();
 
-        StreamedResponse streamedResponse = await request.send();
+          final Response response = await Response.fromStream(streamedResponse);
 
-        final Response response = await Response.fromStream(streamedResponse);
-
-        return response;
+          return response;
+        });
       }
     );
   }
@@ -92,19 +93,21 @@ class DogProfileRepository extends API {
 
   Future<Response> getList({
     required BuildContext context
-  }) async {
-    return await storage.read(key: 'accessToken').then((accessToken) async {
-      return await api(
-          context: context,
-          func: () => get(
+  }) {
+    return api(
+      context: context,
+      func: () {
+        return storage.read(key: 'accessToken').then((accessToken) {
+          return get(
               Uri.http('$domain:$port', '/api/v1/dog'),
               headers: <String, String>{
                 'Content-type' : 'application/json',
                 'Authorization' : 'Bearer $accessToken'
               }
-          )
-      );
-    });
+          );
+        });
+      }
+    );
   }
 
   Future<Response> selectWithId({
@@ -126,18 +129,20 @@ class DogProfileRepository extends API {
   Future<Response> remove({
     required BuildContext context,
     required int dogId
-  }) async {
-    return await storage.read(key: 'accessToken').then((accessToken) async {
-      return await api(
-          context: context,
-          func: () => delete(
-              Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
-              headers: <String, String>{
-                'Content-type' : 'application/json',
-                'Authorization' : 'Bearer $accessToken'
-              }
-          )
-      );
-    });
+  }) {
+    return api(
+      context: context,
+      func: () {
+        return storage.read(key: 'accessToken').then((accessToken) {
+          return delete(
+            Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
+            headers: <String, String>{
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            }
+          );
+        });
+      }
+    );
   }
 }
