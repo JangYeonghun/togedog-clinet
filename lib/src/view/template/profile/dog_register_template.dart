@@ -68,21 +68,20 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   };
 
   Future<void> getImage({required ImageSource imageSource}) async {
-    ImagePicker().pickImage(
+    final image = await ImagePicker().pickImage(
         source: imageSource,
         maxHeight: 360,
         maxWidth: 360,
         imageQuality: 70
-    ).then((image) async {
-      if (image != null) {
-        debugPrint("#\n\n\n");
-        debugPrint("${(await image.length() / 1024 / 1024).toStringAsFixed(3)}Mb");
-        debugPrint("\n\n\n#");
-        setState(() {
-          profileImage = image;
-        });
-      }
-    });
+    );
+    if (image != null) {
+      debugPrint("#\n\n\n");
+      debugPrint("${(await image.length() / 1024 / 1024).toStringAsFixed(3)}Mb");
+      debugPrint("\n\n\n#");
+      setState(() {
+        profileImage = image;
+      });
+    }
   }
 
   Widget profileUpload() {
@@ -91,11 +90,10 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
       child: InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
-        onTap: () {
-          getImage(imageSource: ImageSource.gallery).whenComplete(() {
-            setState(() {
+        onTap: () async {
+          await getImage(imageSource: ImageSource.gallery);
+          setState(() {
 
-            });
           });
         },
         child: Stack(
@@ -427,7 +425,8 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
                     region: selectedLocation!,
                     notes: significantController.text,
                     tags: hashTags,
-                    age: int.parse(ageController.text)
+                    age: int.parse(ageController.text),
+                    file: profileImage
                 );
     
                 debugPrint('테스뚜');
@@ -442,6 +441,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
                 ${dto.notes}
                 ${dto.tags}
                 ${dto.age}
+                ${dto.file}
                 ''');
     
                 ProfileRepository().postDogProfile(

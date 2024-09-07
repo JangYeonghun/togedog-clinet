@@ -1,3 +1,5 @@
+import 'package:image_picker/image_picker.dart';
+
 class DogProfileRegisterDTO {
   final int? id;
   final String name;
@@ -10,6 +12,7 @@ class DogProfileRegisterDTO {
   final List<String> tags;
   final bool vaccine;
   final int age;
+  final XFile? file;
 
   const DogProfileRegisterDTO({
     this.id,
@@ -22,7 +25,8 @@ class DogProfileRegisterDTO {
     required this.notes,
     required this.tags,
     required this.vaccine,
-    required this.age
+    required this.age,
+    required this.file
   });
 
   DogProfileRegisterDTO.fromEmpty() :
@@ -36,7 +40,8 @@ class DogProfileRegisterDTO {
         notes = '',
         tags = [],
         vaccine = false,
-        age = 0;
+        age = 0,
+        file = null;
 
   DogProfileRegisterDTO.fromJson(Map<String, dynamic> map) :
         id = map['id'] ?? 0,
@@ -49,5 +54,6 @@ class DogProfileRegisterDTO {
         notes = map['notes'] ?? '',
         tags = map['tags'] ?? [],
         vaccine = map['vaccine'] ?? false,
-        age = map['age'] ?? 0;
+        age = map['age'] ?? 0,
+        file = map['file'];
 }
