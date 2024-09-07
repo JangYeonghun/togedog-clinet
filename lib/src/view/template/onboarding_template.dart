@@ -61,10 +61,14 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
     debugPrint('Received link: $uri');
     if (uri.scheme == 'togedog' && uri.host == 'togedog' && uri.path.startsWith('/login')) {
       String? accessToken = uri.queryParameters['accessToken'];
+      String? refreshToken = uri.queryParameters['refreshToken'];
       if (accessToken != null) {
-        debugPrint('Access Token: $accessToken');
-        storage.write(key: 'accessToken', value: accessToken).then((_) {
-          checkAccessToken();
+        storage.write(key: 'accessToken', value: accessToken).whenComplete(() {
+          storage.write(key: 'refreshToken', value: refreshToken).whenComplete(() {
+            debugPrint('Access Token: $accessToken');
+            debugPrint('Refresh Token: $refreshToken');
+            checkAccessToken();
+          });
         });
       }
     }

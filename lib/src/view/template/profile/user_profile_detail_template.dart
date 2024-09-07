@@ -4,24 +4,22 @@ import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 
-class WalkerProfileDetailTemplate extends StatefulWidget {
-  final Map<String, dynamic> walkerProfile;
-  const WalkerProfileDetailTemplate({super.key, required this.walkerProfile});
+class UserProfileDetailTemplate extends StatefulWidget {
+  const UserProfileDetailTemplate({super.key});
 
   @override
-  State<WalkerProfileDetailTemplate> createState() => _WalkerProfileDetailTemplateState();
+  State<UserProfileDetailTemplate> createState() => _UserProfileDetailTemplateState();
 }
 
-class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplate> with SingleTickerProviderStateMixin {
+class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late Map<String, dynamic> walkerProfile;
+  late Map<String, dynamic> userProfile;
   final double deviceHeight = GlobalVariables.height;
   final double deviceWidth = GlobalVariables.width;
 
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
-    walkerProfile = widget.walkerProfile;
     super.initState();
   }
 
@@ -80,7 +78,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
           Row(
             children: [
               Text(
-                walkerProfile['name'],
+                userProfile['name'],
                 style: const TextStyle(
                     color: Palette.darkFont4,
                     fontSize: 20,
@@ -98,7 +96,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  '${walkerProfile['gender']} | 만 ${walkerProfile['age']}세',
+                  '${userProfile['gender']} | 만 ${userProfile['age']}세',
                   style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -112,7 +110,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  walkerProfile['region'],
+                  userProfile['region'],
                   style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -140,18 +138,18 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
       child: Column(
         children: [
           Row(
-            children: walkerProfile['hashTags'].map<Widget>((e) => hashTagItem(hashTag: e)).toList(),
+            children: userProfile['hashTags'].map<Widget>((e) => hashTagItem(hashTag: e)).toList(),
           ),
           const SizedBox(height: 25),
-          infoItem(title: '산책 가능 시간', content: walkerProfile['availableTimes'].join(', ')),
-          infoItem(title: '선호 지역', content: walkerProfile['preferences']['region'].join(', ')),
-          infoItem(title: '선호 시간', content: walkerProfile['preferences']['time'].join(', ')),
+          infoItem(title: '산책 가능 시간', content: userProfile['availableTimes'].join(', ')),
+          infoItem(title: '선호 지역', content: userProfile['preferences']['region'].join(', ')),
+          infoItem(title: '선호 시간', content: userProfile['preferences']['time'].join(', ')),
           Padding(
             padding: const EdgeInsets.only(left: 3, right: 39),
             child: horizontalDivider(margin: 8)
           ),
-          infoItem(title: '선호 견종 크기', content: walkerProfile['preferences']['size'].join(', ')),
-          infoItem(title: '동반 가능한 반려견 수 ', content: '${walkerProfile['maxAllowedPets']}마리')
+          infoItem(title: '선호 견종 크기', content: userProfile['preferences']['size'].join(', ')),
+          infoItem(title: '동반 가능한 반려견 수 ', content: '${userProfile['maxAllowedPets']}마리')
         ],
       ),
     );
@@ -184,7 +182,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
         Positioned(
           top: 0,
           child: CachedNetworkImage(
-            imageUrl: walkerProfile['imgUrl'],
+            imageUrl: userProfile['imgUrl'],
             fit: BoxFit.fitHeight,
             height: deviceHeight * 0.5,
             alignment: Alignment.topCenter,
@@ -229,7 +227,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
           Padding(
             padding: const EdgeInsets.only(left: 2),
             child: Text(
-              walkerProfile['notes'],
+              userProfile['notes'],
               style: const TextStyle(
                 color: Palette.darkFont4,
                 fontSize: 12,
@@ -250,7 +248,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
         Positioned(
           top: 0,
           child: CachedNetworkImage(
-            imageUrl: walkerProfile['imgUrl'],
+            imageUrl: userProfile['imgUrl'],
             fit: BoxFit.fitHeight,
             height: deviceHeight * 0.5,
             alignment: Alignment.topCenter,
@@ -269,7 +267,7 @@ class _WalkerProfileDetailTemplateState extends State<WalkerProfileDetailTemplat
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(500),
-                    child: CachedNetworkImage(imageUrl: walkerProfile['imgUrl'], fit: BoxFit.cover)
+                    child: CachedNetworkImage(imageUrl: userProfile['imgUrl'], fit: BoxFit.cover)
                 )
             ),
           ],

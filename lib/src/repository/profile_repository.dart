@@ -2,16 +2,13 @@ import 'dart:convert';
 
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/dto/dog_profile_register_dto.dart';
-import 'package:dog/src/util/api_util.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:dog/src/interface/api.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
-class ProfileRepository {
+class ProfileRepository extends API {
   final String domain = GlobalVariables.domain;
   final int port = GlobalVariables.port;
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   Future<Response> postDogProfile({
     required BuildContext context,
@@ -19,30 +16,52 @@ class ProfileRepository {
   }) async {
     final String? accessToken = await storage.read(key: 'accessToken');
 
-    final Response response = await api(
-        context: context,
-        response: await post(
-            Uri.http("$domain:$port", 'api/v1/dog'),
-            headers: <String, String>{
-              'Content-type' : 'application/json',
-              'Authorization' : 'Bearer $accessToken'
-            },
-            body: jsonEncode({
-              'name' : dto.name,
-              'breed' : dto.breed,
-              'neutered' : dto.neutered,
-              'dogGender' : dto.dogGender,
-              'weight' : dto.weight,
-              'region' : dto.region,
-              'notes' : dto.notes,
-              'tags' : dto.tags,
-              'vaccine' : dto.vaccine,
-              'age' : dto.age
-            })
+    return await api(
+      func: () async {
+        MultipartRequest request = MultipartRequest(
+            'POST',
+            Uri.http('$domain:$port', 'api/v1/dog')
         )
-    );
+          ..headers.addAll({
+            "Content-Type": "multipart/form-data",
+            'Authorization': 'Bearer $accessToken'
+          })
+          ..fields['request'] = jsonEncode({
+            'name' : dto.name,
+            'breed' : dto.breed,
+            'neutered' : dto.neutered,
+            'dogGender' : dto.dogGender,
+            'weight' : dto.weight,
+            'region' : dto.region,
+            'notes' : dto.notes,
+            'tags' : dto.tags,
+            'vaccine' : dto.vaccine,
+            'age' : dto.age
+          });
 
-    return response;
+        if (dto.file != null) {
+
+          request.files.add(await MultipartFile.fromPath(
+              'profileImage',
+              dto.file!.path,
+              filename: dto.file!.path.split('/').last
+          ));
+
+        }
+
+        debugPrint("필드: ${request.fields}");
+        debugPrint("파일: ${request.files[0].contentType} ${request.files[0].field} ${request.files[0].filename}");
+        debugPrint("헤더: ${request.headers}");
+        debugPrint("주소: ${request.url}");
+        debugPrint("메소드: ${request.method}");
+
+        StreamedResponse streamedResponse = await request.send();
+
+        final Response response = await Response.fromStream(streamedResponse);
+
+        return response;
+      }
+    );
   }
 
   Future<Response> updateDogProfile({
@@ -77,20 +96,18 @@ class ProfileRepository {
   Future<Response> getDogProfileList({
     required BuildContext context
   }) async {
-    final String? accessToken = await storage.read(key: 'accessToken');
-
-    final Response response = await api(
-        context: context,
-        response: await get(
-            Uri.http('$domain:$port', '/api/v1/dog'),
-            headers: <String, String>{
-              'Content-type' : 'application/json',
-              'Authorization' : 'Bearer $accessToken'
-            }
-        )
-    );
-
-    return response;
+    return await storage.read(key: 'accessToken').then((accessToken) async {
+      return await api(
+          context: context,
+          func: () => get(
+              Uri.http('$domain:$port', '/api/v1/dog'),
+              headers: <String, String>{
+                'Content-type' : 'application/json',
+                'Authorization' : 'Bearer $accessToken'
+              }
+          )
+      );
+    });
   }
 
   Future<Response> getDogProfile({
@@ -113,19 +130,34 @@ class ProfileRepository {
     required BuildContext context,
     required int dogId
   }) async {
-    final String? accessToken = await storage.read(key: 'accessToken');
+    return await storage.read(key: 'accessToken').then((accessToken) async {
+      return await api(
+          context: context,
+          func: () => delete(
+              Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
+              headers: <String, String>{
+                'Content-type' : 'application/json',
+                'Authorization' : 'Bearer $accessToken'
+              }
+          )
+      );
+    });
+  }
 
-    final Response response = await api(
-        context: context,
-        response: await delete(
-            Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
-            headers: <String, String>{
-              'Content-type' : 'application/json',
-              'Authorization' : 'Bearer $accessToken'
-            }
-        )
-    );
-
-    return response;
+  Future<Response> getUserProfile({
+    required BuildContext context
+  }) async {
+    return await storage.read(key: 'accessToken').then((accessToken) async {
+      return await api(
+          context: context,
+          func: () => get(
+              Uri.http('$domain:$port', '/api/v1/mate'),
+              headers: <String, String>{
+                'Content-type' : 'application/json',
+                'Authorization' : 'Bearer $accessToken'
+              }
+          )
+      );
+    });
   }
 }
