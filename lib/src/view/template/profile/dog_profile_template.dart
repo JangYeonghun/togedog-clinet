@@ -285,7 +285,6 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -295,8 +294,6 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
                 final List<DogProfileDTO> data = snapshot.data;
-
-                debugPrint("데이터: $data");
 
                 if (data.isNotEmpty) {
                   return ListView.builder(

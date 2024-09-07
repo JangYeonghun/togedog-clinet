@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dog/src/config/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -21,8 +19,6 @@ class AuthRepository {
       }
     );
 
-    final json = jsonDecode(response.body);
-
     debugPrint('''
       
       /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
@@ -30,11 +26,14 @@ class AuthRepository {
       TOKEN REISSUE
       
       StatusCode: ${response.statusCode}
+      Header: ${response.headers}
       Content: ${response.body}
       
       /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
       
       ''');
+
+    final json = response.headers;
 
     if (response.statusCode ~/ 100 == 2) {
       await storage.write(key: 'accessToken', value: json['accesstoken']);

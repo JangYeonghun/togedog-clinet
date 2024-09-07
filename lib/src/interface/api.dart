@@ -29,7 +29,8 @@ class API {
       if (response.statusCode == 401) {
         await AuthRepository().reissueToken().then((succeed) async {
           if (succeed) {
-            return await api(func: () => func(), context: context);
+            final Response retryResponse = await api(func: () => func(), context: context);
+            return retryResponse;
           } else {
             await storage.deleteAll();
             throw Exception('Error: Token Expired');
@@ -52,6 +53,7 @@ class API {
     required Response response,
     required BuildContext context
   }) {
+
     switch (response.statusCode ~/ 100) {
       case 5:
         ToastPopupUtil.error(context: context, content: '서버와의 통신에 실패했습니다.');
@@ -63,6 +65,7 @@ class API {
         ToastPopupUtil.error(context: context, content: '문제가 발생하였습니다.');
         throw Exception('Error: ${response.statusCode}');
     }
+
   }
 
 }

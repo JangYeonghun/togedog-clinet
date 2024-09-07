@@ -1,4 +1,5 @@
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/repository/auth_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/notification_template.dart';
@@ -147,6 +148,7 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget testButton() {
     return InkWell(
       onTap: () async {
+        await AuthRepository().reissueToken();
       },
       child: const Text(
         'TEST',
