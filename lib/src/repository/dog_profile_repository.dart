@@ -8,7 +8,7 @@ import 'package:http/http.dart';
 class DogProfileRepository extends API {
 
   Future<Response> register({
-    required BuildContext context,
+    required BuildContext? context,
     required DogProfileRegisterDTO dto
   }) {
     return api(
@@ -43,7 +43,6 @@ class DogProfileRepository extends API {
                 dto.file!.path,
                 filename: dto.file!.path.split('/').last
             ));
-
           }
 
           debugPrint("필드: ${request.fields}");
@@ -63,6 +62,7 @@ class DogProfileRepository extends API {
   }
 
   Future<Response> update({
+    required BuildContext? context,
     required DogProfileRegisterDTO dto
   }) async {
     final String? accessToken = await storage.read(key: 'accessToken');
@@ -92,7 +92,7 @@ class DogProfileRepository extends API {
   }
 
   Future<Response> getList({
-    required BuildContext context
+    required BuildContext? context
   }) {
     return api(
       context: context,
@@ -127,7 +127,7 @@ class DogProfileRepository extends API {
   }
 
   Future<Response> remove({
-    required BuildContext context,
+    required BuildContext? context,
     required int dogId
   }) {
     return api(

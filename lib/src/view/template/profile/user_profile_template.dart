@@ -27,9 +27,13 @@ class _UserProfileTemplateState extends State<UserProfileTemplate> {
 
   Future<UserProfileDTO> getMateProfiles() async {
     final Response response = await userProfileRepository.getProfile(context: context);
-    final dynamic json = jsonDecode(response.body);
-    final UserProfileDTO result = UserProfileDTO.fromJson(json);
-    return result;
+
+    if (response.body.isNotEmpty) {
+      final dynamic json = jsonDecode(response.body);
+      return UserProfileDTO.fromJson(json);
+    } else {
+      return UserProfileDTO.fromEmpty();
+    }
   }
 
   @override
@@ -118,9 +122,9 @@ class _UserProfileTemplateState extends State<UserProfileTemplate> {
             future: userProfile,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               if (snapshot.hasData) {
-                final UserProfileDTO? data = snapshot.data;
+                final UserProfileDTO data = snapshot.data;
 
-                if (data != null) {
+                if (data.mateId != 0) {
                   return const UserProfileDetailTemplate();
                 } else {
                   return emptyProfile();

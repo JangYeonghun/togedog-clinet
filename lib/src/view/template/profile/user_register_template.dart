@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/user_profile_register_dto.dart';
+import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
@@ -26,6 +28,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   final TextEditingController experienceController = TextEditingController();
   final TextEditingController hashTagController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
+  final UserProfileRepository userProfileRepository = UserProfileRepository();
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
   late final double columnHeight;
   late DateTime birth;
@@ -33,7 +36,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   String? selectedLocation;
   List<String> hashTags = [];
   XFile? profileImage;
-  int selectedToggle = 1;
+  int isMale = 1;
   int pageIndex = 0;
   List<Map<String, dynamic>> dogSizePreference = [
     {
@@ -265,7 +268,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
       width: deviceWidth - 28,
       child: AnimatedToggleSwitch<int>.size(
         textDirection: TextDirection.rtl,
-        current: selectedToggle,
+        current: isMale,
         values: const [0, 1],
         customIconBuilder: (context, local, global) {
           final String icon = ['여자', '남자'][local.index];
@@ -294,7 +297,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
         ),
         onChanged: (i) {
           setState(() {
-            selectedToggle = i;
+            isMale = i;
           });
         },
       ),
@@ -472,7 +475,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           ),
           InkWell(
             onTap: () {
-              // 여기에 중복 확인 API 필요
+
             },
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
@@ -652,11 +655,41 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               height: (deviceWidth - 40) / 335 * 55,
               title: '완료',
               onTap: () {
-
+                sendRequest();
               }
           ).filledButton1m(),
         )
       ],
+    );
+  }
+
+  Future<void> sendRequest() async {
+    List<dynamic> weeks = dayPreference.map((e) => e['prefer'] ? e['name'] : '').toList();
+    weeks.removeWhere((e) => e == '');
+    List<dynamic> times = timePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
+    times.removeWhere((e) => e == '');
+    List<dynamic> dogTypes = dogSizePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
+    dogTypes.removeWhere((e) => e == '');
+
+    await userProfileRepository.register(
+        context: context,
+        dto: UserProfileRegisterDto(
+            nickname: nicknameController.text,
+            userGender: isMale == 1 ? '남성' : '여성',
+            genderVisibility: 'ACTIVE',
+            phoneNumber: phoneController.text,
+            accommodatableDogsCount: 1,
+            career: experienceController.text,
+            preferredDetails: {
+              'weeks' : weeks,
+              'times' : times,
+              'hashTag' : hashTags,
+              'dogTypes' : dogTypes,
+              'region' : '인천'
+            },
+            region: selectedLocation ?? '',
+            profileImage: profileImage
+        )
     );
   }
   

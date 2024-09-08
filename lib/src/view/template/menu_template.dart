@@ -1,11 +1,14 @@
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_register_dto.dart';
 import 'package:dog/src/repository/auth_repository.dart';
+import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/notification_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:transition/transition.dart';
 
 class MenuTemplate extends StatefulWidget {
@@ -19,6 +22,7 @@ class _MenuTemplateState extends State<MenuTemplate> {
   final String account = "dogmate@gmail.comㅁㅁㅁㅁㅁㅁㅁㅁㅁ";
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   int notiCount = 2;
+  late final XFile profileImage;
 
   Widget menuItem({
     required Function onTap,
@@ -144,11 +148,45 @@ class _MenuTemplateState extends State<MenuTemplate> {
     );
   }
 
+  Future<void> getImage({required ImageSource imageSource}) async {
+    final image = await ImagePicker().pickImage(
+        source: imageSource,
+        maxHeight: 360,
+        maxWidth: 360,
+        imageQuality: 70
+    );
+    if (image != null) {
+      debugPrint("#\n\n\n");
+      debugPrint("${(await image.length() / 1024 / 1024).toStringAsFixed(3)}Mb");
+      debugPrint("\n\n\n#");
+      setState(() {
+        profileImage = image;
+      });
+    }
+  }
+
   //테스뚜버튼~~
   Widget testButton() {
     return InkWell(
       onTap: () async {
-        await AuthRepository().reissueToken();
+        await getImage(imageSource: ImageSource.gallery);
+
+        await DogProfileRepository().register(
+          context: context,
+          dto: DogProfileRegisterDTO(
+              name: '댕댕이',
+              breed: '아키타',
+              neutered: true,
+              dogGender: true,
+              weight: 2.0,
+              region: '서울',
+              notes: '으으음',
+              tags: ['피자', '라면'],
+              vaccine: false,
+              age: 5,
+              file: profileImage
+          )
+        );
       },
       child: const Text(
         'TEST',
