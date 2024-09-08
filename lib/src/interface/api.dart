@@ -10,6 +10,7 @@ class API {
   final String domain = GlobalVariables.domain;
   final int port = GlobalVariables.port;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
+  int retry = 0;
 
   // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도
   Future<Response> api({BuildContext? context, required Future<Response> Function() func}) {
@@ -27,21 +28,27 @@ class API {
       ''');
 
       if (response.statusCode == 401) {
-        return AuthRepository().reissueToken().then((succeed) async {
-          if (succeed) {
-            return await api(func: () => func(), context: context);
-          } else {
-            await storage.deleteAll();
-            throw Exception('Error: Token Expired');
-          }
-        });
+        retry ++;
+        if (retry < 3) {
+          return AuthRepository().reissueToken().then((succeed) async {
+            if (succeed) {
+              return await api(func: () => func(), context: context);
+            } else {
+              await storage.deleteAll();
+              throw Exception('Error: Token Expired');
+            }
+          });
+        } else {
+          retry = 0;
+          throw Exception('Error: Token reissue failure');
+        }
 
       } else if (response.statusCode ~/ 100 == 2) {
         return response;
 
       } else if (context != null) {
         _failureNotifier(response: response, context: context);
-        throw Exception("API call failed");
+        throw Exception("Error: API call gone wrong");
       } else {
         throw Exception("API call failed");
       }
