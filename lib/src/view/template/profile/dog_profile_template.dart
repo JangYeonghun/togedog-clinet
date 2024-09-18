@@ -24,7 +24,7 @@ class DogProfileTemplate extends StatefulWidget {
 class _DogProfileTemplateState extends State<DogProfileTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final DogProfileRepository profileRepository = DogProfileRepository();
-  late final Future<List<DogProfileDTO>> dogProfiles;
+  late Future<List<DogProfileDTO>> dogProfiles;
 
   @override
   void initState() {
@@ -84,17 +84,27 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
               width: deviceWidth - 90,
               height: (deviceWidth - 90) / 285 * 55,
               title: '반려견 프로필 등록하기',
-              onTap: () => Navigator.push(
-                  context,
-                  Transition(
-                      transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-                      child: const DogRegisterTemplate()
-                  )
-              )
+              onTap: () => goToRegister()
           ).filledButton1m()
         ],
       ),
     );
+  }
+
+  void goToRegister() {
+    Navigator.push(
+        context,
+        Transition(
+            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+            child: const DogRegisterTemplate()
+        )
+    ).then((result) {
+      if (result ~/ 100 == 2) {
+        setState(() {
+          dogProfiles = getDogProfiles();
+        });
+      }
+    });
   }
 
   Widget dogProfileItem({required DogProfileDTO profile}) {
@@ -304,13 +314,7 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
                           return dogProfileItem(profile: data[index]);
                         } else {
                           return InkWell(
-                            onTap: () => data.length >= 5 ? showProfileLimitAlert() : Navigator.push(
-                                context,
-                                Transition(
-                                    transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-                                    child: const DogRegisterTemplate()
-                                )
-                            ),
+                            onTap: () => data.length >= 5 ? showProfileLimitAlert() : goToRegister(),
                             child: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),

@@ -447,7 +447,10 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
                 DogProfileRepository().register(
                   context: context,
                   dto: dto
-                );
+                ).then((response) {
+                  Navigator.pop(context, response.statusCode);
+                });
+
               }
           ).filledButton1m(),
         )

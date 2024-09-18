@@ -151,9 +151,9 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Future<void> getImage({required ImageSource imageSource}) async {
     final image = await ImagePicker().pickImage(
         source: imageSource,
-        maxHeight: 360,
-        maxWidth: 360,
-        imageQuality: 70
+        maxHeight: 850,
+        maxWidth: 850,
+        imageQuality: 100
     );
     if (image != null) {
       debugPrint("#\n\n\n");
@@ -174,14 +174,14 @@ class _MenuTemplateState extends State<MenuTemplate> {
         await DogProfileRepository().register(
           context: context,
           dto: DogProfileRegisterDTO(
-              name: '댕댕이',
+              name: '댕댕',
               breed: '아키타',
               neutered: true,
               dogGender: true,
               weight: 2.0,
-              region: '서울',
+              region: '인천',
               notes: '으으음',
-              tags: ['피자', '라면'],
+              tags: ['피자', '라'],
               vaccine: false,
               age: 5,
               file: profileImage
