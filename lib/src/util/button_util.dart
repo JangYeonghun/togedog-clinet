@@ -16,10 +16,8 @@ class ButtonUtil {
   });
   
   Widget _basicButton({required Function onTap, required Color color, Border? border, required TextStyle titleStyle}) {
-    return InkWell(
+    return GestureDetector(
       onTap: () => onTap(),
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
       child: Container(
         width: width,
         height: height,

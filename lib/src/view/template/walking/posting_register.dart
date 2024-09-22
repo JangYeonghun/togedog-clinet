@@ -435,9 +435,7 @@ class _PostingRegisterState extends State<PostingRegister> {
                     ),
                   ),
                 ),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
+                GestureDetector(
                   onTap: () {
                     setState(() {
                       hashTagList.remove(e);
