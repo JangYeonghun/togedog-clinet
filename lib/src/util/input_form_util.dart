@@ -9,17 +9,13 @@ class InputFormUtil extends StatefulWidget {
 }
 
 class _InputFormUtilState extends State<InputFormUtil> {
-  late final double columnHeight;
+  double? parentHeight;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
         builder: (context, constraints) {
-          try {
-            columnHeight = constraints.maxHeight - 80;
-          } catch(e) {
-            debugPrint(e.toString());
-          }
+          parentHeight ??= constraints.maxHeight;
 
           return GestureDetector(
             onTap: () {
@@ -27,7 +23,7 @@ class _InputFormUtilState extends State<InputFormUtil> {
             },
             child: SingleChildScrollView(
               child: SizedBox(
-                height: columnHeight,
+                height: parentHeight,
                 child: widget.child,
               ),
             ),

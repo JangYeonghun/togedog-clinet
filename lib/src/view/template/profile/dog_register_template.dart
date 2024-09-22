@@ -12,6 +12,7 @@ import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DogRegisterTemplate extends StatefulWidget {
@@ -30,7 +31,6 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   final TextEditingController significantController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
-  late final double columnHeight;
   String? selectedLocation;
   int pageIndex = 0;
   XFile? profileImage;
@@ -241,7 +241,9 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   }
 
   Widget nextButton() {
-    return Center(
+    return Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.only(bottom: 36.h),
       child: ButtonUtil(
           width: deviceWidth - 40,
           height: (deviceWidth - 40) / 335 * 55,
@@ -347,7 +349,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
             ),
           ],
         ),
-        nextButton()
+        nextButton(),
       ],
     );
   }
@@ -400,7 +402,9 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
             ),
           ],
         ),
-        Center(
+        Container(
+          margin: EdgeInsets.only(bottom: 36.h),
+          alignment: Alignment.center,
           child: ButtonUtil(
               width: deviceWidth - 40,
               height: (deviceWidth - 40) / 335 * 55,
