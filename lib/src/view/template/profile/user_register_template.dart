@@ -132,9 +132,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   Widget profileUpload() {
     return Padding(
       padding: const EdgeInsets.only(left: 14, top: 18, bottom: 23),
-      child: InkWell(
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
+      child: GestureDetector(
         onTap: () {
           getImage(imageSource: ImageSource.gallery).whenComplete(() {
             setState(() {
@@ -184,7 +182,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: preference.map((e) {
           final double width = (deviceWidth - 28 - (preference.length - 1) * gap) / preference.length;
-          return InkWell(
+          return GestureDetector(
             onTap: () {
               if (maxSelection != null) {
                 if (e['prefer'] == false) {
@@ -202,8 +200,6 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
                 setState(() => e['prefer'] = !e['prefer']);
               }
             },
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
             child: Container(
               width: width,
               height: height,
@@ -433,9 +429,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               ),
             ),
           ),
-          InkWell(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
+          GestureDetector(
             onTap: () {
               hashTagRemoveHandler(hashTag: hashTag);
             },
@@ -473,12 +467,14 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
             keyboardType: TextInputType.text,
             decoration: TextInputUtil().inputDecoration(hintText: '닉네임을 입력하세요')
           ),
-          InkWell(
+          GestureDetector(
             onTap: () {
-
+              userProfileRepository.checkNicknameDuplication(context: context, nickname: nicknameController.text).then((response) {
+                if (response.statusCode ~/ 100 == 2) {
+                  ToastPopupUtil.notice(context: context, content: '사용가능한 닉네임입니다.');
+                }
+              });
             },
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(200),

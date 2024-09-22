@@ -339,14 +339,12 @@ class _NotificationTemplateState extends State<NotificationTemplate> {
                   ]
               )
           ),
-          InkWell(
+          GestureDetector(
             onTap: () {
               setState(() {
                 isSelectMode = !isSelectMode;
               });
             },
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
             child: Padding(
               padding: EdgeInsets.only(left: 14.w, right: 14.w, top: 8.h, bottom: 8.h),
               child: Text(
