@@ -11,13 +11,14 @@ class API {
   final int port = GlobalVariables.port;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   int retry = 0;
+  int backoffDelay = 2;
 
   // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도
   Future<Response> api({BuildContext? context, required Future<Response> Function(String? accessToken) func}) {
 
     return storage.read(key: 'accessToken').then((accessToken) {
 
-      return func(accessToken).then((response) {
+      return func(accessToken).then((response) async {
         debugPrint('''
       
       /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
@@ -30,7 +31,9 @@ class API {
       ''');
 
         if (response.statusCode == 401) {
+          await Future.delayed(Duration(seconds: backoffDelay));
           retry ++;
+          backoffDelay *= 2;
           if (retry < 3) {
             return AuthRepository().reissueToken().then((succeed) async {
               if (succeed) {
@@ -42,6 +45,7 @@ class API {
             });
           } else {
             retry = 0;
+            backoffDelay = 2;
             throw Exception('Error: Token reissue failure');
           }
 
