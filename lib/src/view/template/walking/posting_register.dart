@@ -7,6 +7,7 @@ import 'package:dog/src/dto/location_data_dto.dart';
 import 'package:dog/src/dto/walk_board_dto.dart';
 import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
+import 'package:dog/src/util/input_form_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/util/toast_popup_util.dart';
@@ -37,20 +38,6 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
   static const List<String> wages = ["시급", "건당"];
-  // static const List<Map<String, dynamic>> testData = [
-  //   {
-  //     'name': '뽀삐',
-  //     'species': '웰시코기',
-  //     'age': 3,
-  //     'imgUrl': 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMzAzMjNfMTg1%2FMDAxNjc5NTQyNTYzNjU4.9aj6sJRExdpVzm3JqillN5CBljpKSUHjyWnpSAXeXTYg.oYA4T0TidaQWbDrrJv21Pb7nZ4dMsB3ut-aIzl2HT04g.JPEG.imkimbom_%2Foutput_861680940.jpg&type=a340'
-  //   },
-  //   {
-  //     'name': '설이',
-  //     'species': '포메라니안',
-  //     'age': 2,
-  //     'imgUrl': 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAyMDVfNjIg%2FMDAxNzA3MTEyMDgxMDg3._SnnduCEZqfjDDCBlTH9CCFeED8NVndAB6uNhTPmYjwg.-8-DmtSIS1RhPsZeP90lNzXTpIeFMTAb2l4sbn5VBcIg.JPEG.nono83123%2F1707111397354.jpg&type=a340'
-  //   },
-  // ];
 
   late Future<List<DogProfileDTO>> dogProfiles;
 
@@ -513,7 +500,7 @@ class _PostingRegisterState extends State<PostingRegister> {
     String text = '다음'
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 40.h),
+      padding: EdgeInsets.only(bottom: 36.h),
       child: Center(
         child: ButtonUtil(
             width: 347.w,
@@ -1027,17 +1014,19 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          children: [
-            StepProgressBar(currentStep: pageNum + 1, totalStep: 5),
-            postingRegister(),
-          ],
-        ),
-        pageNum == 1 ? nextButton(text: '픽업 장소로 설정') : nextButton(),
-      ],
+    return InputFormUtil(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            children: [
+              StepProgressBar(currentStep: pageNum + 1, totalStep: 5),
+              postingRegister(),
+            ],
+          ),
+          pageNum == 1 ? nextButton(text: '픽업 장소로 설정') : nextButton(),
+        ],
+      ),
     );
   }
 }

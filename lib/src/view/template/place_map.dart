@@ -40,25 +40,18 @@ class _PlaceMapState extends State<PlaceMap> {
   void initState() {
     super.initState();
     _initializeMap();
-    _getCurrentLocation();
   }
 
-  Future<bool> _getCurrentLocation() async {
+  Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
       setState(() {
         currentPosition = LatLng(position.latitude, position.longitude);
-        isLoading = false;
       });
       _getAddressFromLatLng(currentPosition!);
-      return true;
     } catch (e) {
       debugPrint('Method getCurrentLocation: $e');
-      setState(() {
-        isLoading = false;
-      });
-      return false;
     }
   }
 
@@ -91,6 +84,7 @@ class _PlaceMapState extends State<PlaceMap> {
   Future<void> _initializeMap() async {
     await _loadCustomMarker();
     await _checkLocationPermission();
+    await _getCurrentLocation();
     setState(() {
       isLoading = false;
     });
@@ -112,20 +106,7 @@ class _PlaceMapState extends State<PlaceMap> {
       ToastPopupUtil.error(context: context, content: '설정을 열어서 위치 권한을 허용해 주세요.');
       return;
     }
-
-    // 권한이 허용된 경우
-    // await _getLocation();
   }
-
-  // Future<void> _getLocation() async {
-  //   Position position = await Geolocator.getCurrentPosition(
-  //       desiredAccuracy: LocationAccuracy.high
-  //   );
-  //   setState(() {
-  //     lat = position.latitude;
-  //     lng = position.longitude;
-  //   });
-  // }
 
   Future<void> _loadCustomMarker() async {
     placeMarkerIcon = await getBytesFromAsset("assets/images/nav_btn_my_walk.png", 100.w.round());
@@ -140,29 +121,6 @@ class _PlaceMapState extends State<PlaceMap> {
     ui.FrameInfo fi = await codec.getNextFrame();
     ByteData? byteData = await fi.image.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
-  }
-
-  // Set<Marker> _createMarkers() {
-  //   if (lat == null || lng == null || placeMarkerIcon == null) return {};
-  //
-  //   final LatLng currentLatLng = LatLng(lat!, lng!);
-  //   Marker customMarker = Marker(
-  //     markerId: const MarkerId('customMarker'),
-  //     position: currentLatLng,
-  //     icon: BitmapDescriptor.fromBytes(placeMarkerIcon!),
-  //     anchor: const Offset(0.5, 0.5),
-  //   );
-  //
-  //   return {customMarker};
-  // }
-
-  Set<Marker> _createMarkers() {
-    return {
-      Marker(
-        markerId: const MarkerId('center_marker'),
-        position: currentPosition!,
-      ),
-    };
   }
 
   @override
@@ -180,36 +138,26 @@ class _PlaceMapState extends State<PlaceMap> {
       children: [
         GoogleMap(
           mapType: MapType.normal,
-          liteModeEnabled: false,
-          myLocationEnabled: false,
-          myLocationButtonEnabled: false,
-          compassEnabled: false,
-          trafficEnabled: false,
-          buildingsEnabled: /*true*/false,
-          indoorViewEnabled: false,
-          mapToolbarEnabled: false,
-          zoomControlsEnabled: false,
-          tiltGesturesEnabled: false,
-          scrollGesturesEnabled: true,
-          zoomGesturesEnabled: true,
-          rotateGesturesEnabled: true,
           initialCameraPosition: CameraPosition(
             target: currentPosition!,
             zoom: 16,
           ),
-          markers: _createMarkers(),
           onMapCreated: (GoogleMapController controller) {
             mapController = controller;
           },
           onCameraMove: (CameraPosition position) {
             setState(() {
               currentPosition = position.target;
-              _getAddressFromLatLng;
             });
           },
           onCameraIdle: () {
             _getAddressFromLatLng(currentPosition!);
           },
+          myLocationEnabled: false,
+          zoomControlsEnabled: false,
+        ),
+        Center(
+          child: Icon(Icons.place, color: Colors.red, size: 40.w),
         ),
         Positioned(
           bottom: 90,
@@ -218,19 +166,12 @@ class _PlaceMapState extends State<PlaceMap> {
             backgroundColor: Palette.outlinedButton1,
             child: const Icon(Icons.my_location),
             onPressed: () async {
-              double currentZoomLevel = await mapController!.getZoomLevel();
-
-              _getCurrentLocation().then((value) {
-                if (value) {
-                  CameraPosition cameraPosition = CameraPosition(
-                    target: currentPosition!,
-                    zoom: currentZoomLevel,
-                  );
-                  mapController?.animateCamera(
-                    CameraUpdate.newCameraPosition(cameraPosition),
-                  );
-                }
-              });
+              await _getCurrentLocation();
+              if (currentPosition != null) {
+                mapController?.animateCamera(
+                  CameraUpdate.newLatLng(currentPosition!),
+                );
+              }
             },
           ),
         ),
@@ -245,7 +186,7 @@ class _PlaceMapState extends State<PlaceMap> {
                       topRight: Radius.circular(20),
                       topLeft: Radius.circular(20)
                   ),
-                color: Colors.white
+                  color: Colors.white
               ),
               child: Text(
                 currentAddress,
