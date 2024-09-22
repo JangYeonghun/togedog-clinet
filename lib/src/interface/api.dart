@@ -13,10 +13,12 @@ class API {
   int retry = 0;
 
   // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도
-  Future<Response> api({BuildContext? context, required Future<Response> Function() func}) {
+  Future<Response> api({BuildContext? context, required Future<Response> Function(String? accessToken) func}) {
 
-    return func().then((response) {
-      debugPrint('''
+    return storage.read(key: 'accessToken').then((accessToken) {
+
+      return func(accessToken).then((response) {
+        debugPrint('''
       
       /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
       
@@ -27,32 +29,35 @@ class API {
       
       ''');
 
-      if (response.statusCode == 401) {
-        retry ++;
-        if (retry < 3) {
-          return AuthRepository().reissueToken().then((succeed) async {
-            if (succeed) {
-              return await api(func: () => func(), context: context);
-            } else {
-              await storage.deleteAll();
-              throw Exception('Error: Token Expired');
-            }
-          });
+        if (response.statusCode == 401) {
+          retry ++;
+          if (retry < 3) {
+            return AuthRepository().reissueToken().then((succeed) async {
+              if (succeed) {
+                return await api(func: (accessToken) => func(accessToken), context: context);
+              } else {
+                await storage.deleteAll();
+                throw Exception('Error: Token Expired');
+              }
+            });
+          } else {
+            retry = 0;
+            throw Exception('Error: Token reissue failure');
+          }
+
+        } else if (response.statusCode ~/ 100 == 2) {
+          return response;
+
+        } else if (context != null) {
+          _failureNotifier(response: response, context: context);
+          throw Exception("Error: API call gone wrong");
         } else {
-          retry = 0;
-          throw Exception('Error: Token reissue failure');
+          throw Exception("API call failed");
         }
-
-      } else if (response.statusCode ~/ 100 == 2) {
-        return response;
-
-      } else if (context != null) {
-        _failureNotifier(response: response, context: context);
-        throw Exception("Error: API call gone wrong");
-      } else {
-        throw Exception("API call failed");
-      }
+      });
     });
+
+
   }
 
   // Http status code에 따른 토스트 팝업

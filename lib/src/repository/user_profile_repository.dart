@@ -14,17 +14,13 @@ class UserProfileRepository extends API {
   }) {
     return api(
       context: context,
-      func: () {
-        return storage.read(key: 'accessToken').then((accessToken) {
-          return get(
-            Uri.http('$domain:$port', '/api/v1/mate'),
-            headers: <String, String> {
-              'Content-type' : 'application/json',
-              'Authorization' : 'Bearer $accessToken'
-            }
-          );
-        });
-      }
+      func: (accessToken) => get(
+          Uri.http('$domain:$port', '/api/v1/mate'),
+          headers: <String, String> {
+            'Content-type' : 'application/json',
+            'Authorization' : 'Bearer $accessToken'
+          }
+      )
     );
   }
 
@@ -33,17 +29,13 @@ class UserProfileRepository extends API {
   }) {
     return api(
         context: context,
-        func: () {
-          return storage.read(key: 'accessToken').then((accessToken) {
-            return delete(
-                Uri.http('$domain:$port', '/api/v1/mate'),
-                headers: <String, String> {
-                  'Content-type' : 'application/json',
-                  'Authorization' : 'Bearer $accessToken'
-                }
-            );
-          });
-        }
+        func: (accessToken) => delete(
+            Uri.http('$domain:$port', '/api/v1/mate'),
+            headers: <String, String> {
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            }
+        )
     );
   }
 
@@ -53,62 +45,9 @@ class UserProfileRepository extends API {
   }) {
     return api(
         context: context,
-        func: () {
-          return storage.read(key: 'accessToken').then((accessToken) async {
-            MultipartRequest request = MultipartRequest(
-                'PATCH',
-                Uri.http('$domain:$port', 'api/v1/mate')
-            )
-              ..headers.addAll({
-                "Content-Type": "multipart/form-data",
-                'Authorization': 'Bearer $accessToken'
-              })
-              ..fields['Request'] = jsonEncode({
-                'nickname' : dto.nickname,
-                'userGender' : dto.userGender,
-                'genderVisibility' : dto.genderVisibility,
-                'phoneNumber' : dto.phoneNumber,
-                'accommodatableDogsCount' : dto.accommodatableDogsCount,
-                'career' : dto.career,
-                'preferredDetails' : dto.preferredDetails,
-                'region' : dto.region
-              });
-
-            if (dto.profileImage != null) {
-
-              request.files.add(await MultipartFile.fromPath(
-                  'profileImage',
-                  dto.profileImage!.path,
-                  filename: dto.profileImage!.path.split('/').last
-              ));
-            }
-
-            debugPrint("필드: ${request.fields}");
-            debugPrint("파일: ${request.files[0].contentType} ${request.files[0].field} ${request.files[0].filename}");
-            debugPrint("헤더: ${request.headers}");
-            debugPrint("주소: ${request.url}");
-            debugPrint("메소드: ${request.method}");
-
-            StreamedResponse streamedResponse = await request.send();
-
-            final Response response = await Response.fromStream(streamedResponse);
-
-            return response;
-          });
-        }
-    );
-  }
-
-  Future<Response> register({
-    required BuildContext? context,
-    required UserProfileRegisterDto dto
-  }) {
-    return api(
-      context: context,
-      func: () {
-        return storage.read(key: 'accessToken').then((accessToken) async {
+        func: (accessToken) async {
           MultipartRequest request = MultipartRequest(
-              'POST',
+              'PATCH',
               Uri.http('$domain:$port', 'api/v1/mate')
           )
             ..headers.addAll({
@@ -146,7 +85,56 @@ class UserProfileRepository extends API {
           final Response response = await Response.fromStream(streamedResponse);
 
           return response;
-        });
+        }
+    );
+  }
+
+  Future<Response> register({
+    required BuildContext? context,
+    required UserProfileRegisterDto dto
+  }) {
+    return api(
+      context: context,
+      func: (accessToken) async {
+        MultipartRequest request = MultipartRequest(
+            'POST',
+            Uri.http('$domain:$port', 'api/v1/mate')
+        )
+          ..headers.addAll({
+            "Content-Type": "multipart/form-data",
+            'Authorization': 'Bearer $accessToken'
+          })
+          ..fields['Request'] = jsonEncode({
+            'nickname' : dto.nickname,
+            'userGender' : dto.userGender,
+            'genderVisibility' : dto.genderVisibility,
+            'phoneNumber' : dto.phoneNumber,
+            'accommodatableDogsCount' : dto.accommodatableDogsCount,
+            'career' : dto.career,
+            'preferredDetails' : dto.preferredDetails,
+            'region' : dto.region
+          });
+
+        if (dto.profileImage != null) {
+
+          request.files.add(await MultipartFile.fromPath(
+              'profileImage',
+              dto.profileImage!.path,
+              filename: dto.profileImage!.path.split('/').last
+          ));
+        }
+
+        debugPrint("필드: ${request.fields}");
+        debugPrint("파일: ${request.files[0].contentType} ${request.files[0].field} ${request.files[0].filename}");
+        debugPrint("헤더: ${request.headers}");
+        debugPrint("주소: ${request.url}");
+        debugPrint("메소드: ${request.method}");
+
+        StreamedResponse streamedResponse = await request.send();
+
+        final Response response = await Response.fromStream(streamedResponse);
+
+        return response;
       }
     );
   }
@@ -157,17 +145,13 @@ class UserProfileRepository extends API {
   }) {
     return api(
       context: context,
-      func: () {
-        return storage.read(key: 'accessToken').then((accessToken) {
-          return get(
-            Uri.http('$domain:$port', '/api/v1/mate/$nickname'),
-            headers: <String, String> {
-              'Content-type' : 'application/json',
-              'Authorization' : 'Bearer $accessToken'
-            }
-          );
-        });
-      }
+      func: (accessToken) => get(
+          Uri.http('$domain:$port', '/api/v1/mate/$nickname'),
+          headers: <String, String> {
+            'Content-type' : 'application/json',
+            'Authorization' : 'Bearer $accessToken'
+          }
+      )
     );
   }
 }
