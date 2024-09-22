@@ -13,9 +13,9 @@ class PostingTemplate extends StatefulWidget {
 class _PostingTemplateState extends State<PostingTemplate> {
   @override
   Widget build(BuildContext context) {
-    return CommonScaffoldUtil(
+    return const CommonScaffoldUtil(
       backgroundColor: Colors.white,
-      appBar: const PopHeader(title: '산책하기', useBackButton: true),
+      appBar: PopHeader(title: '산책하기', useBackButton: true),
       body: PostingRegister(),
     );
   }

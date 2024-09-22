@@ -1,12 +1,22 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_dto.dart';
+import 'package:dog/src/dto/location_data_dto.dart';
+import 'package:dog/src/dto/walk_board_dto.dart';
+import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
+import 'package:dog/src/util/toast_popup_util.dart';
 import 'package:dog/src/view/component/walking/posting_calendar.dart';
 import 'package:dog/src/view/template/place_map.dart';
+import 'package:dog/src/view/template/profile/dog_register_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart';
+import 'package:transition/transition.dart';
 
 class PostingRegister extends StatefulWidget {
 
@@ -23,24 +33,28 @@ class _PostingRegisterState extends State<PostingRegister> {
   final TextEditingController pickupController = TextEditingController();
   final TextEditingController wageController = TextEditingController();
   final TextEditingController phoneNumController = TextEditingController();
-
+  final DogProfileRepository profileRepository = DogProfileRepository();
 
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
   static const List<String> wages = ["시급", "건당"];
-  static const List<Map<String, dynamic>> testData = [
-    {
-      'name': '뽀삐',
-      'species': '웰시코기',
-      'age': 3,
-      'imgUrl': 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMzAzMjNfMTg1%2FMDAxNjc5NTQyNTYzNjU4.9aj6sJRExdpVzm3JqillN5CBljpKSUHjyWnpSAXeXTYg.oYA4T0TidaQWbDrrJv21Pb7nZ4dMsB3ut-aIzl2HT04g.JPEG.imkimbom_%2Foutput_861680940.jpg&type=a340'
-    },
-    {
-      'name': '설이',
-      'species': '포메라니안',
-      'age': 2,
-      'imgUrl': 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAyMDVfNjIg%2FMDAxNzA3MTEyMDgxMDg3._SnnduCEZqfjDDCBlTH9CCFeED8NVndAB6uNhTPmYjwg.-8-DmtSIS1RhPsZeP90lNzXTpIeFMTAb2l4sbn5VBcIg.JPEG.nono83123%2F1707111397354.jpg&type=a340'
-    },
-  ];
+  // static const List<Map<String, dynamic>> testData = [
+  //   {
+  //     'name': '뽀삐',
+  //     'species': '웰시코기',
+  //     'age': 3,
+  //     'imgUrl': 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMzAzMjNfMTg1%2FMDAxNjc5NTQyNTYzNjU4.9aj6sJRExdpVzm3JqillN5CBljpKSUHjyWnpSAXeXTYg.oYA4T0TidaQWbDrrJv21Pb7nZ4dMsB3ut-aIzl2HT04g.JPEG.imkimbom_%2Foutput_861680940.jpg&type=a340'
+  //   },
+  //   {
+  //     'name': '설이',
+  //     'species': '포메라니안',
+  //     'age': 2,
+  //     'imgUrl': 'https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAyMDVfNjIg%2FMDAxNzA3MTEyMDgxMDg3._SnnduCEZqfjDDCBlTH9CCFeED8NVndAB6uNhTPmYjwg.-8-DmtSIS1RhPsZeP90lNzXTpIeFMTAb2l4sbn5VBcIg.JPEG.nono83123%2F1707111397354.jpg&type=a340'
+  //   },
+  // ];
+
+  late Future<List<DogProfileDTO>> dogProfiles;
+
+  LocationDataDTO receivedLocationData = LocationDataDTO.fromEmpty();
 
   String? selectedLocation;
   String? wage = '시급';
@@ -54,9 +68,30 @@ class _PostingRegisterState extends State<PostingRegister> {
   bool isSelectEndTime = false;
 
   List<String> hashTagList = [];
-  List<bool> isProfileSelected = List.filled(testData.length, false);
+  List<bool> isProfileSelected = [];
+  List<DogProfileDTO> loadedProfiles = [];
+  List<int> selectedDogId = [];
 
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    dogProfiles = getDogProfiles();
+    dogProfiles.then((profiles) {
+      setState(() {
+        loadedProfiles = profiles;
+        isProfileSelected = List.filled(profiles.length, false);
+      });
+    });
+  }
+
+  Future<List<DogProfileDTO>> getDogProfiles() async {
+    final Response response = await profileRepository.getList(context: context);
+    final List<dynamic> list = jsonDecode(response.body);
+    final List<DogProfileDTO> result = list.map((e) => DogProfileDTO.fromJson(e)).toList();
+    return result;
+  }
 
   TextStyle commonTextStyle({
     Color fontColor = Palette.darkFont4,
@@ -84,8 +119,61 @@ class _PostingRegisterState extends State<PostingRegister> {
         return postRegister4();
       case 4:
         return postRegister5();
+      // case 5:
+      //
+      //   break;
       default:
         return postRegister1();
+    }
+  }
+  
+  // 각 화면당 체크
+  bool validateCurrentPage() {
+    switch (pageNum) {
+      case 0:
+        if (titleController.text.isEmpty) {
+          ToastPopupUtil.error(context: context, content: '제목을 입력해 주세요.');
+          return false;
+        }
+        if (hashTagList.isEmpty) {
+          ToastPopupUtil.error(context: context, content: '장소 추천을 입력해 주세요.');
+          return false;
+        }
+        if (selectedLocation == null) {
+          ToastPopupUtil.error(context: context, content: '픽업 지역을 선택해 주세요.');
+          return false;
+        }
+        return true;
+      case 1:
+        if (receivedLocationData.isEmpty()) {
+          ToastPopupUtil.error(context: context, content: '위치 정보가 없습니다.');
+          return false;
+        }
+        return true;
+      case 2:
+        if (!isProfileSelected.contains(true)) {
+          ToastPopupUtil.error(context: context, content: '최소 한 마리의 반려견을 선택해 주세요.');
+          return false;
+        }
+        return true;
+      case 3:
+        if (_startTime == '시작' || _endTime == '종료') {
+          ToastPopupUtil.error(context: context, content: '시작 시간과 종료 시간을 모두 선택해 주세요.');
+          return false;
+        }
+        return true;
+      case 4:
+        if (wageController.text.isEmpty) {
+          ToastPopupUtil.error(context: context, content: '임금을 입력해 주세요.');
+          return false;
+        }
+        if (phoneNumController.text.isEmpty) {
+          ToastPopupUtil.error(context: context, content: '연락처를 입력해 주세요.');
+          return false;
+        }
+        return true;
+      default:
+        return true;
     }
   }
 
@@ -118,7 +206,7 @@ class _PostingRegisterState extends State<PostingRegister> {
         SizedBox(
             height: 580.h,
             width: 1.sw,
-            child: const PlaceMap()
+            child: PlaceMap(onLocationUpdated: _updateLocation)
         ),
       ],
     );
@@ -147,6 +235,7 @@ class _PostingRegisterState extends State<PostingRegister> {
       ],
     );
   }
+
   Widget postRegister5() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,6 +252,28 @@ class _PostingRegisterState extends State<PostingRegister> {
         ),
       ],
     );
+  }
+
+  void goToRegister() {
+    Navigator.push(
+        context,
+        Transition(
+            transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+            child: const DogRegisterTemplate()
+        )
+    ).then((result) {
+      if (result ~/ 100 == 2) {
+        setState(() {
+          dogProfiles = getDogProfiles();
+        });
+      }
+    });
+  }
+
+  void _updateLocation(LocationDataDTO locationDataDTO) {
+    setState(() {
+      receivedLocationData = locationDataDTO;
+    });
   }
 
   void _onDateSelected(DateTime selectedDate) {
@@ -272,14 +383,24 @@ class _PostingRegisterState extends State<PostingRegister> {
         textInputAction: TextInputAction.go,
         onChanged: (value) {
           if (value.length > 8) {
-            // 토스트 팝업!
+            ToastPopupUtil.error(context: context, content: '7글자 까지 입력 가능해요.');
             hashTagController.text = value.substring(0, 7);
           }
         },
         onSubmitted: (value) {
           setState(() {
-            hashTagList.add(value);
-            hashTagController.text = '';
+            if (value.isEmpty) {
+              return;
+            } else if (hashTagList.contains(value)) {
+              ToastPopupUtil.error(context: context, content: '이미 입력한 장소 입니다.');
+              return;
+            } else if (hashTagList.length >= 2) {
+              ToastPopupUtil.error(context: context, content: '산책 장소 추천은 2개까지 입력 가능해요.');
+              return;
+            } else {
+              hashTagList.add(value);
+              hashTagController.text = '';
+            }
           });
         },
         keyboardType: TextInputType.text,
@@ -401,9 +522,30 @@ class _PostingRegisterState extends State<PostingRegister> {
             height: 51.h,
             title: text,
             onTap: () {
-              setState(() {
-                pageNum += 1;
-              });
+              if (validateCurrentPage()) {
+                if (pageNum == 4) {
+                  // final WalkBoardDTO dto = WalkBoardDTO(
+                  //     title: titleController.text,
+                  //     tag: hashTagList,
+                  //     pickupLocation1: receivedLocationData.address,
+                  //     mapX: receivedLocationData.longitude,
+                  //     mapY: receivedLocationData.latitude,
+                  //     dogGender: true, // dogGender,  없어져야함
+                  //     dogId: 1, // selectedDogId,  리스트로 받아야함
+                  //     pickUpDay: pickUpDay,
+                  //     startTime: startTime,
+                  //     endTime: endTime,
+                  //     feeType: feeType,
+                  //     fee: fee,
+                  //     phoneNumber: phoneNumber
+                  // );
+
+                } else {
+                  setState(() {
+                    pageNum += 1;
+                  });
+                }
+              }
             }
         ).filledButton1m(),
       ),
@@ -411,33 +553,50 @@ class _PostingRegisterState extends State<PostingRegister> {
   }
 
   Widget buildDogProfileList() {
-    return ListView.builder(
-        shrinkWrap: true,
-        itemCount: testData.length,
-        itemBuilder: (context, index) {
-          bool isExistProfile = testData.length < 4 && index + 1 == testData.length;
-          return Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 10.h),
-                child: dogProfileBox(
-                  dogData: testData[index],
-                    isSelected: isProfileSelected[index],
-                    onTap: () {
-                    setState(() {
-                      isProfileSelected[index] = !isProfileSelected[index];
-                    });
-                  }
-                ),
-              ),
-              if (isExistProfile)
-                Padding(
-                  padding: EdgeInsets.only(bottom: 10.h),
-                  child: dogProfileAdd(),
-                ),
-            ],
+    return FutureBuilder<List<DogProfileDTO>>(
+      future: dogProfiles,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No dog profiles available'));
+        } else {
+          List<DogProfileDTO> profiles = snapshot.data!;
+          return ListView.builder(
+              shrinkWrap: true,
+              itemCount: profiles.length + (profiles.length < 4 ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index < profiles.length) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(bottom: 10.h),
+                        child: dogProfileBox(
+                            dogData: profiles[index],
+                            isSelected: isProfileSelected[index],
+                            onTap: () {
+                              setState(() {
+                                isProfileSelected[index] = !isProfileSelected[index];
+
+                                selectedDogId.add(profiles[index].dogId);
+                              });
+                            }
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 10.h),
+                    child: dogProfileAdd(),
+                  );
+                }
+              }
           );
         }
+      },
     );
   }
 
@@ -448,9 +607,9 @@ class _PostingRegisterState extends State<PostingRegister> {
         onTap: () {
           setState(() {
             if (isProfileSelected.every((element) => element == true)) {
-              isProfileSelected = List.filled(testData.length, false);
+              isProfileSelected = List.filled(loadedProfiles.length, false);
             } else {
-              isProfileSelected = List.filled(testData.length, true);
+              isProfileSelected = List.filled(loadedProfiles.length, true);
             }
           });
         },
@@ -497,7 +656,7 @@ class _PostingRegisterState extends State<PostingRegister> {
   }
 
   Widget dogProfileBox({
-    required Map<String, dynamic> dogData,
+    required DogProfileDTO dogData,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
@@ -524,7 +683,7 @@ class _PostingRegisterState extends State<PostingRegister> {
                           width: 53,
                           height: 53,
                           child: CachedNetworkImage(
-                            imageUrl: dogData['imgUrl'],
+                            imageUrl: dogData.dogImage,
                             fit: BoxFit.cover,
                           ),
                       ),
@@ -535,7 +694,7 @@ class _PostingRegisterState extends State<PostingRegister> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        dogData['name'],
+                        dogData.name,
                         style: TextStyle(
                           color: Palette.darkFont4,
                           fontSize: 16.sp,
@@ -545,7 +704,7 @@ class _PostingRegisterState extends State<PostingRegister> {
                       ),
                       SizedBox(height: 11.h),
                       Text(
-                        '${dogData['species']} / ${dogData['age']}살',
+                        '${dogData.breed} / ${dogData.age}살',
                         style: TextStyle(
                             color: Palette.darkFont2,
                             fontSize: 12.sp,
@@ -568,31 +727,37 @@ class _PostingRegisterState extends State<PostingRegister> {
   }
 
   Widget dogProfileAdd() {
-    return Container(
-      width: 347.w,
-      height: 80.h,
-      decoration: ShapeDecoration(
-        color: Palette.outlinedButton1,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-      ),
-      padding: EdgeInsets.only(left: 15.w, right: 24.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.add, size: 20.r, color: const Color(0xFF818181)),
-          SizedBox(width: 4.w),
-          Text(
-            '추가하기',
-            style: TextStyle(
-              color: const Color(0xFF818181),
-              fontSize: 16.sp,
-              fontFamily: 'Pretendard',
-              fontWeight: FontWeight.w500,
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 14.w),
+      child: InkWell(
+        onTap: () => goToRegister(),
+        child: Container(
+          width: 1.sw,
+          height: 80.h,
+          decoration: ShapeDecoration(
+            color: Palette.outlinedButton1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
-        ],
+          padding: EdgeInsets.only(left: 15.w, right: 24.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.add, size: 20.r, color: const Color(0xFF818181)),
+              SizedBox(width: 4.w),
+              Text(
+                '추가하기',
+                style: TextStyle(
+                  color: const Color(0xFF818181),
+                  fontSize: 16.sp,
+                  fontFamily: 'Pretendard',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -664,7 +829,7 @@ class _PostingRegisterState extends State<PostingRegister> {
     return PopupMenuButton<String>(
       color: Colors.white,
       icon: Icon(Icons.keyboard_arrow_down_sharp, size: 25.w, color: color),
-      offset: type == 'start' ? const Offset(-120, 50) : const Offset(0, 50),
+      offset: type == 'start' ? const Offset(-70, 50) : const Offset(0, 50),
       onSelected: (String value) {
         setState(() {
           type == 'start'
@@ -690,10 +855,13 @@ class _PostingRegisterState extends State<PostingRegister> {
           }
         });
         List<String> timeSlots = getTimeSlots();
-        if (timeSlots.length >= 4) {
+        /*if (timeSlots.isEmpty) {
+          ToastPopupUtil.error(context: context, content: '선택 가능한 시간이 없어요.');
+          return;
+        } else */if (timeSlots.length >= 4) {
           return [
             PopupMenuItem<String>(
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.only(left: 0),
               child: SizedBox(
                 width: 100.w,
                 height: 180.h,
@@ -703,6 +871,7 @@ class _PostingRegisterState extends State<PostingRegister> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: timeSlots.map((String choice) {
                       return ListTile(
+                        contentPadding: EdgeInsets.only(left: 10.w),
                         dense: true,
                         title: Text(
                           choice,
@@ -739,6 +908,8 @@ class _PostingRegisterState extends State<PostingRegister> {
           return timeSlots.map((String choice) {
             return PopupMenuItem<String>(
               child: ListTile(
+                contentPadding: EdgeInsets.only(left: 10.w),
+                dense: true,
                 title: Text(
                   choice,
                   style: TextStyle(
@@ -840,12 +1011,15 @@ class _PostingRegisterState extends State<PostingRegister> {
               ),
             ),
           ),
-          SizedBox(
-            width: 166.w,
-            height: 55.h,
-            child: TextInputUtil().money(
-                controller: wageController,
-                hintText: '15,000',
+          Padding(
+            padding: EdgeInsets.only(bottom: 9.h),
+            child: SizedBox(
+              width: 166.w,
+              height: 55.h,
+              child: TextInputUtil().money(
+                  controller: wageController,
+                  hintText: '15,000',
+              ),
             ),
           ),
         ],
