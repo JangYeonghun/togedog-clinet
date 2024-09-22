@@ -31,9 +31,13 @@ class API {
       ''');
 
         if (response.statusCode == 401) {
-          await Future.delayed(Duration(seconds: backoffDelay));
           retry ++;
-          backoffDelay *= 2;
+
+          if (retry > 1) {
+            await Future.delayed(Duration(seconds: backoffDelay));
+            backoffDelay *= 2;
+          }
+
           if (retry < 3) {
             return AuthRepository().reissueToken().then((succeed) async {
               if (succeed) {

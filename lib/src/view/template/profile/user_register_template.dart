@@ -7,11 +7,13 @@ import 'package:dog/src/dto/user_profile_register_dto.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/input_form_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/util/toast_popup_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserRegisterTemplate extends StatefulWidget {
@@ -30,7 +32,6 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   final TextEditingController ageController = TextEditingController();
   final UserProfileRepository userProfileRepository = UserProfileRepository();
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
-  late final double columnHeight;
   late DateTime birth;
   bool isAgeEditing = true;
   String? selectedLocation;
@@ -225,7 +226,9 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   }
 
   Widget nextButton({bool isFilled = true}) {
-    return Center(
+    return Container(
+      margin: EdgeInsets.only(bottom: 36.h),
+      alignment: Alignment.center,
       child: ButtonUtil(
           width: deviceWidth - 40,
           height: (deviceWidth - 40) / 335 * 55,
@@ -564,25 +567,22 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-          height: columnHeight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 27),
-              titleBox(title: '프로필 사진 등록'),
-              profileUpload(),
-              titleBox(title: '닉네임 입력'),
-              nicknameInputBox(),
-              // 닉네임 체크 결과 텍스트 추가
-              const SizedBox(height: 30),
-              titleBox(title: '성별 입력'),
-              toggle(),
-              const SizedBox(height: 30),
-              titleBox(title: '나이'),
-              ageBox(),
-            ],
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 27),
+            titleBox(title: '프로필 사진 등록'),
+            profileUpload(),
+            titleBox(title: '닉네임 입력'),
+            nicknameInputBox(),
+            // 닉네임 체크 결과 텍스트 추가
+            const SizedBox(height: 30),
+            titleBox(title: '성별 입력'),
+            toggle(),
+            const SizedBox(height: 30),
+            titleBox(title: '나이'),
+            ageBox(),
+          ],
         ),
         nextButton(
           isFilled: nicknameController.text.isNotEmpty && ageController.text.isNotEmpty
@@ -595,31 +595,28 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-          height: columnHeight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 27),
-              titleBox(title: '연락처 입력'),
-              Padding(
-                padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 30),
-                child: TextInputUtil().number(controller: phoneController, hintText: '\'-\' 제외하고 숫자만 입력'),
-              ),
-              titleBox(title: '경력 및 경험 추가'),
-              experienceInputBox(),
-              titleBox(title: '선호 견종 크기 선택'),
-              preferenceSelection(
-                  preference: dogSizePreference,
-                  gap: 9,
-                  height: 40,
-                  borderRadius: BorderRadius.circular(10)
-              ),
-              titleBox(title: '산책 스타일 및 선호사항 태그'),
-              hashTagInputBox(),
-              hashTagList(),
-            ],
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 27),
+            titleBox(title: '연락처 입력'),
+            Padding(
+              padding: const EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 30),
+              child: TextInputUtil().number(controller: phoneController, hintText: '\'-\' 제외하고 숫자만 입력'),
+            ),
+            titleBox(title: '경력 및 경험 추가'),
+            experienceInputBox(),
+            titleBox(title: '선호 견종 크기 선택'),
+            preferenceSelection(
+                preference: dogSizePreference,
+                gap: 9,
+                height: 40,
+                borderRadius: BorderRadius.circular(10)
+            ),
+            titleBox(title: '산책 스타일 및 선호사항 태그'),
+            hashTagInputBox(),
+            hashTagList(),
+          ],
         ),
         nextButton()
       ],
@@ -630,22 +627,21 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-          height: columnHeight,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 27),
-              titleBox(title: '거주 지역 선택'),
-              locationDropdown(),
-              titleBox(title: '선호 요일 선택'),
-              preferenceSelection(preference: dayPreference, height: 30, gap: 5),
-              titleBox(title: '선호 시간 선택(2개)'),
-              preferenceSelection(preference: timePreference, height: 35, gap: 5, maxSelection: 2),
-            ],
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 27),
+            titleBox(title: '거주 지역 선택'),
+            locationDropdown(),
+            titleBox(title: '선호 요일 선택'),
+            preferenceSelection(preference: dayPreference, height: 30, gap: 5),
+            titleBox(title: '선호 시간 선택(2개)'),
+            preferenceSelection(preference: timePreference, height: 35, gap: 5, maxSelection: 2),
+          ],
         ),
-        Center(
+        Container(
+          margin: EdgeInsets.only(bottom: 36.h),
+          alignment: Alignment.center,
           child: ButtonUtil(
               width: deviceWidth - 40,
               height: (deviceWidth - 40) / 335 * 55,
@@ -660,7 +656,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   }
 
   Future<void> sendRequest() async {
-    List<dynamic> weeks = dayPreference.map((e) => e['prefer'] ? e['name'] : '').toList();
+    List<dynamic> weeks = dayPreference.map((e) => e['prefer'] ? '${e['name']}요일' : '').toList();
     weeks.removeWhere((e) => e == '');
     List<dynamic> times = timePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
     times.removeWhere((e) => e == '');
@@ -672,7 +668,6 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
         dto: UserProfileRegisterDto(
             nickname: nicknameController.text,
             userGender: isMale == 1 ? '남성' : '여성',
-            genderVisibility: 'ACTIVE',
             phoneNumber: phoneController.text,
             accommodatableDogsCount: 1,
             career: experienceController.text,
@@ -680,8 +675,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               'weeks' : weeks,
               'times' : times,
               'hashTag' : hashTags,
-              'dogTypes' : dogTypes,
-              'region' : '인천'
+              'dogTypes' : dogTypes
             },
             region: selectedLocation ?? '',
             profileImage: profileImage
@@ -706,22 +700,15 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
       appBar: const PopHeader(title: '프로필 등록', useBackButton: true),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          try {
-            columnHeight = constraints.maxHeight - 80 - (deviceWidth - 40) / 335 * 55;
-          } catch(e) {
-            debugPrint(e.toString());
-          }
-          return SingleChildScrollView(
-              child: Column(
-                children: [
-                  StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
-                  walkerRegister(),
-                ],
-              )
-          );
-        },
+      body: InputFormUtil(
+        child: Column(
+          children: [
+            StepProgressBar(currentStep: pageIndex + 1, totalStep: 3),
+            Flexible(
+              child: walkerRegister()
+            ),
+          ],
+        )
       )
     );
   }

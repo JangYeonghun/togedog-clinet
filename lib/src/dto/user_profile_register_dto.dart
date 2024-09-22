@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 class UserProfileRegisterDto {
   final String nickname;
   final String userGender;
-  final String genderVisibility;
   final String phoneNumber;
   final int accommodatableDogsCount;
   final String career;
@@ -14,7 +13,6 @@ class UserProfileRegisterDto {
   const UserProfileRegisterDto({
     required this.nickname,
     required this.userGender,
-    required this.genderVisibility,
     required this.phoneNumber,
     required this.accommodatableDogsCount,
     required this.career,

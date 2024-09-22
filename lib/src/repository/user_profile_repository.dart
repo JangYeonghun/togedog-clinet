@@ -54,10 +54,9 @@ class UserProfileRepository extends API {
               "Content-Type": "multipart/form-data",
               'Authorization': 'Bearer $accessToken'
             })
-            ..fields['Request'] = jsonEncode({
+            ..fields['request'] = jsonEncode({
               'nickname' : dto.nickname,
               'userGender' : dto.userGender,
-              'genderVisibility' : dto.genderVisibility,
               'phoneNumber' : dto.phoneNumber,
               'accommodatableDogsCount' : dto.accommodatableDogsCount,
               'career' : dto.career,
@@ -104,10 +103,9 @@ class UserProfileRepository extends API {
             "Content-Type": "multipart/form-data",
             'Authorization': 'Bearer $accessToken'
           })
-          ..fields['Request'] = jsonEncode({
+          ..fields['request'] = jsonEncode({
             'nickname' : dto.nickname,
             'userGender' : dto.userGender,
-            'genderVisibility' : dto.genderVisibility,
             'phoneNumber' : dto.phoneNumber,
             'accommodatableDogsCount' : dto.accommodatableDogsCount,
             'career' : dto.career,
