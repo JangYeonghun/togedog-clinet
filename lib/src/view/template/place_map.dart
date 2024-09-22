@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/location_data_dto.dart';
 import 'package:dog/src/util/loading_util.dart';
+import 'package:dog/src/util/toast_popup_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,7 +14,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 
 class PlaceMap extends StatefulWidget {
-  const PlaceMap({super.key});
+  final Function(LocationDataDTO) onLocationUpdated;
+
+  const PlaceMap({
+    super.key,
+    required this.onLocationUpdated,
+  });
 
   @override
   State<PlaceMap> createState() => _PlaceMapState();
@@ -47,7 +54,7 @@ class _PlaceMapState extends State<PlaceMap> {
       _getAddressFromLatLng(currentPosition!);
       return true;
     } catch (e) {
-      print(e);
+      debugPrint('Method getCurrentLocation: $e');
       setState(() {
         isLoading = false;
       });
@@ -67,10 +74,17 @@ class _PlaceMapState extends State<PlaceMap> {
             ? place.street!.replaceAll("대한민국 ", "")
             : place.street!
             : "주소 없음";
-        debugPrint('궯: $currentAddress');
+
+        widget.onLocationUpdated(
+          LocationDataDTO(
+              latitude: position.latitude,
+              longitude: position.longitude,
+              address: currentAddress
+          )
+        );
       });
     } catch (e) {
-      print(e);
+      debugPrint('Method getAddressFromLatLng: $e');
     }
   }
 
@@ -88,18 +102,14 @@ class _PlaceMapState extends State<PlaceMap> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         // 사용자가 권한을 거부한 경우
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Location permissions are required to use the map.')),
-        );
+        ToastPopupUtil.error(context: context, content: '위치 권한 허용이 필요해요.');
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       // 사용자가 권한을 영구적으로 거부한 경우
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Location permissions are permanently denied, we cannot request permissions.')),
-      );
+      ToastPopupUtil.error(context: context, content: '설정을 열어서 위치 권한을 허용해 주세요.');
       return;
     }
 
@@ -205,6 +215,7 @@ class _PlaceMapState extends State<PlaceMap> {
           bottom: 90,
           right: 16,
           child: FloatingActionButton(
+            backgroundColor: Palette.outlinedButton1,
             child: const Icon(Icons.my_location),
             onPressed: () async {
               double currentZoomLevel = await mapController!.getZoomLevel();
