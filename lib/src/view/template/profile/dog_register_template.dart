@@ -7,6 +7,7 @@ import 'package:dog/src/dto/dog_profile_register_dto.dart';
 import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/image_util.dart';
 import 'package:dog/src/util/input_form_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
@@ -68,31 +69,18 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
     }
   };
 
-  Future<void> getImage({required ImageSource imageSource}) async {
-    final image = await ImagePicker().pickImage(
-        source: imageSource,
-        maxHeight: 360,
-        maxWidth: 360,
-        imageQuality: 70
-    );
-    if (image != null) {
-      debugPrint("#\n\n\n");
-      debugPrint("${(await image.length() / 1024 / 1024).toStringAsFixed(3)}Mb");
-      debugPrint("\n\n\n#");
-      setState(() {
-        profileImage = image;
-      });
-    }
-  }
-
   Widget profileUpload() {
     return Padding(
       padding: const EdgeInsets.only(left: 14, top: 18, bottom: 23),
       child: GestureDetector(
         onTap: () async {
-          await getImage(imageSource: ImageSource.gallery);
-          setState(() {
-
+          ImageUtil().getImage(
+            context: context,
+            imageSource: ImageSource.gallery
+          ).then((image) {
+            setState(() {
+              profileImage = image;
+            });
           });
         },
         child: Stack(
@@ -177,6 +165,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
       child: TextField(
         controller: hashTagController,
         style: TextInputUtil().textStyle,
+        cursorColor: Palette.green6,
         textInputAction: TextInputAction.go,
         onChanged: (value) {
           if (value.startsWith('#')) {

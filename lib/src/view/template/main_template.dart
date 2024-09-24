@@ -1,9 +1,9 @@
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/provider/bottom_navigation_bar_provider.dart';
-import 'package:dog/src/view/body/my_page_body.dart';
 import 'package:dog/src/view/body/my_walk_body.dart';
 import 'package:dog/src/view/body/walking_body.dart';
 import 'package:dog/src/view/component/bottom_navigation.dart';
+import 'package:dog/src/view/body/chat_body.dart';
 import 'package:dog/src/view/template/home_template.dart';
 import 'package:dog/src/view/template/profile/profile_template.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +27,7 @@ class MainTemplate extends ConsumerWidget {
           0: const HomeTemplate(),
           1: const SafeArea(top: true, bottom: false, child: WalkingBody()),
           2: const SafeArea(top: true, bottom: false, child: MyWalkBody()),
-          3: const SafeArea(top: true, bottom: false, child: MyPageBody()),
+          3: const ChatBody(),
           4: const ProfileTemplate(),
         }[currentIndex]!,
         bottomNavigationBar: const BottomNavigation(),
