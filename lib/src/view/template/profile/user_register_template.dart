@@ -7,6 +7,7 @@ import 'package:dog/src/dto/user_profile_register_dto.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/image_util.dart';
 import 'package:dog/src/util/input_form_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
 import 'package:dog/src/util/text_input_util.dart';
@@ -112,32 +113,17 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     }
   ];
 
-  Future<void> getImage({required ImageSource imageSource}) async {
-    ImagePicker().pickImage(
-        source: imageSource,
-        maxHeight: 360,
-        maxWidth: 360,
-        imageQuality: 70
-    ).then((image) async {
-      if (image != null) {
-        debugPrint("#\n\n\n");
-        debugPrint("${(await image.length() / 1024 / 1024).toStringAsFixed(3)}Mb");
-        debugPrint("\n\n\n#");
-        setState(() {
-          profileImage = image;
-        });
-      }
-    });
-  }
-
   Widget profileUpload() {
     return Padding(
       padding: const EdgeInsets.only(left: 14, top: 18, bottom: 23),
       child: GestureDetector(
         onTap: () {
-          getImage(imageSource: ImageSource.gallery).whenComplete(() {
+          ImageUtil().getImage(
+            context: context,
+            imageSource: ImageSource.gallery
+          ).then((image) {
             setState(() {
-
+              profileImage = image;
             });
           });
         },
@@ -372,6 +358,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           controller: hashTagController,
           style: TextInputUtil().textStyle,
           textInputAction: TextInputAction.go,
+          cursorColor: Palette.green6,
           onChanged: (value) {
             if (value.startsWith('#')) {
               if (value.replaceAll('#', '').length > 5) {
@@ -465,6 +452,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
         children: [
           TextField(
             controller: nicknameController,
+            cursorColor: Palette.green6,
             style: TextInputUtil().textStyle,
             maxLength: 10,
             keyboardType: TextInputType.text,

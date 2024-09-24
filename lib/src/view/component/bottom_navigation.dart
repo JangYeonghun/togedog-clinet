@@ -30,7 +30,7 @@ class BottomNavigation extends ConsumerWidget {
     },
     {
       'index': 3,
-      'route': '/my_page',
+      'route': '/chat',
       'name': '채팅',
       'image': 'assets/images/nav_btn_profile.png',
       'selectedImage': 'assets/images/nav_btn_profile_active.png'

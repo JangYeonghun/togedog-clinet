@@ -58,6 +58,7 @@ class TextInputUtil {
       controller: controller,
       maxLines: maxLines,
       maxLength: maxLength,
+      cursorColor: Palette.green6,
       onChanged: (value) {
         if (onChanged != null) onChanged(value);
       },
@@ -78,6 +79,7 @@ class TextInputUtil {
         if (onChanged != null) onChanged(value);
       },
       style: textStyle,
+      cursorColor: Palette.green6,
       keyboardType: TextInputType.number,
       decoration: inputDecoration(hintText: hintText),
     );
@@ -93,6 +95,7 @@ class TextInputUtil {
       onChanged: (value) {
         if (onChanged != null) onChanged(value);
       },
+      cursorColor: Palette.green6,
       style: textStyle,
       keyboardType: TextInputType.phone,
       decoration: inputDecoration(hintText: hintText),
@@ -110,6 +113,7 @@ class TextInputUtil {
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       style: textStyle,
+      cursorColor: Palette.green6,
       onChanged: (value) {
         if (value.isNotEmpty) {
           final formatter = NumberFormat('#,###');
