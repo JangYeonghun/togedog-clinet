@@ -47,6 +47,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   XFile? profileImage;
   int isMale = 1;
   int pageIndex = 0;
+
   List<Preference> dogSizePreference = [
     Preference(name: '소형견', value: false),
     Preference(name: '중형견', value: false),
@@ -71,6 +72,16 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     Preference(name: '저녁', value: false),
     Preference(name: '새벽', value: false)
   ];
+
+  @override
+  void dispose() {
+    nicknameController.dispose();
+    phoneController.dispose();
+    experienceController.dispose();
+    hashTagController.dispose();
+    ageController.dispose();
+    super.dispose();
+  }
 
   Widget profileUpload() {
     return Padding(

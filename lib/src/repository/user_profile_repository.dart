@@ -24,6 +24,26 @@ class UserProfileRepository extends API {
     );
   }
 
+  Future<Response> getRandomList({
+    required BuildContext? context,
+    required int page,
+    required int size
+  }) {
+    return api(
+        context: context,
+        func: (accessToken) => get(
+            Uri.https(domain, '/api/v1/mate/random', {
+              'page' : page.toString(),
+              'size' : size.toString()
+            }),
+            headers: <String, String> {
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            },
+        )
+    );
+  }
+
   Future<Response> remove({
     required BuildContext? context
   }) {

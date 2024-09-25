@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:dog/src/config/global_variables.dart';
+import 'package:dog/src/dto/user_profile_dto.dart';
+import 'package:dog/src/repository/user_profile_repository.dart';
+import 'package:dog/src/util/loading_util.dart';
 import 'package:dog/src/view/component/profile_grid_item.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class ProfileGrid extends StatefulWidget {
   final Widget gridText;
@@ -15,65 +21,21 @@ class ProfileGrid extends StatefulWidget {
 }
 
 class _ProfileGridState extends State<ProfileGrid> {
-  static const List<Map<String, dynamic>> testData = [
-    {
-      'id': 1,
-      'nickname':'니니님',
-      'age':23,
-      'gender':'여',
-      'location':'서울시'
-    },
-    {
-      'id': 2,
-      'nickname':'지워닝',
-      'age':22,
-      'gender':'여',
-      'location':'대구시'
-    },
-    {
-      'id': 3,
-      'nickname':'테스트1',
-      'age':24,
-      'gender':'남',
-      'location':'대전시'
-    },
-    {
-      'id': 4,
-      'nickname':'테스트2',
-      'age':22,
-      'gender':'남',
-      'location':'포항시'
-    },
-    {
-      'id': 5,
-      'nickname':'니니님',
-      'age':23,
-      'gender':'여',
-      'location':'서울시'
-    },
-    {
-      'id': 6,
-      'nickname':'지워닝',
-      'age':22,
-      'gender':'여',
-      'location':'대구시'
-    },
-    {
-      'id': 7,
-      'nickname':'테스트1',
-      'age':24,
-      'gender':'남',
-      'location':'대전시'
-    },
-    {
-      'id': 8,
-      'nickname':'테스트2',
-      'age':22,
-      'gender':'남',
-      'location':'포항시'
-    },
-  ];
+  late final Future<List<UserProfileDTO>> randomProfiles;
   final deviceWidth = GlobalVariables.width;
+
+  @override
+  void initState() {
+    randomProfiles = getRandomProfiles();
+    super.initState();
+  }
+
+  Future<List<UserProfileDTO>> getRandomProfiles() async {
+    final Response response = await UserProfileRepository().getRandomList(context: context, page: 0, size: 6);
+    final List<dynamic> list = jsonDecode(response.body)['content'];
+    final List<UserProfileDTO> result = list.map((e) => UserProfileDTO.fromJson(e)).toList();
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,30 +48,35 @@ class _ProfileGridState extends State<ProfileGrid> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           widget.gridText,
-          GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 15,
-                crossAxisSpacing: 11,
-                childAspectRatio: 168/200
-              ),
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              padding: const EdgeInsets.only(left: 12, right: 16, top: 15, bottom: 10),
-              itemCount: testData.length,
-              itemBuilder: (context, index) {
-                return ProfileGridItem(
-                    width: deviceWidth - 43,
-                    height: (deviceWidth - 43) / 168 * 200,
-                    id: testData[index]['id'],
-                    nickname: testData[index]['nickname'],
-                    gender: testData[index]['gender'],
-                    age: testData[index]['age'],
-                    location: testData[index]['location'],
-                    imgUrl: 'https://cdn.gijn.kr/news/photo/202202/411141_315429_83.jpg'
+          FutureBuilder(
+            future: randomProfiles,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                final List<UserProfileDTO> data = snapshot.data;
+                return GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 15,
+                        crossAxisSpacing: 11,
+                        childAspectRatio: 168/200
+                    ),
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: const EdgeInsets.only(left: 12, right: 16, top: 15, bottom: 10),
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return ProfileGridItem(
+                          width: deviceWidth - 43,
+                          height: (deviceWidth - 43) / 168 * 200,
+                          userProfileDTO: data[index],
+                      );
+                    }
                 );
+              } else {
+                return const LoadingUtil();
               }
-          ),
+            }
+          )
         ],
       ),
     );

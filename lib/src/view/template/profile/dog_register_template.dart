@@ -69,6 +69,17 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
     }
   };
 
+  @override
+  void dispose() {
+    hashTagController.dispose();
+    nameController.dispose();
+    speciesController.dispose();
+    ageController.dispose();
+    significantController.dispose();
+    weightController.dispose();
+    super.dispose();
+  }
+
   Widget profileUpload() {
     return Padding(
       padding: const EdgeInsets.only(left: 14, top: 18, bottom: 23),

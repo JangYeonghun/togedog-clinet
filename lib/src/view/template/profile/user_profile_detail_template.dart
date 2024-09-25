@@ -183,7 +183,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
           top: 0,
           child: CachedNetworkImage(
             imageUrl: userProfile['imgUrl'],
-            fit: BoxFit.fitHeight,
+            fit: BoxFit.cover,
             height: deviceHeight * 0.5,
             alignment: Alignment.topCenter,
           ),
@@ -249,7 +249,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
           top: 0,
           child: CachedNetworkImage(
             imageUrl: userProfile['imgUrl'],
-            fit: BoxFit.fitHeight,
+            fit: BoxFit.cover,
             height: deviceHeight * 0.5,
             alignment: Alignment.topCenter,
           ),

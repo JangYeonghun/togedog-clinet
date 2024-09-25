@@ -219,7 +219,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.fitHeight),
+        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.cover),
         Stack(
           alignment: Alignment.center,
           children: [
@@ -235,7 +235,7 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.fitHeight),
+        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.cover),
         Stack(
           alignment: Alignment.center,
           children: [
