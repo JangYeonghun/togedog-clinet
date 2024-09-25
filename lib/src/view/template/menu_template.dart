@@ -50,8 +50,11 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget logOut() {
     return menuItem(
         onTap: () async {
-          await storage.deleteAll().whenComplete(() {
-            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+          await storage.deleteAll().whenComplete(() async {
+            // await storage.read(key: 'accessToken').then((accessToken) {
+            //   debugPrint('궯1: $accessToken');
+            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false, arguments: {'isLogout': true});
+            // });
           });
         },
         child: Row(

@@ -515,7 +515,6 @@ class _PostingRegisterState extends State<PostingRegister> {
                   //     pickupLocation1: receivedLocationData.address,
                   //     mapX: receivedLocationData.longitude,
                   //     mapY: receivedLocationData.latitude,
-                  //     dogGender: true, // dogGender,  없어져야함
                   //     dogId: 1, // selectedDogId,  리스트로 받아야함
                   //     pickUpDay: pickUpDay,
                   //     startTime: startTime,
