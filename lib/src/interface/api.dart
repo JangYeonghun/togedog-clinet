@@ -22,6 +22,7 @@ class API {
       
       /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
       
+      API: ${response.request?.method} ${response.request?.url}
       StatusCode: ${response.statusCode}
       Content: ${response.body}
       
