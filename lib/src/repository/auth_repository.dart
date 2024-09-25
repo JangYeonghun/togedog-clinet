@@ -12,7 +12,7 @@ class AuthRepository {
     final String? refreshToken = await storage.read(key: 'refreshToken');
 
     final Response response = await get(
-      Uri.http('$domain:$port', 'api/v1/member/reissue-token'),
+      Uri.https(domain, 'api/v1/member/reissue-token'),
       headers: <String, String>{
         'Content-type' : 'application/json',
         'Authorization' : 'Bearer $refreshToken'

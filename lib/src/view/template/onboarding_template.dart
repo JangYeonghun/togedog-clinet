@@ -93,9 +93,8 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
         onTap: () async {
           await launchUrl(
             Uri(
-              scheme: 'http',
+              scheme: 'https',
               host: GlobalVariables.domain,
-              port: GlobalVariables.port,
               path: 'oauth2/authorization/$social',
             ),
           );

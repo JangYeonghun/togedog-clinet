@@ -16,7 +16,7 @@ class DogProfileRepository extends API {
       func: (accessToken) async {
         MultipartRequest request = MultipartRequest(
             'POST',
-            Uri.http('$domain:$port', 'api/v1/dog')
+            Uri.https(domain, 'api/v1/dog')
         )
           ..headers.addAll({
             "Content-Type": "multipart/form-data",
@@ -66,7 +66,7 @@ class DogProfileRepository extends API {
     final String? accessToken = await storage.read(key: 'accessToken');
 
     final Response response = await patch(
-      Uri.http('$domain:$port', '/api/v1/dog'),
+      Uri.https(domain, '/api/v1/dog'),
       headers: <String, String>{
         'Content-type' : 'application/json',
         'Authorization' : 'Bearer $accessToken'
@@ -95,7 +95,7 @@ class DogProfileRepository extends API {
     return api(
       context: context,
       func: (accessToken) => get(
-          Uri.http('$domain:$port', '/api/v1/dog'),
+          Uri.https(domain, '/api/v1/dog'),
           headers: <String, String>{
             'Content-type' : 'application/json',
             'Authorization' : 'Bearer $accessToken'
@@ -110,7 +110,7 @@ class DogProfileRepository extends API {
     final String? accessToken = await storage.read(key: 'accessToken');
 
     final Response response = await get(
-        Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
+        Uri.https(domain, '/api/v1/dog/$dogId'),
         headers: <String, String>{
           'Content-type' : 'application/json',
           'Authorization' : 'Bearer $accessToken'
@@ -127,7 +127,7 @@ class DogProfileRepository extends API {
     return api(
       context: context,
       func: (accessToken) => delete(
-          Uri.http('$domain:$port', '/api/v1/dog/$dogId'),
+          Uri.https(domain, '/api/v1/dog/$dogId'),
           headers: <String, String>{
             'Content-type' : 'application/json',
             'Authorization' : 'Bearer $accessToken'
