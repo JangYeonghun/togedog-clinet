@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/util/loading_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,7 +21,9 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   late double deviceHeight;
   late double deviceWidth;
   late final TabController _tabController;
-  late AppLinks _appLinks;
+  AppLinks? _appLinks;
+  bool isLogout = false;
+  StreamSubscription<Uri?>? _uriSubscription;
 
   static const TextStyle textStyle = TextStyle(
       color: Palette.darkFont4,
@@ -29,60 +32,83 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
       fontWeight: FontWeight.w500
   );
 
-  Future<void> checkAccessToken() async {
-    await storage.read(key: 'accessToken').then((accessToken) {
-      FlutterNativeSplash.remove();
-      if (accessToken != null) {
-        Navigator.pushReplacementNamed(context, '/main');
-      } else {
-        initAppLinks();
-      }
-    });
+  Future<bool> checkAccessToken() async {
+    final accessToken = await storage.read(key: 'accessToken');
+    debugPrint('궯2: $accessToken, $mounted');
+    FlutterNativeSplash.remove();
+    debugPrint('궯21111: $accessToken, $mounted');
+    if (accessToken != null) {
+      debugPrint('궯22222: $accessToken, $mounted');
+      return true;
+    } else {
+      await initAppLinks();
+      return false;
+    }
   }
 
   Future<void> initAppLinks() async {
+    debugPrint('궯궯: $isLogout, $mounted');
+
+    if (isLogout) {
+      _appLinks = null;
+      isLogout = false;
+      return;
+    }
+
     _appLinks = AppLinks();
 
     // 앱이 실행 중일 때
-    _appLinks.uriLinkStream.listen((Uri? uri) {
+    _uriSubscription = _appLinks?.uriLinkStream.listen((Uri? uri) {
+      debugPrint('궯3: $uri, $mounted');
       if (uri != null) {
         _handleIncomingLink(uri);
       }
     });
 
+
     // 앱이 종료 되었을 때
-    final appLinkUri = await _appLinks.getInitialLink();
+    final appLinkUri = await _appLinks?.getInitialLink();
+    debugPrint('궯4: $appLinkUri, $mounted');
     if (appLinkUri != null) {
       _handleIncomingLink(appLinkUri);
     }
   }
 
-  void _handleIncomingLink(Uri uri) {
+  Future<void> _handleIncomingLink(Uri uri) async {
     debugPrint('Received link: $uri');
     if (uri.scheme == 'togedog' && uri.host == 'togedog' && uri.path.startsWith('/login')) {
       String? accessToken = uri.queryParameters['accessToken'];
       String? refreshToken = uri.queryParameters['refreshToken'];
       if (accessToken != null) {
-        storage.write(key: 'accessToken', value: accessToken).whenComplete(() {
-          storage.write(key: 'refreshToken', value: refreshToken).whenComplete(() {
-            debugPrint('Access Token: $accessToken');
-            debugPrint('Refresh Token: $refreshToken');
-            checkAccessToken();
-          });
-        });
+        await storage.write(key: 'accessToken', value: accessToken);
+        await storage.write(key: 'refreshToken', value: refreshToken);
+        debugPrint('Access Token: $accessToken');
+        debugPrint('Refresh Token: $refreshToken');
+        debugPrint('궯233333: $mounted');
+        setState(() {}); // Trigger a rebuild to check the access token again
       }
     }
   }
 
   @override
   void initState() {
-    checkAccessToken();
+    // checkAccessToken();
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    // args에서 isLogout 초기화
+    isLogout = args?['isLogout'] ?? false; // 기본값을 false로 설정
+  }
+
+  @override
   void dispose() {
+    _uriSubscription?.cancel();  // 리스너를 종료
     _tabController.dispose();
     super.dispose();
   }
@@ -98,6 +124,7 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
               path: 'oauth2/authorization/$social',
             ),
           );
+          setState(() {});
         },
         child: Image.asset('assets/images/sign_with_$social.png', width: deviceWidth - 28)
     );
@@ -156,55 +183,72 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
         bottom: false,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: Stack(
-            alignment: Alignment.topCenter,
-            children: [
-              Positioned(
-                bottom: deviceHeight / 812 * 220,
-                child: SizedBox(
-                  width: 120,
-                  height: 7,
-                  child: Stack(
+          body: FutureBuilder<bool>(
+            future: checkAccessToken(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: LoadingUtil());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (snapshot.data == true) {
+                // Access token exists, navigate to main
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pushReplacementNamed(context, '/main');
+                });
+                return const SizedBox.shrink(); // Placeholder while navigating
+                } else {
+                  return Stack(
+                    alignment: Alignment.topCenter,
                     children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            tabDot(),
-                            tabDot(),
-                            tabDot()
-                          ]
+                      Positioned(
+                        bottom: deviceHeight / 812 * 220,
+                        child: SizedBox(
+                          width: 120,
+                          height: 7,
+                          child: Stack(
+                            children: [
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    tabDot(),
+                                    tabDot(),
+                                    tabDot()
+                                  ]
+                              ),
+                              TabBar(
+                                controller: _tabController,
+                                tabs: [
+                                  tabDot(colored: false),
+                                  tabDot(colored: false),
+                                  tabDot(colored: false),
+                                ],
+                                indicator: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Palette.green6
+                                ),
+                                overlayColor: const WidgetStatePropertyAll(
+                                    Colors.transparent
+                                ),
+                                indicatorWeight: 0.1,
+                                dividerColor: Colors.transparent,
+                                indicatorSize: TabBarIndicatorSize.tab,
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      TabBar(
+                      TabBarView(
                         controller: _tabController,
-                        tabs: [
-                          tabDot(colored: false),
-                          tabDot(colored: false),
-                          tabDot(colored: false),
+                        children: [
+                          onboarding(content: '우리 강아지를 위한\n최고의 산책 메이트를 만나보세요.', index: 1),
+                          onboarding(content: '강아지와의 산책, \n즐거움과 함께 보상도 누리세요!', index: 2),
+                          onboarding(content: '쉽고 빠르게! 산책 메이트를 찾는\n가장 쉬운 방법, 같이걷개', index: 3),
                         ],
-                        indicator: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Palette.green6
-                        ),
-                        overlayColor: const WidgetStatePropertyAll(
-                            Colors.transparent
-                        ),
-                        indicatorWeight: 0.1,
-                        dividerColor: Colors.transparent,
-                        indicatorSize: TabBarIndicatorSize.tab,
                       ),
                     ],
-                  ),
-                ),
-              ),
-              TabBarView(
-                controller: _tabController,
-                children: [
-                  onboarding(content: '우리 강아지를 위한\n최고의 산책 메이트를 만나보세요.', index: 1),
-                  onboarding(content: '강아지와의 산책, \n즐거움과 함께 보상도 누리세요!', index: 2),
-                  onboarding(content: '쉽고 빠르게! 산책 메이트를 찾는\n가장 쉬운 방법, 같이걷개', index: 3),
-                ],
-              ),
-            ],
+                  );
+                }
+            },
           ),
         )
     );

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dog/main.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
@@ -10,6 +11,7 @@ import 'package:dog/src/dto/my_walk_schedule_dto.dart';
 import 'package:dog/src/dto/my_walking_dto.dart';
 import 'package:dog/src/provider/mode_provider.dart';
 import 'package:dog/src/repository/my_walk_repository.dart';
+import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/util/loading_util.dart';
@@ -63,37 +65,37 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   }
 
   Widget ownerMyWalk() {
-    return Column(
-      children: [
-        topInfo(text: '산책일정'),
-        Expanded(
-          child: Container(
-              color: const Color(0xFFF2F2F2),
-              child: FutureBuilder<MyWalkScheduleDTO>(
-                  future: getMyWalkSchedule(),
-                  builder: (BuildContext context, AsyncSnapshot<MyWalkScheduleDTO> snapshot) {
-                    if (snapshot.hasData) {
-                      final MyWalkScheduleDTO? data = snapshot.data;
-          
-                      if (data!.content.isNotEmpty) {
-                        return ListView.builder(
+    return Expanded(
+      child: Container(
+          color: const Color(0xFFF2F2F2),
+          child: FutureBuilder<MyWalkScheduleDTO>(
+              future: getMyWalkSchedule(),
+              builder: (BuildContext context, AsyncSnapshot<MyWalkScheduleDTO> snapshot) {
+                if (snapshot.hasData) {
+                  final MyWalkScheduleDTO? data = snapshot.data;
+
+                  if (data!.content.isNotEmpty) {
+                    return Column(
+                      children: [
+                        topInfo(text: '산책일정'),
+                        ListView.builder(
                             padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
                             itemCount: data.content.length,
                             itemBuilder: (context, index) {
                               return myWalkScheduleItem(profile: data.content[index]);
                             }
-                        );
-                      } else {
-                        return Text('산책 일정이 없어요');
-                      }
-                    } else {
-                      return const LoadingUtil();
-                    }
+                        ),
+                      ],
+                    );
+                  } else {
+                    return emptyWalk(mode: 'ownerSchedule');
                   }
-              ),
+                } else {
+                  return const LoadingUtil();
+                }
+              }
           ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -239,37 +241,37 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   }
 
   Widget ownerMatchWalk() {
-    return Column(
-      children: [
-        topInfo(text: '내가 쓴 글'),
-        Expanded(
-          child: Container(
-            color: const Color(0xFFF2F2F2),
-            child: FutureBuilder<MyWalkingDto>(
-                future: getMyWalkList(),
-                builder: (BuildContext context, AsyncSnapshot<MyWalkingDto> snapshot) {
-                  if (snapshot.hasData) {
-                    final MyWalkingDto? data = snapshot.data;
+    return Expanded(
+      child: Container(
+        color: const Color(0xFFF2F2F2),
+        child: FutureBuilder<MyWalkingDto>(
+            future: getMyWalkList(),
+            builder: (BuildContext context, AsyncSnapshot<MyWalkingDto> snapshot) {
+              if (snapshot.hasData) {
+                final MyWalkingDto? data = snapshot.data;
 
-                    if (data!.content.isNotEmpty) {
-                      return ListView.builder(
+                if (data!.content.isNotEmpty) {
+                  return Column(
+                    children: [
+                      topInfo(text: '내가 쓴 글'),
+                      ListView.builder(
                           padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
                           itemCount: data.content.length,
                           itemBuilder: (context, index) {
                             return wroteMyWalkItem(profile: data.content[index]);
                           }
-                      );
-                    } else {
-                      return Text('산책 일정이 없어요');
-                    }
-                  } else {
-                    return const LoadingUtil();
-                  }
+                      ),
+                    ],
+                  );
+                } else {
+                  return emptyWalk(mode: 'ownerWrote');
                 }
-            ),
-          ),
+              } else {
+                return const LoadingUtil();
+              }
+            }
         ),
-      ],
+      ),
     );
   }
 
@@ -394,38 +396,38 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   }
 
   Widget walkerMyWalk() {
-    return Column(
-      children: [
-        topInfo(text: '산책일정'),
-        Expanded(
-          child: Container(
-            color: const Color(0xFFF2F2F2),
-            child: FutureBuilder(
-                future: myWalkList,
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
-                    final List<DogProfileDTO> data = snapshot.data;
+    return Expanded(
+      child: Container(
+        color: const Color(0xFFF2F2F2),
+        child: FutureBuilder(
+            future: myWalkList,
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                final List<DogProfileDTO> data = snapshot.data;
 
-                    if (data.isNotEmpty) {
-                      return ListView.builder(
+                if (data.isNotEmpty) {
+                  return Column(
+                    children: [
+                      topInfo(text: '산책일정'),
+                      ListView.builder(
                           padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
                           itemCount: data.length,
                           itemBuilder: (context, index) {
                             // return walkScheduleItem(profile: data[index]);
                             return SizedBox();
                           }
-                      );
-                    } else {
-                      return Text('산책 일정이 없어요');
-                    }
-                  } else {
-                    return const LoadingUtil();
-                  }
+                      ),
+                    ],
+                  );
+                } else {
+                  return emptyWalk(mode: 'mateSchedule');
                 }
-            ),
-          ),
+              } else {
+                return const LoadingUtil();
+              }
+            }
         ),
-      ],
+      ),
     );
   }
 
@@ -435,6 +437,7 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
     return Container(
         width: 1.sw,
         height: 50.h,
+        color: Colors.white,
         alignment: Alignment.centerLeft,
         padding: EdgeInsets.only(left: 16.w),
         child: Text(
@@ -446,6 +449,61 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
             fontWeight: FontWeight.w600,
           ),
         )
+    );
+  }
+
+  Widget emptyWalk({
+    required String mode
+  }) {
+    String mainText = '';
+    String subText = '';
+
+    switch (mode) {
+      case 'ownerSchedule':
+      case 'ownerWrote':
+        mainText = '아직 멍뭉이의 산책 일정이 없어요';
+        subText = '산책 일정을 등록하고 산책메이트를 찾아보세요!';
+        break;
+      case 'mateSchedule':
+        mainText = '아직 멍뭉이의 산책 일정이 없어요';
+        subText = '산책 일정을 확인하고 멍뭉이 메이트를 찾아보세요!';
+    }
+
+    return Container(
+      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            mainText,
+            style: TextStyle(
+              color: Palette.darkFont4,
+              fontSize: 12.sp,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(height: 20.h),
+          Text(
+            subText,
+            style: TextStyle(
+              color: Palette.darkFont2,
+              fontSize: 12.sp,
+              fontFamily: 'Pretendard',
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 70.h),
+          ButtonUtil(
+              width: 343.w,
+              height: 55.h,
+              title: '산책 일정 등록하기',
+              onTap: () {
+
+              }
+          ).filledButton1m(),
+        ],
+      ),
     );
   }
 
