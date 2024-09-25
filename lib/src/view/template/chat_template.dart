@@ -89,6 +89,13 @@ class _ChatTemplateState extends State<ChatTemplate> {
   late List<Map<String, dynamic>> rList;
 
   @override
+  void dispose() {
+    scrollController.dispose();
+    chatController.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     rList = test.reversed.toList();
     super.initState();

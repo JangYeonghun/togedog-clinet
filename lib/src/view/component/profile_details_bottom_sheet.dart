@@ -1,4 +1,5 @@
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/user_profile_dto.dart';
 import 'package:dog/src/util/hash_tag_util.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +7,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfileDetailsBottomSheet extends StatelessWidget {
   final String type;
-  final List hashTag;
-  final Map<String, String> profileData;
+  final UserProfileDTO userProfileDTO;
 
   const ProfileDetailsBottomSheet({
     super.key,
     required this.type,
-    required this.hashTag,
-    required this.profileData,
+    required this.userProfileDTO
   });
 
   @override
@@ -57,18 +56,18 @@ class ProfileDetailsBottomSheet extends StatelessWidget {
   }
 
   Widget _profileFrontSide() {
+    final Map<String, dynamic> preference = userProfileDTO.preferred;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        HashTagUtil(hashTag: hashTag),
+        HashTagUtil(hashTag: preference['hashTag']),
         SizedBox(height: 32.h),
-        _buildProfileInfoItem('산책 가능 시간', profileData['walkTime'] ?? ''),
-        _buildProfileInfoItem('선호 지역', profileData['preferredArea'] ?? ''),
-        _buildProfileInfoItem('선호 시간', profileData['preferredTime'] ?? ''),
+        _buildProfileInfoItem('산책 가능 시간', (preference['time'].toString() ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
+        _buildProfileInfoItem('선호 시간', (preference['time'].toString() ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
         horizontalDivider(margin: 0),
         SizedBox(height: 14.h),
-        _buildProfileInfoItem('선호 견종 크기', profileData['preferredDogSize'] ?? ''),
-        _buildProfileInfoItem('동반 가능한 반려견 수', profileData['companionDogCount'] ?? ''),
+        _buildProfileInfoItem('선호 견종 크기', (preference['breed'] ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
+        _buildProfileInfoItem('동반 가능한 반려견 수', (preference['accommodatableDogsCount'] ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
       ],
     );
   }
@@ -88,7 +87,7 @@ class ProfileDetailsBottomSheet extends StatelessWidget {
         ),
         horizontalDivider(margin: 14.h),
         Text(
-          profileData['experience'] ?? '',
+          userProfileDTO.career ?? '',
           style: TextStyle(
             color: Palette.darkFont4,
             fontSize: 12.sp,

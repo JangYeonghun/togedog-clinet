@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:dog/src/dto/user_profile_dto.dart';
 import 'package:dog/src/view/component/walking/profile_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:transition/transition.dart';
@@ -6,23 +7,13 @@ import 'package:transition/transition.dart';
 class ProfileGridItem extends StatelessWidget {
   final double width;
   final double height;
-  final int id;
-  final String nickname;
-  final String gender;
-  final int age;
-  final String location;
-  final String imgUrl;
+  final UserProfileDTO userProfileDTO;
 
   const ProfileGridItem({
       super.key,
       required this.width,
       required this.height,
-      required this.id,
-      required this.nickname,
-      required this.gender,
-      required this.age,
-      required this.location,
-      required this.imgUrl
+      required this.userProfileDTO
   });
 
   Widget textContent({required String title, required String content}) {
@@ -50,7 +41,7 @@ class ProfileGridItem extends StatelessWidget {
         Navigator.push(
             context,
             Transition(
-              child: ProfileDetail(id: id - 1),
+              child: ProfileDetail(userProfileDTO: userProfileDTO),
               transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
             ),
         );
@@ -64,7 +55,7 @@ class ProfileGridItem extends StatelessWidget {
                 child: SizedBox(
                     width: width,
                     height: height,
-                    child: CachedNetworkImage(fit: BoxFit.cover, imageUrl: imgUrl)
+                    child: CachedNetworkImage(fit: BoxFit.cover, imageUrl: userProfileDTO.profileImage)
                 )
             ),
             Padding(
@@ -75,12 +66,12 @@ class ProfileGridItem extends StatelessWidget {
                   children: [
                     textContent(
                         title: '닉네임 ',
-                        content: '$nickname(만 $age세, $gender)'
+                        content: '${userProfileDTO.nickname}(만 ${userProfileDTO.age}세, ${userProfileDTO.gender})'
                     ),
                     const SizedBox(height: 5),
                     textContent(
                         title: '선호 장소/위치 ',
-                        content: location
+                        content: userProfileDTO.region
                     )
                   ]
                 )
