@@ -7,7 +7,6 @@ class UserProfileRegisterDto {
   final int accommodatableDogsCount;
   final String career;
   final Map<String, dynamic> preferredDetails;
-  final String region;
   final XFile? profileImage;
   
   const UserProfileRegisterDto({
@@ -17,7 +16,6 @@ class UserProfileRegisterDto {
     required this.accommodatableDogsCount,
     required this.career,
     required this.preferredDetails,
-    required this.region,
     required this.profileImage
   });
 }

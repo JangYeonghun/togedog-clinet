@@ -15,11 +15,18 @@ class TextInputUtil {
 
   InputDecoration inputDecoration({
     required String hintText,
-    required
+    String? errorText
   }) {
     return InputDecoration(
       counterText: '',
       hintText: hintText,
+      errorText: errorText,
+      errorStyle: TextStyle(
+        color: const Color(0xFFF30000),
+        fontSize: 10.sp,
+        fontFamily: 'Pretendard',
+        fontWeight: FontWeight.w400
+      ),
       hintStyle: TextStyle(
           color: Palette.darkFont2,
           fontSize: 12.sp,
@@ -43,7 +50,25 @@ class TextInputUtil {
           color: Palette.green6,
           width: 1,
         ),
-      )
+      ),
+      errorBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+        borderSide: BorderSide(
+          color: Color(0xFFF64040),
+          width: 1,
+        )
+      ),
+      focusedErrorBorder: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+        borderSide: BorderSide(
+          color: Color(0xFFF64040),
+          width: 1,
+        )
+      ),
     );
   }
 

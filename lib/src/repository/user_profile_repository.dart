@@ -60,8 +60,7 @@ class UserProfileRepository extends API {
               'phoneNumber' : dto.phoneNumber,
               'accommodatableDogsCount' : dto.accommodatableDogsCount,
               'career' : dto.career,
-              'preferredDetails' : dto.preferredDetails,
-              'region' : dto.region
+              'preferredDetails' : dto.preferredDetails
             });
 
           if (dto.profileImage != null) {
@@ -109,8 +108,7 @@ class UserProfileRepository extends API {
             'phoneNumber' : dto.phoneNumber,
             'accommodatableDogsCount' : dto.accommodatableDogsCount,
             'career' : dto.career,
-            'preferredDetails' : dto.preferredDetails,
-            'region' : dto.region
+            'preferredDetails' : dto.preferredDetails
           });
 
         if (dto.profileImage != null) {

@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/user_profile_register_dto.dart';
+import 'package:dog/src/model/preference.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
@@ -33,84 +35,41 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   final TextEditingController ageController = TextEditingController();
   final UserProfileRepository userProfileRepository = UserProfileRepository();
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
+  List<dynamic> weeks = [];
+  List<dynamic> times = [];
+  List<dynamic> dogTypes = [];
   late DateTime birth;
   bool isAgeEditing = true;
+  bool isValidNickname = true;
   String? selectedLocation;
+  String? errorMsg;
   List<String> hashTags = [];
   XFile? profileImage;
   int isMale = 1;
   int pageIndex = 0;
-  List<Map<String, dynamic>> dogSizePreference = [
-    {
-      'name' : '소형견',
-      'prefer' : false
-    },
-    {
-      'name' : '중형견',
-      'prefer' : false
-    },
-    {
-      'name' : '대형견',
-      'prefer' : false
-    },
-    {
-      'name' : '초대형견',
-      'prefer' : false
-    }
+  List<Preference> dogSizePreference = [
+    Preference(name: '소형견', value: false),
+    Preference(name: '중형견', value: false),
+    Preference(name: '대형견', value: false),
+    Preference(name: '초형견', value: false)
   ];
 
-  List<Map<String, dynamic>> dayPreference = [
-    {
-      'name' : '월',
-      'prefer' : false
-    },
-    {
-      'name' : '화',
-      'prefer' : false
-    },
-    {
-      'name' : '수',
-      'prefer' : false
-    },
-    {
-      'name' : '목',
-      'prefer' : false
-    },
-    {
-      'name' : '금',
-      'prefer' : false
-    },
-    {
-      'name' : '토',
-      'prefer' : false
-    },
-    {
-      'name' : '일',
-      'prefer' : false
-    }
+  List<Preference> dayPreference = [
+    Preference(name: '월', value: false),
+    Preference(name: '화', value: false),
+    Preference(name: '수', value: false),
+    Preference(name: '목', value: false),
+    Preference(name: '금', value: false),
+    Preference(name: '토', value: false),
+    Preference(name: '일', value: false)
   ];
 
-  List<Map<String, dynamic>> timePreference = [
-    {
-      'name' : '아침',
-      'prefer' : false
-    },
-    {
-      'name' : '오전',
-      'prefer' : false
-    },
-    {
-      'name' : '오후',
-      'prefer' : false
-    },
-    {
-      'name' : '저녁',
-      'prefer' : false
-    },
-    {
-      'name' : '새벽',
-      'prefer' : false
-    }
+  List<Preference> timePreference = [
+    Preference(name: '아침', value: false),
+    Preference(name: '오전', value: false),
+    Preference(name: '오후', value: false),
+    Preference(name: '저녁', value: false),
+    Preference(name: '새벽', value: false)
   ];
 
   Widget profileUpload() {
@@ -155,7 +114,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   }
 
   Widget preferenceSelection({
-    required List<Map<String, dynamic>> preference,
+    required List<Preference> preference,
     required double height,
     required int gap,
     int? maxSelection,
@@ -172,19 +131,19 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           return GestureDetector(
             onTap: () {
               if (maxSelection != null) {
-                if (e['prefer'] == false) {
-                  final int selectedAmount = preference.where((item) => item['prefer'] == true).length;
+                if (e.value == false) {
+                  final int selectedAmount = preference.where((item) => item.value== true).length;
                   debugPrint('선택수: $selectedAmount');
                   if (selectedAmount < maxSelection) {
-                    setState(() => e['prefer'] = !e['prefer']);
+                    setState(() => e.value = !e.value);
                   } else {
                     // 갯수 초과 콜백
                   }
                 } else {
-                  setState(() => e['prefer'] = !e['prefer']);
+                  setState(() => e.value = !e.value);
                 }
               } else {
-                setState(() => e['prefer'] = !e['prefer']);
+                setState(() => e.value = !e.value);
               }
             },
             child: Container(
@@ -192,13 +151,13 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               height: height,
               decoration: BoxDecoration(
                   borderRadius: borderRadius,
-                  border: Border.all(width: 1, color: e['prefer'] ? Palette.green6 : Palette.outlinedButton1)
+                  border: Border.all(width: 1, color: e.value ? Palette.green6 : Palette.outlinedButton1)
               ),
               alignment: Alignment.center,
               child: Text(
-                e['name'],
+                e.name,
                 style: TextStyle(
-                  color: e['prefer'] ? Colors.black : Palette.darkFont2,
+                  color: e.value ? Colors.black : Palette.darkFont2,
                   fontSize: 12,
                   fontFamily: 'Pretendard',
                   fontWeight: FontWeight.w600
@@ -211,7 +170,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     );
   }
 
-  Widget nextButton({bool isFilled = true}) {
+  Widget nextButton({bool isFilled = true, Function? func}) {
     return Container(
       margin: EdgeInsets.only(bottom: 36.h),
       alignment: Alignment.center,
@@ -220,6 +179,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           height: (deviceWidth - 40) / 335 * 55,
           title: '다음',
           onTap: () {
+            func?.call();
             if (isFilled) {
               setState(() {
                 pageIndex += 1;
@@ -305,9 +265,11 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
                 if (ymd.length > 8) {
                   ageController.text = ageController.text.substring(0, ageController.text.length - 1);
                   isAgeEditing = false;
+                  FocusScope.of(context).unfocus();
                   birth = DateTime.parse(ageController.text);
                 } else if (ymd.length == 8) {
                   isAgeEditing = false;
+                  FocusScope.of(context).unfocus();
                   birth = DateTime.parse(ymd);
                 }
               });
@@ -444,11 +406,37 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     });
   }
 
+  void checkNickname() {
+    if (nicknameController.text.isEmpty) {
+      ToastPopupUtil.error(context: context, content: '닉네임을 입력해주세요.');
+    } else {
+
+      userProfileRepository.checkNicknameDuplication(context: context, nickname: nicknameController.text).then((response) {
+        if (response.statusCode ~/ 100 == 2) {
+
+          isValidNickname = jsonDecode(response.body)['flag'] == "true";
+
+          if (isValidNickname) {
+            setState(() {
+              errorMsg = null;
+            });
+            ToastPopupUtil.notice(context: context, content: '사용가능한 닉네임입니다.');
+          } else {
+            errorMsg = '중복된 닉네입니다';
+            ToastPopupUtil.error(context: context, content: '이미 사용중인 닉네임입니다.');
+          }
+
+        }
+      });
+
+    }
+  }
+
   Widget nicknameInputBox() {
     return Padding(
       padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16),
       child: Stack(
-        alignment: Alignment.centerRight,
+        alignment: Alignment.topRight,
         children: [
           TextField(
             controller: nicknameController,
@@ -456,30 +444,30 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
             style: TextInputUtil().textStyle,
             maxLength: 10,
             keyboardType: TextInputType.text,
-            decoration: TextInputUtil().inputDecoration(hintText: '닉네임을 입력하세요')
+            decoration: TextInputUtil().inputDecoration(
+              hintText: '닉네임을 입력하세요',
+              errorText: errorMsg
+            )
           ),
-          GestureDetector(
-            onTap: () {
-              userProfileRepository.checkNicknameDuplication(context: context, nickname: nicknameController.text).then((response) {
-                if (response.statusCode ~/ 100 == 2) {
-                  ToastPopupUtil.notice(context: context, content: '사용가능한 닉네임입니다.');
-                }
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(200),
-                border: Border.all(width: 1, color: Palette.green6),
-              ),
-              padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
-              margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: const Text(
-                '중복확인',
-                style: TextStyle(
-                  color: Color(0xFF00DB97),
-                  fontSize: 12,
-                  fontFamily: 'Pretendard',
-                  fontWeight: FontWeight.w400
+          Positioned(
+            top: 8.5,
+            child: GestureDetector(
+              onTap: () => checkNickname(),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(200),
+                  border: Border.all(width: 1, color: Palette.green6),
+                ),
+                padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+                margin: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                child: const Text(
+                  '중복확인',
+                  style: TextStyle(
+                    color: Color(0xFF00DB97),
+                    fontSize: 12,
+                    fontFamily: 'Pretendard',
+                    fontWeight: FontWeight.w400
+                  ),
                 ),
               ),
             ),
@@ -573,7 +561,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           ],
         ),
         nextButton(
-          isFilled: nicknameController.text.isNotEmpty && ageController.text.isNotEmpty
+          isFilled: nicknameController.text.isNotEmpty && ageController.text.isNotEmpty && profileImage != null
         )
       ],
     );
@@ -606,7 +594,13 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
             hashTagList(),
           ],
         ),
-        nextButton()
+        nextButton(
+          func: () {
+            dogTypes = dogSizePreference.map((e) => e.value ? e.name : '').toList();
+            dogTypes.removeWhere((e) => e == '');
+          },
+          isFilled: phoneController.text.isNotEmpty && experienceController.text.isNotEmpty && dogTypes.isNotEmpty && hashTags.isNotEmpty
+        )
       ],
     );
   }
@@ -635,7 +629,16 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               height: (deviceWidth - 40) / 335 * 55,
               title: '완료',
               onTap: () {
-                sendRequest();
+                weeks = dayPreference.map((e) => e.value ? '${e.name}요일' : '').toList();
+                weeks.removeWhere((e) => e == '');
+                times = timePreference.map((e) => e.value ? e.name : '').toList();
+                times.removeWhere((e) => e == '');
+
+                if (weeks.isNotEmpty && times.isNotEmpty && selectedLocation != null) {
+                  sendRequest();
+                } else {
+                  ToastPopupUtil.error(context: context, content: '정보를 모두 입력하세요.');
+                }
               }
           ).filledButton1m(),
         )
@@ -643,15 +646,9 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     );
   }
 
-  Future<void> sendRequest() async {
-    List<dynamic> weeks = dayPreference.map((e) => e['prefer'] ? '${e['name']}요일' : '').toList();
-    weeks.removeWhere((e) => e == '');
-    List<dynamic> times = timePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
-    times.removeWhere((e) => e == '');
-    List<dynamic> dogTypes = dogSizePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
-    dogTypes.removeWhere((e) => e == '');
+  void sendRequest() async {
 
-    await userProfileRepository.register(
+    userProfileRepository.register(
         context: context,
         dto: UserProfileRegisterDto(
             nickname: nicknameController.text,
@@ -663,12 +660,14 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               'weeks' : weeks,
               'times' : times,
               'hashTag' : hashTags,
-              'dogTypes' : dogTypes
+              'dogTypes' : dogTypes,
+              'region' : selectedLocation ?? '',
             },
-            region: selectedLocation ?? '',
             profileImage: profileImage
         )
-    );
+    ).then((response) {
+      Navigator.pop(context, response.statusCode);
+    });
   }
   
   Widget walkerRegister() {

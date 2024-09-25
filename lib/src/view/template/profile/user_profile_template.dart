@@ -93,7 +93,13 @@ class _UserProfileTemplateState extends State<UserProfileTemplate> {
                       transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
                       child: const UserRegisterTemplate()
                   )
-              )
+              ).then((result) {
+                if (result ~/ 100 == 2) {
+                  setState(() {
+                    userProfile = getMateProfiles();
+                  });
+                }
+              })
           ).filledButton1m()
         ],
       ),
