@@ -5,7 +5,6 @@ import 'package:http/http.dart';
 
 class AuthRepository {
   final String domain = GlobalVariables.domain;
-  final int port = GlobalVariables.port;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   Future<bool> reissueToken() async {

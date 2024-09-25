@@ -8,7 +8,6 @@ import 'package:http/http.dart';
 
 class API {
   final String domain = GlobalVariables.domain;
-  final int port = GlobalVariables.port;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   int retry = 0;
   int backoffDelay = 2;

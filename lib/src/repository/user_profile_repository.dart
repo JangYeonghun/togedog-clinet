@@ -15,7 +15,7 @@ class UserProfileRepository extends API {
     return api(
       context: context,
       func: (accessToken) => get(
-          Uri.http('$domain:$port', '/api/v1/mate'),
+          Uri.https(domain, '/api/v1/mate'),
           headers: <String, String> {
             'Content-type' : 'application/json',
             'Authorization' : 'Bearer $accessToken'
@@ -30,7 +30,7 @@ class UserProfileRepository extends API {
     return api(
         context: context,
         func: (accessToken) => delete(
-            Uri.http('$domain:$port', '/api/v1/mate'),
+            Uri.https(domain, '/api/v1/mate'),
             headers: <String, String> {
               'Content-type' : 'application/json',
               'Authorization' : 'Bearer $accessToken'
@@ -48,7 +48,7 @@ class UserProfileRepository extends API {
         func: (accessToken) async {
           MultipartRequest request = MultipartRequest(
               'PATCH',
-              Uri.http('$domain:$port', 'api/v1/mate')
+              Uri.https(domain, 'api/v1/mate')
           )
             ..headers.addAll({
               "Content-Type": "multipart/form-data",
