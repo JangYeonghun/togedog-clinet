@@ -97,7 +97,7 @@ class UserProfileRepository extends API {
       func: (accessToken) async {
         MultipartRequest request = MultipartRequest(
             'POST',
-            Uri.http('$domain:$port', 'api/v1/mate')
+            Uri.https(domain, 'api/v1/mate')
         )
           ..headers.addAll({
             "Content-Type": "multipart/form-data",
@@ -144,7 +144,7 @@ class UserProfileRepository extends API {
     return api(
       context: context,
       func: (accessToken) => get(
-          Uri.http('$domain:$port', '/api/v1/mate/$nickname'),
+          Uri.https(domain, '/api/v1/mate/$nickname'),
           headers: <String, String> {
             'Content-type' : 'application/json',
             'Authorization' : 'Bearer $accessToken'

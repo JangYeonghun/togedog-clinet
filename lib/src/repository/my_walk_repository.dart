@@ -11,7 +11,7 @@ class MyWalkRepository extends API {
     return api(
       context: context,
       func: (accessToken) => get(
-          Uri.http('$domain:$port', '/api/v1/owner/mySchedule'),
+          Uri.https(domain, '/api/v1/owner/mySchedule'),
           headers: <String, String> {
             'Content-type': 'application/json',
             'Authorization': 'Bearer $accessToken'
@@ -26,7 +26,7 @@ class MyWalkRepository extends API {
     return api(
       context: context,
       func: (accessToken) => get(
-          Uri.http('$domain:$port', '/api/v1/owner/myWalking'),
+          Uri.https(domain, '/api/v1/owner/myWalking'),
           headers: <String, String> {
             'Content-type': 'application/json',
             'Authorization': 'Bearer $accessToken'
