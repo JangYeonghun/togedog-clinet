@@ -34,11 +34,8 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
   Future<bool> checkAccessToken() async {
     final accessToken = await storage.read(key: 'accessToken');
-    debugPrint('궯2: $accessToken, $mounted');
     FlutterNativeSplash.remove();
-    debugPrint('궯21111: $accessToken, $mounted');
     if (accessToken != null) {
-      debugPrint('궯22222: $accessToken, $mounted');
       return true;
     } else {
       await initAppLinks();
@@ -47,8 +44,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   }
 
   Future<void> initAppLinks() async {
-    debugPrint('궯궯: $isLogout, $mounted');
-
     if (isLogout) {
       _appLinks = null;
       isLogout = false;
@@ -59,7 +54,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
     // 앱이 실행 중일 때
     _uriSubscription = _appLinks?.uriLinkStream.listen((Uri? uri) {
-      debugPrint('궯3: $uri, $mounted');
       if (uri != null) {
         _handleIncomingLink(uri);
       }
@@ -68,7 +62,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
     // 앱이 종료 되었을 때
     final appLinkUri = await _appLinks?.getInitialLink();
-    debugPrint('궯4: $appLinkUri, $mounted');
     if (appLinkUri != null) {
       _handleIncomingLink(appLinkUri);
     }
@@ -84,7 +77,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
         await storage.write(key: 'refreshToken', value: refreshToken);
         debugPrint('Access Token: $accessToken');
         debugPrint('Refresh Token: $refreshToken');
-        debugPrint('궯233333: $mounted');
         setState(() {}); // Trigger a rebuild to check the access token again
       }
     }
