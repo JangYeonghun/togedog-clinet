@@ -168,25 +168,8 @@ class _MenuTemplateState extends State<MenuTemplate> {
   //테스뚜버튼~~
   Widget testButton() {
     return InkWell(
-      onTap: () async {
-        await getImage(imageSource: ImageSource.gallery);
-
-        await DogProfileRepository().register(
-          context: context,
-          dto: DogProfileRegisterDTO(
-              name: '댕댕',
-              breed: '아키타',
-              neutered: true,
-              dogGender: true,
-              weight: 2.0,
-              region: '인천',
-              notes: '으으음',
-              tags: ['피자', '라'],
-              vaccine: false,
-              age: 5,
-              file: profileImage
-          )
-        );
+      onTap: () {
+        storage.read(key: 'accessToken').then((accessToken) => debugPrint("\n\n\naccessToken: $accessToken\n\n\n"));
       },
       child: const Text(
         'TEST',

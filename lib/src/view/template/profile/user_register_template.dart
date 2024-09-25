@@ -5,6 +5,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/user_profile_register_dto.dart';
+import 'package:dog/src/model/preference.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
@@ -46,77 +47,29 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   XFile? profileImage;
   int isMale = 1;
   int pageIndex = 0;
-  List<Map<String, dynamic>> dogSizePreference = [
-    {
-      'name' : '소형견',
-      'prefer' : false
-    },
-    {
-      'name' : '중형견',
-      'prefer' : false
-    },
-    {
-      'name' : '대형견',
-      'prefer' : false
-    },
-    {
-      'name' : '초대형견',
-      'prefer' : false
-    }
+  List<Preference> dogSizePreference = [
+    Preference(name: '소형견', value: false),
+    Preference(name: '중형견', value: false),
+    Preference(name: '대형견', value: false),
+    Preference(name: '초형견', value: false)
   ];
 
-  List<Map<String, dynamic>> dayPreference = [
-    {
-      'name' : '월',
-      'prefer' : false
-    },
-    {
-      'name' : '화',
-      'prefer' : false
-    },
-    {
-      'name' : '수',
-      'prefer' : false
-    },
-    {
-      'name' : '목',
-      'prefer' : false
-    },
-    {
-      'name' : '금',
-      'prefer' : false
-    },
-    {
-      'name' : '토',
-      'prefer' : false
-    },
-    {
-      'name' : '일',
-      'prefer' : false
-    }
+  List<Preference> dayPreference = [
+    Preference(name: '월', value: false),
+    Preference(name: '화', value: false),
+    Preference(name: '수', value: false),
+    Preference(name: '목', value: false),
+    Preference(name: '금', value: false),
+    Preference(name: '토', value: false),
+    Preference(name: '일', value: false)
   ];
 
-  List<Map<String, dynamic>> timePreference = [
-    {
-      'name' : '아침',
-      'prefer' : false
-    },
-    {
-      'name' : '오전',
-      'prefer' : false
-    },
-    {
-      'name' : '오후',
-      'prefer' : false
-    },
-    {
-      'name' : '저녁',
-      'prefer' : false
-    },
-    {
-      'name' : '새벽',
-      'prefer' : false
-    }
+  List<Preference> timePreference = [
+    Preference(name: '아침', value: false),
+    Preference(name: '오전', value: false),
+    Preference(name: '오후', value: false),
+    Preference(name: '저녁', value: false),
+    Preference(name: '새벽', value: false)
   ];
 
   Widget profileUpload() {
@@ -161,7 +114,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   }
 
   Widget preferenceSelection({
-    required List<Map<String, dynamic>> preference,
+    required List<Preference> preference,
     required double height,
     required int gap,
     int? maxSelection,
@@ -178,19 +131,19 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           return GestureDetector(
             onTap: () {
               if (maxSelection != null) {
-                if (e['prefer'] == false) {
-                  final int selectedAmount = preference.where((item) => item['prefer'] == true).length;
+                if (e.value == false) {
+                  final int selectedAmount = preference.where((item) => item.value== true).length;
                   debugPrint('선택수: $selectedAmount');
                   if (selectedAmount < maxSelection) {
-                    setState(() => e['prefer'] = !e['prefer']);
+                    setState(() => e.value = !e.value);
                   } else {
                     // 갯수 초과 콜백
                   }
                 } else {
-                  setState(() => e['prefer'] = !e['prefer']);
+                  setState(() => e.value = !e.value);
                 }
               } else {
-                setState(() => e['prefer'] = !e['prefer']);
+                setState(() => e.value = !e.value);
               }
             },
             child: Container(
@@ -198,13 +151,13 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               height: height,
               decoration: BoxDecoration(
                   borderRadius: borderRadius,
-                  border: Border.all(width: 1, color: e['prefer'] ? Palette.green6 : Palette.outlinedButton1)
+                  border: Border.all(width: 1, color: e.value ? Palette.green6 : Palette.outlinedButton1)
               ),
               alignment: Alignment.center,
               child: Text(
-                e['name'],
+                e.name,
                 style: TextStyle(
-                  color: e['prefer'] ? Colors.black : Palette.darkFont2,
+                  color: e.value ? Colors.black : Palette.darkFont2,
                   fontSize: 12,
                   fontFamily: 'Pretendard',
                   fontWeight: FontWeight.w600
@@ -312,9 +265,11 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
                 if (ymd.length > 8) {
                   ageController.text = ageController.text.substring(0, ageController.text.length - 1);
                   isAgeEditing = false;
+                  FocusScope.of(context).unfocus();
                   birth = DateTime.parse(ageController.text);
                 } else if (ymd.length == 8) {
                   isAgeEditing = false;
+                  FocusScope.of(context).unfocus();
                   birth = DateTime.parse(ymd);
                 }
               });
@@ -641,7 +596,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
         ),
         nextButton(
           func: () {
-            dogTypes = dogSizePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
+            dogTypes = dogSizePreference.map((e) => e.value ? e.name : '').toList();
             dogTypes.removeWhere((e) => e == '');
           },
           isFilled: phoneController.text.isNotEmpty && experienceController.text.isNotEmpty && dogTypes.isNotEmpty && hashTags.isNotEmpty
@@ -674,9 +629,9 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               height: (deviceWidth - 40) / 335 * 55,
               title: '완료',
               onTap: () {
-                weeks = dayPreference.map((e) => e['prefer'] ? '${e['name']}요일' : '').toList();
+                weeks = dayPreference.map((e) => e.value ? '${e.name}요일' : '').toList();
                 weeks.removeWhere((e) => e == '');
-                times = timePreference.map((e) => e['prefer'] ? e['name'] : '').toList();
+                times = timePreference.map((e) => e.value ? e.name : '').toList();
                 times.removeWhere((e) => e == '');
 
                 if (weeks.isNotEmpty && times.isNotEmpty && selectedLocation != null) {

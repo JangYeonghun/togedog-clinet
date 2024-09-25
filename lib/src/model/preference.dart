@@ -1,6 +1,6 @@
 class Preference {
-  final String name;
-  final bool value;
+  String name;
+  bool value;
 
-  const Preference({required this.name, required this.value});
+  Preference({required this.name, required this.value});
 }
