@@ -169,9 +169,9 @@ class _SlideTabState extends State<SlideTab> with SingleTickerProviderStateMixin
                       ],
                       indicatorSize: TabBarIndicatorSize.tab,
                       indicatorWeight: 0.1,
-                      indicator: BoxDecoration(
+                      indicator: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: mode ? Colors.white : Palette.outlinedButton3
+                          color: Colors.white
                       ),
                       dividerHeight: 0,
                     ),
