@@ -1,27 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 
-class ProfileListItem extends StatelessWidget {
-  final String imgUrl;
-  final String name;
-  final String gender;
-  final int age;
-  final String size;
-  final String species;
-  final String location;
+class HomeDogListItem extends StatelessWidget {
+  final DogProfileDTO dogProfileDTO;
 
-  const ProfileListItem({
-    super.key,
-    required this.imgUrl,
-    required this.name,
-    required this.gender,
-    required this.age,
-    required this.size,
-    required this.species,
-    required this.location
-  });
+  const HomeDogListItem({super.key, required this.dogProfileDTO});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +38,7 @@ class ProfileListItem extends StatelessWidget {
                       width: 53,
                       height: 53,
                       child: CachedNetworkImage(
-                          imageUrl: imgUrl,
+                          imageUrl: dogProfileDTO.dogImage,
                           fit: BoxFit.cover,
                       )
                   )
@@ -62,7 +48,7 @@ class ProfileListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name,
+                    dogProfileDTO.name,
                     style: const TextStyle(
                       color: Palette.darkFont4,
                       fontSize: 20,
@@ -72,7 +58,7 @@ class ProfileListItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   Text(
-                    '$gender | $age살 | $size | $species',
+                    '${dogProfileDTO.dogGender ? '수컷' : '암컷'} | ${dogProfileDTO.age}살 | ${dogProfileDTO.dogType} | ${dogProfileDTO.breed}',
                     style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -88,7 +74,7 @@ class ProfileListItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 62),
             child: Text(
-              location,
+              dogProfileDTO.region,
               style: const TextStyle(
                   color: Palette.darkFont2,
                   fontSize: 12,
