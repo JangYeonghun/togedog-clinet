@@ -133,7 +133,6 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
   Widget additionalInfo() {
     return Container(
       margin: EdgeInsets.only(top: deviceHeight * 0.51),
-      height: deviceHeight * 0.49,
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topRight: Radius.circular(60), topLeft: Radius.circular(60)),
           color: Colors.white
@@ -176,7 +175,6 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
   Widget dogNote() {
     return Container(
       margin: EdgeInsets.only(top: deviceHeight * 0.51),
-      height: deviceHeight * 0.49,
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topRight: Radius.circular(60), topLeft: Radius.circular(60)),
           color: Colors.white
@@ -219,7 +217,11 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     return Stack(
       fit: StackFit.expand,
       children: [
-        CachedNetworkImage(imageUrl: profile.dogImage, height: deviceHeight * 0.51, fit: BoxFit.cover),
+        CachedNetworkImage(
+          imageUrl: profile.dogImage,
+          height: deviceHeight * 0.51,
+          fit: BoxFit.cover
+        ),
         Stack(
           alignment: Alignment.center,
           children: [

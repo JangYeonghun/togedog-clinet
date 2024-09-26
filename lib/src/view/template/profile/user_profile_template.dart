@@ -117,7 +117,7 @@ class _UserProfileTemplateState extends State<UserProfileTemplate> {
                 final UserProfileDTO data = snapshot.data;
 
                 if (data.mateId != 0) {
-                  return const UserProfileDetailTemplate();
+                  return UserProfileDetailTemplate(userProfileDTO: data);
                 } else {
                   return emptyProfile();
                 }

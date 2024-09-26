@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/user_profile_dto.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileDetailTemplate extends StatefulWidget {
-  const UserProfileDetailTemplate({super.key});
+  final UserProfileDTO userProfileDTO;
+  const UserProfileDetailTemplate({super.key, required this.userProfileDTO});
 
   @override
   State<UserProfileDetailTemplate> createState() => _UserProfileDetailTemplateState();
@@ -13,12 +15,13 @@ class UserProfileDetailTemplate extends StatefulWidget {
 
 class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late Map<String, dynamic> userProfile;
+  late final UserProfileDTO userProfile;
   final double deviceHeight = GlobalVariables.height;
   final double deviceWidth = GlobalVariables.width;
 
   @override
   void initState() {
+    userProfile = widget.userProfileDTO;
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
@@ -78,7 +81,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
           Row(
             children: [
               Text(
-                userProfile['name'],
+                userProfile.nickname,
                 style: const TextStyle(
                     color: Palette.darkFont4,
                     fontSize: 20,
@@ -96,7 +99,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  '${userProfile['gender']} | 만 ${userProfile['age']}세',
+                  '${userProfile.gender} | 만 ${userProfile.age}세',
                   style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -110,7 +113,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
               Padding(
                 padding: const EdgeInsets.only(left: 2),
                 child: Text(
-                  userProfile['region'],
+                  userProfile.region,
                   style: const TextStyle(
                       color: Palette.darkFont2,
                       fontSize: 12,
@@ -128,8 +131,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
 
   Widget additionalInfo() {
     return Container(
-      margin: EdgeInsets.only(top: (deviceWidth - 28) / 347 * 143 - 46),
-      height: deviceHeight * 0.40,
+      margin: EdgeInsets.only(top: deviceHeight * 0.42),
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topRight: Radius.circular(60), topLeft: Radius.circular(60)),
           color: Colors.white
@@ -138,18 +140,18 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
       child: Column(
         children: [
           Row(
-            children: userProfile['hashTags'].map<Widget>((e) => hashTagItem(hashTag: e)).toList(),
+            children: userProfile.preferred['hashTag'].map<Widget>((e) => hashTagItem(hashTag: e)).toList(),
           ),
           const SizedBox(height: 25),
-          infoItem(title: '산책 가능 시간', content: userProfile['availableTimes'].join(', ')),
-          infoItem(title: '선호 지역', content: userProfile['preferences']['region'].join(', ')),
-          infoItem(title: '선호 시간', content: userProfile['preferences']['time'].join(', ')),
+          infoItem(title: '산책 가능 시간', content: userProfile.preferred['week'].join(', ')),
+          infoItem(title: '선호 지역', content: userProfile.region),
+          infoItem(title: '선호 시간', content: userProfile.preferred['time'].join(', ')),
           Padding(
             padding: const EdgeInsets.only(left: 3, right: 39),
             child: horizontalDivider(margin: 8)
           ),
-          infoItem(title: '선호 견종 크기', content: userProfile['preferences']['size'].join(', ')),
-          infoItem(title: '동반 가능한 반려견 수 ', content: '${userProfile['maxAllowedPets']}마리')
+          infoItem(title: '선호 견종 크기', content: userProfile.preferred['breed'].join(', ')),
+          infoItem(title: '동반 가능한 반려견 수 ', content: '${userProfile.accommodatableDogsCount}마리')
         ],
       ),
     );
@@ -177,19 +179,14 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
 
   Widget walkerProfileFront() {
     return Stack(
-      alignment: Alignment.bottomCenter,
+      fit: StackFit.expand,
       children: [
-        Positioned(
-          top: 0,
-          child: CachedNetworkImage(
-            imageUrl: userProfile['imgUrl'],
-            fit: BoxFit.cover,
-            height: deviceHeight * 0.5,
-            alignment: Alignment.topCenter,
-          ),
+        CachedNetworkImage(
+          imageUrl: userProfile.profileImage,
+          fit: BoxFit.cover
         ),
         Stack(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           children: [
             additionalInfo(),
             miniProfile()
@@ -201,8 +198,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
 
   Widget walkerNote() {
     return Container(
-      height: deviceHeight * 0.4,
-      margin: const EdgeInsets.only(top: 132),
+      margin: EdgeInsets.only(top: deviceHeight * 0.42),
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topRight: Radius.circular(60), topLeft: Radius.circular(60)),
           color: Colors.white
@@ -227,7 +223,7 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
           Padding(
             padding: const EdgeInsets.only(left: 2),
             child: Text(
-              userProfile['notes'],
+              userProfile.career,
               style: const TextStyle(
                 color: Palette.darkFont4,
                 fontSize: 12,
@@ -243,22 +239,18 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
 
   Widget walkerProfileBack() {
     return Stack(
-      alignment: Alignment.bottomCenter,
+      fit: StackFit.expand,
       children: [
-        Positioned(
-          top: 0,
-          child: CachedNetworkImage(
-            imageUrl: userProfile['imgUrl'],
-            fit: BoxFit.cover,
-            height: deviceHeight * 0.5,
-            alignment: Alignment.topCenter,
-          ),
+        CachedNetworkImage(
+          imageUrl: userProfile.profileImage,
+          fit: BoxFit.cover
         ),
         Stack(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           children: [
             walkerNote(),
             Container(
+                margin: EdgeInsets.only(bottom: deviceHeight * 0.05),
                 width: deviceWidth / 375 * 187,
                 height: deviceWidth / 375 * 187,
                 decoration: BoxDecoration(
@@ -267,18 +259,10 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(500),
-                    child: CachedNetworkImage(imageUrl: userProfile['imgUrl'], fit: BoxFit.cover)
+                    child: CachedNetworkImage(imageUrl: userProfile.profileImage, fit: BoxFit.cover)
                 )
             ),
           ],
-        ),
-        Positioned(
-          top: 50,
-          left: 8,
-          child: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.chevron_left_outlined, color: Colors.white, size: 40)
-          ),
         )
       ],
     );
