@@ -1,5 +1,4 @@
 import 'package:dog/src/dto/time_of_day_dto.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class WalkBoardDTO {
   final String title;

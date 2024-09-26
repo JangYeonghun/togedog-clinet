@@ -106,20 +106,6 @@ class _UserProfileTemplateState extends State<UserProfileTemplate> {
     );
   }
 
-  Widget mateProfiles() {
-    return FutureBuilder(
-        future: userProfile,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            final UserProfileDTO mateProfileDTO = snapshot.data;
-            return const LoadingUtil();
-          } else {
-            return const LoadingUtil();
-          }
-        }
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
