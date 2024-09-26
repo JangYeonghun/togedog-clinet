@@ -135,4 +135,24 @@ class DogProfileRepository extends API {
       )
     );
   }
+
+  Future<Response> getRandomDogs({
+    required BuildContext? context,
+    required int page,
+    required int size
+  }) {
+    return api(
+        context: context,
+        func: (accessToken) => get(
+            Uri.https(domain, '/api/v1/dog/random', {
+              'page' : page.toString(),
+              'size' : size.toString()
+            }),
+            headers: <String, String>{
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            },
+        )
+    );
+  }
 }

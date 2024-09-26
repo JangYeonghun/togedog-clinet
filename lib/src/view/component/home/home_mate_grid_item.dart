@@ -4,12 +4,12 @@ import 'package:dog/src/view/component/walking/profile_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:transition/transition.dart';
 
-class ProfileGridItem extends StatelessWidget {
+class HomeMateGridItem extends StatelessWidget {
   final double width;
   final double height;
   final UserProfileDTO userProfileDTO;
 
-  const ProfileGridItem({
+  const HomeMateGridItem({
       super.key,
       required this.width,
       required this.height,
