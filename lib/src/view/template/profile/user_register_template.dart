@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/user_profile_dto.dart';
 import 'package:dog/src/dto/user_profile_register_dto.dart';
 import 'package:dog/src/model/preference.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
@@ -20,7 +21,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserRegisterTemplate extends StatefulWidget {
-  const UserRegisterTemplate({super.key});
+  final UserProfileDTO? userProfileDTO;
+  const UserRegisterTemplate({super.key, this.userProfileDTO});
 
   @override
   State<UserRegisterTemplate> createState() => _UserRegisterTemplateState();
@@ -43,10 +45,11 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   bool isValidNickname = true;
   String? selectedLocation;
   String? errorMsg;
-  List<String> hashTags = [];
+  List<dynamic> hashTags = [];
   XFile? profileImage;
   int isMale = 1;
   int pageIndex = 0;
+  late final UserProfileDTO? userProfileDTO;
 
   List<Preference> dogSizePreference = [
     Preference(name: '소형견', value: false),
@@ -72,6 +75,38 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     Preference(name: '저녁', value: false),
     Preference(name: '새벽', value: false)
   ];
+  
+  @override
+  void initState() {
+    editProfileInit();
+    super.initState();
+  }
+
+  void editProfileInit() {
+    userProfileDTO = widget.userProfileDTO;
+    if (userProfileDTO != null) {
+      nicknameController.text = userProfileDTO!.nickname;
+      phoneController.text = userProfileDTO!.phonenumber;
+      experienceController.text = userProfileDTO!.career;
+      hashTags = userProfileDTO!.preferred['hashTag'];
+      isMale = userProfileDTO!.gender == '남성' ? 1 : 0;
+      ageController.text = userProfileDTO!.birth.toString().replaceAll('.', '');
+      birth = DateTime.parse(userProfileDTO!.birth.replaceAll('.', '-'));
+      final List<dynamic> weekList = userProfileDTO!.preferred['week'];
+      for (var e in dayPreference) {
+        e.value = weekList.contains('${e.name}요일');
+      }
+      final List<dynamic> timeList = userProfileDTO!.preferred['time'];
+      for (var e in timePreference) {
+        e.value = timeList.contains(e.name);
+      }
+      final List<dynamic> breedList = userProfileDTO!.preferred['breed'];
+      for (var e in dogSizePreference) {
+        e.value = breedList.contains(e.name);
+      }
+      //selectedLocation = userProfileDTO.region;
+    }
+  }
 
   @override
   void dispose() {
@@ -181,7 +216,8 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     );
   }
 
-  Widget nextButton({bool isFilled = true, Function? func}) {
+  Widget nextButton({required Function validFunc, Function? func}) {
+
     return Container(
       margin: EdgeInsets.only(bottom: 36.h),
       alignment: Alignment.center,
@@ -191,7 +227,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           title: '다음',
           onTap: () {
             func?.call();
-            if (isFilled) {
+            if (validFunc()) {
               setState(() {
                 pageIndex += 1;
               });
@@ -264,7 +300,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        isAgeEditing ? Padding(
+        isAgeEditing && userProfileDTO == null ? Padding(
           padding: const EdgeInsets.only(left: 16, top: 10, bottom: 9, right: 16),
           child: TextInputUtil().number(
             controller: ageController,
@@ -286,8 +322,8 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
               });
             }
           ),
-        ) : InkWell(
-          onTap: () => setState(() => isAgeEditing = true),
+        ) : GestureDetector(
+          onTap: () => userProfileDTO == null ? setState(() => isAgeEditing = true) : null,
           child: Container(
             margin: const EdgeInsets.only(left: 16, top: 10, bottom: 6),
             width: deviceWidth - 32,
@@ -572,7 +608,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           ],
         ),
         nextButton(
-          isFilled: nicknameController.text.isNotEmpty && ageController.text.isNotEmpty && profileImage != null
+          validFunc: () => nicknameController.text.isNotEmpty && ageController.text.isNotEmpty && profileImage != null
         )
       ],
     );
@@ -610,7 +646,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
             dogTypes = dogSizePreference.map((e) => e.value ? e.name : '').toList();
             dogTypes.removeWhere((e) => e == '');
           },
-          isFilled: phoneController.text.isNotEmpty && experienceController.text.isNotEmpty && dogTypes.isNotEmpty && hashTags.isNotEmpty
+          validFunc: () => phoneController.text.isNotEmpty && experienceController.text.isNotEmpty && dogTypes.isNotEmpty && hashTags.isNotEmpty
         )
       ],
     );
@@ -659,26 +695,49 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
 
   void sendRequest() async {
 
-    userProfileRepository.register(
-        context: context,
-        dto: UserProfileRegisterDto(
-            nickname: nicknameController.text,
-            userGender: isMale == 1 ? '남성' : '여성',
-            phoneNumber: phoneController.text,
-            accommodatableDogsCount: 1,
-            career: experienceController.text,
-            preferredDetails: {
-              'weeks' : weeks,
-              'times' : times,
-              'hashTag' : hashTags,
-              'dogTypes' : dogTypes,
-              'region' : selectedLocation ?? '',
-            },
-            profileImage: profileImage
-        )
-    ).then((response) {
-      Navigator.pop(context, response.statusCode);
-    });
+    if (userProfileDTO == null) {
+      userProfileRepository.register(
+          context: context,
+          dto: UserProfileRegisterDto(
+              nickname: nicknameController.text,
+              userGender: isMale == 1 ? '남성' : '여성',
+              phoneNumber: phoneController.text,
+              accommodatableDogsCount: 1,
+              career: experienceController.text,
+              preferredDetails: {
+                'weeks' : weeks,
+                'times' : times,
+                'hashTag' : hashTags,
+                'dogTypes' : dogTypes,
+                'region' : selectedLocation ?? '',
+              },
+              profileImage: profileImage
+          )
+      ).then((response) {
+        Navigator.pop(context, response.statusCode);
+      });
+    } else {
+      userProfileRepository.update(
+          context: context,
+          dto: UserProfileRegisterDto(
+              nickname: nicknameController.text,
+              userGender: isMale == 1 ? '남성' : '여성',
+              phoneNumber: phoneController.text,
+              accommodatableDogsCount: 1,
+              career: experienceController.text,
+              preferredDetails: {
+                'weeks' : weeks,
+                'times' : times,
+                'hashTag' : hashTags,
+                'dogTypes' : dogTypes,
+                'region' : selectedLocation ?? '',
+              },
+              profileImage: profileImage
+          )
+      ).then((response) {
+        Navigator.pop(context, response.statusCode);
+      });
+    }
   }
   
   Widget walkerRegister() {
