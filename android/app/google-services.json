@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "557224160415",
+    "project_id": "togedog-cf1ca",
+    "storage_bucket": "togedog-cf1ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557224160415:android:9d5d01e418d9bf722306aa",
+        "android_client_info": {
+          "package_name": "com.togedog.life"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcS7LXtjRKX6-DEe70E7FYV4iC0cRM80s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
