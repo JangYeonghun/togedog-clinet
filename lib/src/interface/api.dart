@@ -43,7 +43,8 @@ class API {
             if (response.statusCode == 401) {
               return _reissueToken().then((result) async {
                 if (result) {
-                  // 토큰 갱신 성공시 API 호출 재시도
+                  // 토큰 갱신 성공시 API 호출 재시도 및 토큰 재발급 관련 변수 초기화
+                  _resetReissueState();
                   return await api(func: (accessToken) => func(accessToken), context: context);
 
                 } else {
@@ -55,8 +56,6 @@ class API {
               });
 
             } else if (response.statusCode ~/ 100 == 2) {
-              // API 응답 성공시 토큰 재발급 관련 변수 초기화 및 응답 반환
-              _resetReissueState();
               return response;
 
             } else if (context != null) {
