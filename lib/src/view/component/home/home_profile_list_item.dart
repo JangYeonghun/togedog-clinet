@@ -28,7 +28,16 @@ class ProfileListItem extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white
+        border: Border.all(width: 1, color: Palette.outlinedButton1),
+        color: Colors.white,
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0C000000),
+            blurRadius: 8,
+            offset: Offset(0, 4),
+            spreadRadius: 0,
+          )
+        ],
       ),
       margin: const EdgeInsets.only(top: 6, bottom: 6),
       padding: const EdgeInsets.only(left: 16, right: 16, top: 25, bottom: 21),

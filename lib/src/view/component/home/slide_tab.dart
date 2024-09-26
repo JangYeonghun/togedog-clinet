@@ -105,7 +105,7 @@ class _SlideTabState extends State<SlideTab> with SingleTickerProviderStateMixin
         imgSrc: 'assets/images/home_dog_3.png',
         imgHeight: 188,
         imgPadding: const EdgeInsets.only(left: 195, top: 78),
-        fontColor: Palette.darkFont4
+        fontColor: Colors.white
     );
   }
 
@@ -115,7 +115,7 @@ class _SlideTabState extends State<SlideTab> with SingleTickerProviderStateMixin
         imgSrc: 'assets/images/home_dog_4.png',
         imgHeight: 181,
         imgPadding: const EdgeInsets.only(left: 157, top: 92),
-        fontColor: Palette.darkFont4
+        fontColor: Colors.white
     );
   }
 
@@ -157,8 +157,8 @@ class _SlideTabState extends State<SlideTab> with SingleTickerProviderStateMixin
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        tabCircle(color: mode ? Colors.white.withOpacity(0.5) : const Color(0x7F999999)),
-                        tabCircle(color: mode ? Colors.white.withOpacity(0.5) : const Color(0x7F999999))
+                        tabCircle(color: Colors.white.withOpacity(0.5)),
+                        tabCircle(color: Colors.white.withOpacity(0.5))
                       ],
                     ),
                     TabBar(

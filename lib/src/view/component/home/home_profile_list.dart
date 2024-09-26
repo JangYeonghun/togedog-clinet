@@ -51,7 +51,7 @@ class _ProfileListState extends State<ProfileList> {
     return Container(
       decoration: const BoxDecoration(
           borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-          color: Palette.green6
+          color: Colors.white
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +61,7 @@ class _ProfileListState extends State<ProfileList> {
             child: Text(
               '반려견 프로필 카드',
               style: TextStyle(
-                  color: Colors.white,
+                  color: Palette.darkFont4,
                   fontSize: 20,
                   fontFamily: 'Pretendard',
                   fontWeight: FontWeight.w600,
@@ -74,7 +74,7 @@ class _ProfileListState extends State<ProfileList> {
             child: Text(
               '나와 딱 맞는 반려견을 추천해드려요!',
               style: TextStyle(
-                  color: Colors.white,
+                  color: Palette.darkFont2,
                   fontSize: 12,
                   fontFamily: 'Pretendard',
                   fontWeight: FontWeight.w400,

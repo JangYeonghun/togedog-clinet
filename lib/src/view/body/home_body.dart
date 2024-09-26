@@ -35,7 +35,7 @@ class _HomeBodyState extends State<HomeBody> {
     return Stack(
       children: [
         Container(
-            color: Colors.white,
+            color: Palette.green6,
             padding: const EdgeInsets.only(top: 239),
             child: const ProfileList()
         ),
