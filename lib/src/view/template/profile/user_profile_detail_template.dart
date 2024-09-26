@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/user_profile_dto.dart';
+import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
+import 'package:dog/src/view/template/profile/user_register_template.dart';
 import 'package:flutter/material.dart';
+import 'package:transition/transition.dart';
 
 class UserProfileDetailTemplate extends StatefulWidget {
   final UserProfileDTO userProfileDTO;
@@ -15,7 +20,7 @@ class UserProfileDetailTemplate extends StatefulWidget {
 
 class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  late final UserProfileDTO userProfile;
+  late UserProfileDTO userProfile;
   final double deviceHeight = GlobalVariables.height;
   final double deviceWidth = GlobalVariables.width;
 
@@ -57,6 +62,28 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
     );
   }
 
+  void userProfileEditHandler() {
+    Navigator.push(
+        context,
+        Transition(
+            child: UserRegisterTemplate(userProfileDTO: userProfile),
+            transitionEffect: TransitionEffect.RIGHT_TO_LEFT
+        )
+    ).then((statusCode) async {
+      if (statusCode ~/ 100 == 2) {
+        UserProfileRepository().getProfile(context: context).then((response) {
+          if (response.statusCode ~/ 100 == 2) {
+            final json = jsonDecode(response.body);
+            userProfile = UserProfileDTO.fromJson(json);
+            setState(() {
+
+            });
+          }
+        });
+      }
+    });
+  }
+
   Widget miniProfile() {
     return Container(
       width: deviceWidth - 28,
@@ -90,7 +117,10 @@ class _UserProfileDetailTemplateState extends State<UserProfileDetailTemplate> w
                 ),
               ),
               const SizedBox(width: 13),
-              Image.asset('assets/images/edit_icon.png', width: 18, height: 18)
+              GestureDetector(
+                onTap: () => userProfileEditHandler(),
+                child: Image.asset('assets/images/edit_icon.png', width: 18, height: 18)
+              )
             ],
           ),
           Column(

@@ -9,6 +9,7 @@ class UserProfileDTO {
   final String profileImage;
   final int accommodatableDogsCount;
   final String career;
+  final String phonenumber;
 
   const UserProfileDTO({
     required this.mateId,
@@ -20,7 +21,8 @@ class UserProfileDTO {
     required this.region,
     required this.profileImage,
     required this.accommodatableDogsCount,
-    required this.career
+    required this.career,
+    required this.phonenumber
   });
 
   UserProfileDTO.fromJson(Map<String, dynamic> map) :
@@ -33,7 +35,8 @@ class UserProfileDTO {
       region = map['region'] ?? '',
       profileImage = map['profileImage'] ?? '',
       accommodatableDogsCount = map['accommodatableDogsCount'] ?? '',
-      career = map['career'] ?? '';
+      career = map['career'] ?? '',
+      phonenumber = map['phonenumber'] ?? '';
 
   UserProfileDTO.fromEmpty() :
       mateId = 0,
@@ -45,5 +48,6 @@ class UserProfileDTO {
       region = '',
       profileImage = '',
       accommodatableDogsCount = 0,
-      career = '';
+      career = '',
+      phonenumber = '';
 }
