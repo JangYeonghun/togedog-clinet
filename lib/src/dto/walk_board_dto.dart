@@ -6,11 +6,10 @@ class WalkBoardDTO {
   final String pickupLocation1;
   final double mapX;
   final double mapY;
-  final bool dogGender;
-  final int dogId;
-  final DateTime pickUpDay;
-  final TimeOfDayDTO startTime;
-  final TimeOfDayDTO endTime;
+  final List<int> dogIds;
+  final String pickUpDay;
+  final String startTime;
+  final String endTime;
   final String feeType;
   final int fee;
   final String phoneNumber;
@@ -21,8 +20,7 @@ class WalkBoardDTO {
     required this.pickupLocation1,
     required this.mapX,
     required this.mapY,
-    required this.dogGender,
-    required this.dogId,
+    required this.dogIds,
     required this.pickUpDay,
     required this.startTime,
     required this.endTime,
@@ -38,24 +36,30 @@ class WalkBoardDTO {
       pickupLocation1: json['pickupLocation1'],
       mapX: json['mapX'],
       mapY: json['mapY'],
-      dogGender: json['dogGender'],
-      dogId: json['dog_id'],
-      pickUpDay: DateTime.parse(json['pickUpDay']),
-      startTime: TimeOfDayDTO(
-        hour: json['startTime']['hour'],
-        minute: json['startTime']['minute'],
-        second: json['startTime']['second'],
-        nano: json['startTime']['nano'],
-      ),
-      endTime: TimeOfDayDTO(
-        hour: json['endTime']['hour'],
-        minute: json['endTime']['minute'],
-        second: json['endTime']['second'],
-        nano: json['endTime']['nano'],
-      ),
+      dogIds: json['dogIds'],
+      pickUpDay: json['pickUpDay'],
+      startTime: json['startTime'],
+      endTime: json['endTime'],
       feeType: json['feeType'],
       fee: json['fee'],
       phoneNumber: json['phoneNumber'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'tag': tag,
+      'pickupLocation1': pickupLocation1,
+      'mapX': mapX,
+      'mapY': mapY,
+      'dogIds': dogIds,
+      'pickUpDay': pickUpDay,
+      'startTime': startTime,
+      'endTime': endTime,
+      'feeType': feeType,
+      'fee': fee,
+      'phoneNumber': phoneNumber,
+    };
   }
 }

@@ -1,5 +1,3 @@
-
-
 class TimeOfDayDTO {
   final int hour;
   final int minute;
@@ -20,5 +18,14 @@ class TimeOfDayDTO {
         second: json['second'] ?? 0,
         nano: json['nano'] ?? 0,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'hour': hour,
+      'minute': minute,
+      'second': second,
+      'nano': nano,
+    };
   }
 }

@@ -4,7 +4,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/dto/location_data_dto.dart';
+import 'package:dog/src/dto/time_of_day_dto.dart';
+import 'package:dog/src/dto/walk_board_dto.dart';
 import 'package:dog/src/repository/dog_profile_repository.dart';
+import 'package:dog/src/repository/walking_repository.dart';
 import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/input_form_util.dart';
 import 'package:dog/src/util/step_progress_bar.dart';
@@ -43,7 +46,7 @@ class _PostingRegisterState extends State<PostingRegister> {
   LocationDataDTO receivedLocationData = LocationDataDTO.fromEmpty();
 
   String? selectedLocation;
-  String? wage = '시급';
+  String wage = '시급';
   String _startTime = '시작';
   String _endTime = '종료';
 
@@ -105,9 +108,6 @@ class _PostingRegisterState extends State<PostingRegister> {
         return postRegister4();
       case 4:
         return postRegister5();
-      // case 5:
-      //
-      //   break;
       default:
         return postRegister1();
     }
@@ -238,6 +238,10 @@ class _PostingRegisterState extends State<PostingRegister> {
         ),
       ],
     );
+  }
+
+  String parseTimeOfDay(String time) {
+    return time += ':00';
   }
 
   void goToRegister() {
@@ -508,20 +512,30 @@ class _PostingRegisterState extends State<PostingRegister> {
             onTap: () {
               if (validateCurrentPage()) {
                 if (pageNum == 4) {
-                  // final WalkBoardDTO dto = WalkBoardDTO(
-                  //     title: titleController.text,
-                  //     tag: hashTagList,
-                  //     pickupLocation1: receivedLocationData.address,
-                  //     mapX: receivedLocationData.longitude,
-                  //     mapY: receivedLocationData.latitude,
-                  //     dogId: 1, // selectedDogId,  리스트로 받아야함
-                  //     pickUpDay: pickUpDay,
-                  //     startTime: startTime,
-                  //     endTime: endTime,
-                  //     feeType: feeType,
-                  //     fee: fee,
-                  //     phoneNumber: phoneNumber
-                  // );
+                  final WalkBoardDTO dto = WalkBoardDTO(
+                      title: titleController.text,
+                      tag: hashTagList,
+                      pickupLocation1: receivedLocationData.address,
+                      mapX: receivedLocationData.longitude,
+                      mapY: receivedLocationData.latitude,
+                      dogIds: selectedDogId,
+                      pickUpDay: _selectedDate.toIso8601String().split('T')[0],
+                      startTime: parseTimeOfDay(_startTime),
+                      endTime: parseTimeOfDay(_endTime),
+                      feeType: wage,
+                      fee: int.parse(wageController.text.replaceAll(',', '').replaceAll('원', '').trim()),
+                      phoneNumber: phoneNumController.text
+                  );
+
+                  final WalkingRepository walkingRepository = WalkingRepository();
+                  walkingRepository.register(context: context, dto: dto).then((result) {
+
+                    if (result.statusCode == 200) {
+                      Navigator.pop(context);
+                      ToastPopupUtil.notice(context: context, content: '산책 게시글이 등록되었어요');
+                    }
+
+                  });
 
                 } else {
                   setState(() {
@@ -1022,7 +1036,7 @@ class _PostingRegisterState extends State<PostingRegister> {
               postingRegister(),
             ],
           ),
-          pageNum == 1 ? nextButton(text: '픽업 장소로 설정') : nextButton(),
+          pageNum == 1 ? nextButton(text: '픽업 장소로 설정') : (pageNum == 4 ? nextButton(text: '완료') : nextButton()),
         ],
       ),
     );
