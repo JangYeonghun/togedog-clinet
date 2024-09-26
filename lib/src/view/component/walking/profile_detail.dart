@@ -15,7 +15,6 @@ class ProfileDetail extends StatelessWidget {
   });
 
   Widget profileHeader() {
-    String imgUrl = 'https://cdn.gijn.kr/news/photo/202202/411141_315429_83.jpg';
     return ProfileHeaderImage(userProfileDTO: userProfileDTO);
   }
 
@@ -29,7 +28,6 @@ class ProfileDetail extends StatelessWidget {
   }
 
   Widget profileDetails() {
-    final Map<String, dynamic> preference = userProfileDTO.preferred;
     return ProfileDetailsBottomSheet(type: 'front', userProfileDTO: userProfileDTO);
   }
 

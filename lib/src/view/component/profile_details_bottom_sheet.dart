@@ -62,8 +62,8 @@ class ProfileDetailsBottomSheet extends StatelessWidget {
       children: [
         HashTagUtil(hashTag: preference['hashTag']),
         SizedBox(height: 32.h),
-        _buildProfileInfoItem('산책 가능 시간', (preference['time'].toString() ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
-        _buildProfileInfoItem('선호 시간', (preference['time'].toString() ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
+        _buildProfileInfoItem('산책 가능 시간', (preference['time'].toString()).toString().replaceAll(']', '').replaceAll('[', '')),
+        _buildProfileInfoItem('선호 시간', (preference['time'].toString()).toString().replaceAll(']', '').replaceAll('[', '')),
         horizontalDivider(margin: 0),
         SizedBox(height: 14.h),
         _buildProfileInfoItem('선호 견종 크기', (preference['breed'] ?? '').toString().replaceAll(']', '').replaceAll('[', '')),
@@ -87,7 +87,7 @@ class ProfileDetailsBottomSheet extends StatelessWidget {
         ),
         horizontalDivider(margin: 14.h),
         Text(
-          userProfileDTO.career ?? '',
+          userProfileDTO.career,
           style: TextStyle(
             color: Palette.darkFont4,
             fontSize: 12.sp,

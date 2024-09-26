@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:dog/main.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
@@ -16,12 +15,10 @@ import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/util/loading_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
-import 'package:dog/src/view/template/profile/dog_profile_detail_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
-import 'package:transition/transition.dart';
 
 class MyWalkBody extends StatefulWidget {
   const MyWalkBody({super.key});

@@ -1,7 +1,4 @@
 import 'package:dog/src/config/palette.dart';
-import 'package:dog/src/dto/dog_profile_register_dto.dart';
-import 'package:dog/src/repository/auth_repository.dart';
-import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/notification_template.dart';
