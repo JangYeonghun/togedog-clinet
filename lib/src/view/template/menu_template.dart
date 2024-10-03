@@ -1,5 +1,7 @@
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/repository/chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/web_socket_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/notification_template.dart';
 import 'package:flutter/material.dart';
@@ -165,8 +167,10 @@ class _MenuTemplateState extends State<MenuTemplate> {
   //테스뚜버튼~~
   Widget testButton() {
     return InkWell(
-      onTap: () {
-        storage.read(key: 'accessToken').then((accessToken) => debugPrint("\n\n\naccessToken: $accessToken\n\n\n"));
+      onTap: () async {
+        //await ChatRepository().createRoom();
+        //await WebSocketUtil(url: "wss://walktogedog.life").connect();
+        //storage.read(key: 'accessToken').then((accessToken) => debugPrint("\n\n\naccessToken: $accessToken\n\n\n"));
       },
       child: const Text(
         'TEST',

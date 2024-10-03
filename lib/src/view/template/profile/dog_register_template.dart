@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/dto/dog_profile_register_dto.dart';
 import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/button_util.dart';
@@ -17,7 +18,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
 class DogRegisterTemplate extends StatefulWidget {
-  const DogRegisterTemplate({super.key});
+  final DogProfileDTO? dogProfileDTO;
+  const DogRegisterTemplate({super.key, this.dogProfileDTO});
 
   @override
   State<DogRegisterTemplate> createState() => _DogRegisterTemplateState();
@@ -27,10 +29,11 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
   final double deviceWidth = GlobalVariables.width;
   final TextEditingController hashTagController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController speciesController = TextEditingController();
+  final TextEditingController breedController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
-  final TextEditingController significantController = TextEditingController();
+  final TextEditingController notesController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
+  late final DogProfileDTO? dogProfileDTO;
   static const List<String> locations = ["서울", "인천", "경기", "충청", "경상", "전라", "강원", "제주"];
   String? selectedLocation;
   int pageIndex = 0;
@@ -68,14 +71,35 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
       "value" : 1
     }
   };
+  
+  void editProfileInit() {
+    dogProfileDTO = widget.dogProfileDTO;
+    if (dogProfileDTO != null) {
+      nameController.text = dogProfileDTO!.name;
+      breedController.text = dogProfileDTO!.breed;
+      ageController.text = dogProfileDTO!.age.toString();
+      notesController.text = dogProfileDTO!.notes;
+      weightController.text = dogProfileDTO!.weight.toString();
+      dogInfo['neuter']!['value'] = dogProfileDTO!.neutered ? 1 : 0;
+      dogInfo['vaccine']!['value'] = dogProfileDTO!.vaccine ? 1 : 0;
+      dogInfo['gender']!['value'] = dogProfileDTO!.dogGender ? 1 : 0;
+      hashTags = dogProfileDTO!.dogPersonalityTags;
+    }
+  }
+  
+  @override
+  void initState() {
+    editProfileInit();
+    super.initState();
+  }
 
   @override
   void dispose() {
     hashTagController.dispose();
     nameController.dispose();
-    speciesController.dispose();
+    breedController.dispose();
     ageController.dispose();
-    significantController.dispose();
+    notesController.dispose();
     weightController.dispose();
     super.dispose();
   }
@@ -339,7 +363,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
             ),
             titleBox(title: '견종 입력'),
             textInputBox(
-                controller: speciesController,
+                controller: breedController,
                 hintText: '반려견의 종을 입력하세요'
             ),
             titleBox(title: '나이 입력'),
@@ -395,7 +419,7 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
             const SizedBox(height: 35),
             titleBox(title: '반려견 특이사항'),
             textInputBox(
-                controller: significantController,
+                controller: notesController,
                 hintText: '반려견의 특이사항을 입력하세요 (최대500자)',
                 maxLines: 7,
                 maxLength: 500
@@ -411,41 +435,31 @@ class _DogRegisterTemplateState extends State<DogRegisterTemplate> {
               title: '완료',
               onTap: () {
                 final DogProfileRegisterDTO dto = DogProfileRegisterDTO(
+                    id: dogProfileDTO?.dogId,
                     name: nameController.text,
-                    breed: speciesController.text,
+                    breed: breedController.text,
                     vaccine: dogInfo['vaccine']!['value'] == 1,
                     dogGender: dogInfo['gender'] == 1,
                     neutered: dogInfo['neuter'] == 1,
                     weight: double.parse(weightController.text),
                     region: selectedLocation!,
-                    notes: significantController.text,
+                    notes: notesController.text,
                     tags: hashTags,
                     age: int.parse(ageController.text),
                     file: profileImage
                 );
-    
-                debugPrint('테스뚜');
-                debugPrint('''
-                ${dto.name}
-                ${dto.breed}
-                ${dto.vaccine}
-                ${dto.dogGender}
-                ${dto.neutered}
-                ${dto.weight}
-                ${dto.region}
-                ${dto.notes}
-                ${dto.tags}
-                ${dto.age}
-                ${dto.file}
-                ''');
-    
-                DogProfileRepository().register(
-                  context: context,
-                  dto: dto
-                ).then((response) {
-                  Navigator.pop(context, response.statusCode);
-                });
 
+                if (dogProfileDTO == null) {
+                  DogProfileRepository().register(
+                      context: context,
+                      dto: dto
+                  ).then((response) => Navigator.pop(context, response.statusCode));
+                } else {
+                  DogProfileRepository().update(
+                    context: context,
+                    dto: dto
+                  ).then((response) => Navigator.pop(context, response.statusCode));
+                }
               }
           ).filledButton1m(),
         )
