@@ -42,7 +42,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
   List<dynamic> dogTypes = [];
   late DateTime birth;
   bool isAgeEditing = true;
-  bool isValidNickname = true;
+  bool isValidNickname = false;
   String? selectedLocation;
   String? errorMsg;
   List<dynamic> hashTags = [];
@@ -227,13 +227,7 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           title: '다음',
           onTap: () {
             func?.call();
-            if (validFunc()) {
-              setState(() {
-                pageIndex += 1;
-              });
-            } else {
-              ToastPopupUtil.error(context: context, content: '정보를 모두 입력하세요.');
-            }
+            validFunc();
           }
       ).filledButton1m(),
     );
@@ -608,7 +602,17 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
           ],
         ),
         nextButton(
-          validFunc: () => nicknameController.text.isNotEmpty && ageController.text.isNotEmpty && profileImage != null
+          validFunc: () {
+            if (nicknameController.text.isNotEmpty && ageController.text.isNotEmpty && profileImage != null && isValidNickname) {
+              setState(() {
+                pageIndex += 1;
+              });
+            } else if (!isValidNickname) {
+              ToastPopupUtil.error(context: context, content: '사용할 수 없는 닉네임입니다.');
+            } else {
+              ToastPopupUtil.error(context: context, content: '정보를 모두 입력하세요.');
+            }
+          }
         )
       ],
     );
@@ -646,7 +650,15 @@ class _UserRegisterTemplateState extends State<UserRegisterTemplate> {
             dogTypes = dogSizePreference.map((e) => e.value ? e.name : '').toList();
             dogTypes.removeWhere((e) => e == '');
           },
-          validFunc: () => phoneController.text.isNotEmpty && experienceController.text.isNotEmpty && dogTypes.isNotEmpty && hashTags.isNotEmpty
+          validFunc: () {
+            if (phoneController.text.isNotEmpty && experienceController.text.isNotEmpty && dogTypes.isNotEmpty &&  hashTags.isNotEmpty) {
+              setState(() {
+                pageIndex += 1;
+              });
+            } else {
+              ToastPopupUtil.error(context: context, content: '정보를 모두 입력하세요.');
+            }
+          }
         )
       ],
     );

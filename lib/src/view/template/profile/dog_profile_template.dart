@@ -116,7 +116,14 @@ class _DogProfileTemplateState extends State<DogProfileTemplate> {
                 transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
                 child: DogProfileDetailTemplate(profile: profile)
             )
-        );
+        ).then((result) {
+          
+          if (result != null) {
+            setState(() {
+              dogProfiles = Future.value(result);
+            });
+          }
+        });
       },
       child: Container(
         width: deviceWidth - 28,

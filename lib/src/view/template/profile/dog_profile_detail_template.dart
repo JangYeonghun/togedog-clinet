@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
+import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/view/header/pop_header.dart';
+import 'package:dog/src/view/template/profile/dog_register_template.dart';
 import 'package:flutter/material.dart';
+import 'package:transition/transition.dart';
 
 class DogProfileDetailTemplate extends StatefulWidget {
   final DogProfileDTO profile;
@@ -25,6 +30,25 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
     profile = widget.profile;
     _tabController = TabController(length: 2, vsync: this);
     super.initState();
+  }
+
+  void dogProfileEditHandler() {
+    Navigator.push(
+        context,
+        Transition(
+            child: DogRegisterTemplate(dogProfileDTO: profile),
+            transitionEffect: TransitionEffect.RIGHT_TO_LEFT
+        )
+    ).then((statusCode) async {
+      if (statusCode ~/ 100 == 2) {
+        DogProfileRepository().getList(context: context).then((response) {
+          if (response.statusCode ~/ 100 == 2) {
+            final List<dynamic> json = jsonDecode(response.body);
+            Navigator.pop(context, json.map((e) => DogProfileDTO.fromJson(e)).toList());
+          }
+        });
+      }
+    });
   }
 
   Widget miniProfile() {
@@ -60,7 +84,12 @@ class _DogProfileDetailTemplateState extends State<DogProfileDetailTemplate> wit
                 ),
               ),
               const SizedBox(width: 13),
-              Image.asset('assets/images/edit_icon.png', width: 18, height: 18)
+              GestureDetector(
+                onTap: () {
+                  dogProfileEditHandler();
+                },
+                child: Image.asset('assets/images/edit_icon.png', width: 18, height: 18)
+              )
             ],
           ),
           Column(
