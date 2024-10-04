@@ -96,8 +96,11 @@ class _WalkingBodyState extends State<WalkingBody> {
           appBar: PopHeader(title: mode ? '산책메이트 찾기' : '산책하기'),
           body: Stack(
             children: [
-              SingleChildScrollView(
-                child: mode ? ownerWalking() : walkerWalking(),
+              SizedBox(
+                height: 650.h,
+                child: SingleChildScrollView(
+                  child: mode ? ownerWalking() : walkerWalking(),
+                ),
               ),
               if (mode)
                 Positioned(

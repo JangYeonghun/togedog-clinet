@@ -43,6 +43,7 @@ class ProfileInfoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   nickname,
@@ -54,7 +55,6 @@ class ProfileInfoCard extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(width: 127.w),
                 ButtonUtil(
                     width: 80.w,
                     height: 26.h,
@@ -64,7 +64,7 @@ class ProfileInfoCard extends StatelessWidget {
                     }).filledButton1s(),
               ],
             ),
-            SizedBox(height: 23.h),
+            SizedBox(height: 18.h),
             Text(
               '${gender == '여' ? '여자' : '남자'} | 만 $age세',
               style: TextStyle(

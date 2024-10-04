@@ -36,14 +36,14 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   late final Future<MyWalkScheduleDTO> myWalkSchedule;
 
   Future<MyWalkScheduleDTO> getMyWalkSchedule() async {
-    final Response response = await myWalkRepository.myWalkScheduleList(context: context);
+    final Response response = await myWalkRepository.myWalkScheduleList(context: context, page: 0, size: 6);
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
     final MyWalkScheduleDTO result = MyWalkScheduleDTO.fromJson(jsonData);
     return result;
   }
 
   Future<MyWalkingDto> getMyWalkList() async {
-    final Response response = await myWalkRepository.myWalkList(context: context);
+    final Response response = await myWalkRepository.myWalkList(context: context, page: 0, size: 6);
     final Map<String, dynamic> jsonData = jsonDecode(response.body);
     final MyWalkingDto result = MyWalkingDto.fromJson(jsonData);
     return result;
@@ -62,37 +62,35 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   }
 
   Widget ownerMyWalk() {
-    return Expanded(
-      child: Container(
-          color: const Color(0xFFF2F2F2),
-          child: FutureBuilder<MyWalkScheduleDTO>(
-              future: getMyWalkSchedule(),
-              builder: (BuildContext context, AsyncSnapshot<MyWalkScheduleDTO> snapshot) {
-                if (snapshot.hasData) {
-                  final MyWalkScheduleDTO? data = snapshot.data;
+    return Container(
+        color: const Color(0xFFF2F2F2),
+        child: FutureBuilder<MyWalkScheduleDTO>(
+            future: getMyWalkSchedule(),
+            builder: (BuildContext context, AsyncSnapshot<MyWalkScheduleDTO> snapshot) {
+              if (snapshot.hasData) {
+                final MyWalkScheduleDTO? data = snapshot.data;
 
-                  if (data!.content.isNotEmpty) {
-                    return Column(
-                      children: [
-                        topInfo(text: '산책일정'),
-                        ListView.builder(
-                            padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
-                            itemCount: data.content.length,
-                            itemBuilder: (context, index) {
-                              return myWalkScheduleItem(profile: data.content[index]);
-                            }
-                        ),
-                      ],
-                    );
-                  } else {
-                    return emptyWalk(mode: 'ownerSchedule');
-                  }
+                if (data!.content.isNotEmpty) {
+                  return Column(
+                    children: [
+                      topInfo(text: '산책일정'),
+                      ListView.builder(
+                          padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
+                          itemCount: data.content.length,
+                          itemBuilder: (context, index) {
+                            return myWalkScheduleItem(profile: data.content[index]);
+                          }
+                      ),
+                    ],
+                  );
                 } else {
-                  return const LoadingUtil();
+                  return emptyWalk(mode: 'ownerSchedule');
                 }
+              } else {
+                return const LoadingUtil();
               }
-          ),
-      ),
+            }
+        ),
     );
   }
 
@@ -238,36 +236,34 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   }
 
   Widget ownerMatchWalk() {
-    return Expanded(
-      child: Container(
-        color: const Color(0xFFF2F2F2),
-        child: FutureBuilder<MyWalkingDto>(
-            future: getMyWalkList(),
-            builder: (BuildContext context, AsyncSnapshot<MyWalkingDto> snapshot) {
-              if (snapshot.hasData) {
-                final MyWalkingDto? data = snapshot.data;
+    return Container(
+      color: const Color(0xFFF2F2F2),
+      child: FutureBuilder<MyWalkingDto>(
+          future: getMyWalkList(),
+          builder: (BuildContext context, AsyncSnapshot<MyWalkingDto> snapshot) {
+            if (snapshot.hasData) {
+              final MyWalkingDto? data = snapshot.data;
 
-                if (data!.content.isNotEmpty) {
-                  return Column(
-                    children: [
-                      topInfo(text: '내가 쓴 글'),
-                      ListView.builder(
-                          padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
-                          itemCount: data.content.length,
-                          itemBuilder: (context, index) {
-                            return wroteMyWalkItem(profile: data.content[index]);
-                          }
-                      ),
-                    ],
-                  );
-                } else {
-                  return emptyWalk(mode: 'ownerWrote');
-                }
+              if (data!.content.isNotEmpty) {
+                return Column(
+                  children: [
+                    topInfo(text: '내가 쓴 글'),
+                    ListView.builder(
+                        padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
+                        itemCount: data.content.length,
+                        itemBuilder: (context, index) {
+                          return wroteMyWalkItem(profile: data.content[index]);
+                        }
+                    ),
+                  ],
+                );
               } else {
-                return const LoadingUtil();
+                return emptyWalk(mode: 'ownerWrote');
               }
+            } else {
+              return const LoadingUtil();
             }
-        ),
+          }
       ),
     );
   }
@@ -393,37 +389,35 @@ class _MyWalkBodyState extends State<MyWalkBody> with SingleTickerProviderStateM
   }
 
   Widget walkerMyWalk() {
-    return Expanded(
-      child: Container(
-        color: const Color(0xFFF2F2F2),
-        child: FutureBuilder(
-            future: myWalkList,
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.hasData) {
-                final List<DogProfileDTO> data = snapshot.data;
+    return Container(
+      color: const Color(0xFFF2F2F2),
+      child: FutureBuilder(
+          future: myWalkList,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              final List<DogProfileDTO> data = snapshot.data;
 
-                if (data.isNotEmpty) {
-                  return Column(
-                    children: [
-                      topInfo(text: '산책일정'),
-                      ListView.builder(
-                          padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            // return walkScheduleItem(profile: data[index]);
-                            return SizedBox();
-                          }
-                      ),
-                    ],
-                  );
-                } else {
-                  return emptyWalk(mode: 'mateSchedule');
-                }
+              if (data.isNotEmpty) {
+                return Column(
+                  children: [
+                    topInfo(text: '산책일정'),
+                    ListView.builder(
+                        padding: const EdgeInsets.only(left: 14, right: 14, top: 18, bottom: 18),
+                        itemCount: data.length,
+                        itemBuilder: (context, index) {
+                          // return walkScheduleItem(profile: data[index]);
+                          return SizedBox();
+                        }
+                    ),
+                  ],
+                );
               } else {
-                return const LoadingUtil();
+                return emptyWalk(mode: 'mateSchedule');
               }
+            } else {
+              return const LoadingUtil();
             }
-        ),
+          }
       ),
     );
   }

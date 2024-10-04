@@ -141,15 +141,13 @@ class TextInputUtil {
       cursorColor: Palette.green6,
       onChanged: (value) {
         if (value.isNotEmpty) {
-          final formatter = NumberFormat('#,###');
           final numericValue = int.parse(value.replaceAll(',', ''));
+          final formatter = NumberFormat('#,###');
           final newValue = '${formatter.format(numericValue)} 원';
-          if (controller.text != newValue) {
-            controller.value = controller.value.copyWith(
-              text: newValue,
-              selection: TextSelection.collapsed(offset: newValue.length - 1),
-            );
-          }
+          controller.value = controller.value.copyWith(
+            text: newValue,
+            selection: TextSelection.collapsed(offset: newValue.length - 2),
+          );
         } else {
           controller.clear();
         }

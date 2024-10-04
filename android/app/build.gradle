@@ -87,3 +87,5 @@ dependencies {
     implementation 'androidx.window:window-java:1.0.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.2'
 }
+
+apply from: project(':flutter_config').projectDir.getPath() + "/dotenv.gradle"
