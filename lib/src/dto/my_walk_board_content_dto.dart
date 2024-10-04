@@ -15,6 +15,7 @@ class MyWalkBoardContentDTO {
   final String dogType;
   final String dogGender;
   final String dogProfileImage;
+  final String completeStatus;
 
   MyWalkBoardContentDTO({
     required this.boardId,
@@ -33,6 +34,7 @@ class MyWalkBoardContentDTO {
     required this.dogType,
     required this.dogGender,
     required this.dogProfileImage,
+    required this.completeStatus,
   });
 
   factory MyWalkBoardContentDTO.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class MyWalkBoardContentDTO {
       dogType: json['dogType'] ?? '',
       dogGender: json['dogGender'] ?? '',
       dogProfileImage: json['dogProfileImage'] ?? '',
+      completeStatus: json['completeStatus'] ?? '',
     );
   }
 }

@@ -121,6 +121,10 @@ class _PostingRegisterState extends State<PostingRegister> {
           ToastPopupUtil.error(context: context, content: '제목을 입력해 주세요.');
           return false;
         }
+        if (titleController.text.length < 5 || titleController.text.length >= 20) {
+          ToastPopupUtil.error(context: context, content: '제목은 5~20 글자로 입력해 주세요');
+          return false;
+        }
         if (hashTagList.isEmpty) {
           ToastPopupUtil.error(context: context, content: '장소 추천을 입력해 주세요.');
           return false;
@@ -173,8 +177,8 @@ class _PostingRegisterState extends State<PostingRegister> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 14.w),
           child: TextInputUtil().text(
-              controller: titleController,
-              hintText: '제목'
+            controller: titleController,
+            hintText: '제목(5~20 글자)'
           ),
         ),
         textInfo(text: '산책 장소 추천'),
