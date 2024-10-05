@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/repository/chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:dog/src/util/loading_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/chat_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart';
 import 'package:transition/transition.dart';
 
 class ChatBody extends StatefulWidget {
@@ -14,32 +19,20 @@ class ChatBody extends StatefulWidget {
 }
 
 class _ChatBodyState extends State<ChatBody> {
-  final List<Map<String, dynamic>> test = [
-    {
-      'nickname' : 'ㄴㄴ',
-      'lastMsg' : '안녕하세요~!',
-      'lastMsgTime' : '2024-09-22 10:12:24',
-      'unreadMsg' : 4
-    },
-    {
-      'nickname' : 'SS',
-      'lastMsg' : '안녕~!',
-      'lastMsgTime' : '2024-09-22 23:56:58',
-      'unreadMsg' : 4
-    },
-    {
-      'nickname' : 'dd',
-      'lastMsg' : '안녕하세요우오우와우~!',
-      'lastMsgTime' : '2024-09-21 07:14:22',
-      'unreadMsg' : 12
-    },
-    {
-      'nickname' : 'ㄴㄴㄴㄴㄴㄴ',
-      'lastMsg' : '@&@&@#^^*&@^#&*@^#&*@^#*@#^@*&#^*@&~!',
-      'lastMsgTime' : '2024-09-11 07:14:22',
-      'unreadMsg' : 12
-    }
-  ];
+  final ChatRepository chatRepository = ChatRepository();
+  late final Future<List<dynamic>> fetchChatList;
+
+  Future<List<dynamic>> getChatList() async {
+    final Response response = await chatRepository.chatList();
+    final List<dynamic> list = jsonDecode(response.body);
+    return list;
+  }
+
+  @override
+  void initState() {
+    fetchChatList = getChatList();
+    super.initState();
+  }
 
   Widget chatItem({
     required String nickname,
@@ -65,7 +58,7 @@ class _ChatBodyState extends State<ChatBody> {
         context,
         Transition(
           transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-          child: ChatTemplate()
+          child: const ChatTemplate()
         )
       ),
       child: Container(
@@ -145,16 +138,46 @@ class _ChatBodyState extends State<ChatBody> {
     );
   }
 
-  Widget chatList() {
-    return ListView.builder(
-      itemCount: test.length,
-      itemBuilder: (context, index) {
-        final item = test[index];
-        return chatItem(
-          nickname: item['nickname'],
-          lastMsg: item['lastMsg'],
-          lastMsgTime: item['lastMsgTime'],
-          unreadMsg: item['unreadMsg']
+  Widget emptyChat() {
+    return Center(
+      child: Text(
+        '아직 받은 메시지가 없어요',
+        style: TextStyle(
+            color: Palette.darkFont2,
+            fontSize: 14.sp,
+            fontFamily: 'Pretendard',
+            fontWeight: FontWeight.w500
+        ),
+      ),
+    );
+  }
+
+  Widget chatListBuilder() {
+    return FutureBuilder(
+      future: fetchChatList,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const LoadingUtil();
+        }
+
+        if (!snapshot.hasData || snapshot.data.isEmpty) {
+          return emptyChat();
+        }
+
+        final List<dynamic> chatListData = snapshot.data;
+
+        return ListView.builder(
+            itemCount: chatListData.length,
+            itemBuilder: (context, index) {
+              final item = chatListData[index];
+              return chatItem(
+                  nickname: item['nickname'],
+                  lastMsg: item['lastMsg'],
+                  lastMsgTime: item['lastMsgTime'],
+                  unreadMsg: item['unreadMsg']
+              );
+            }
         );
       }
     );
@@ -164,7 +187,7 @@ class _ChatBodyState extends State<ChatBody> {
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
       appBar: const PopHeader(title: '채팅', useBackButton: true),
-      body: chatList()
+      body: chatListBuilder()
     );
   }
 }
