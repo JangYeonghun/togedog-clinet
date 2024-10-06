@@ -54,8 +54,7 @@ class ImageUtil {
                 Flexible(
                   child: Center(
                     child: CachedNetworkImage(
-                      imageUrl: imgUrl,
-                      fit: BoxFit.contain,
+                      imageUrl: imgUrl
                     ),
                   ),
                 ),
@@ -118,7 +117,9 @@ class ImageUtil {
                 ),
               ),
               Flexible(
-                child: Image.file(File(file.path)),
+                child: Center(
+                  child: Image.file(File(file.path))
+                ),
               ),
             ],
           ),
