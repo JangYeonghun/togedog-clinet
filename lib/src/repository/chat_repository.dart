@@ -16,10 +16,14 @@ class ChatRepository extends API {
     );
   }
 
-  Future<Response> createRoom() {
+  Future<Response> createRoom({
+    required int receiverId
+  }) {
     return api(
-        func: (accessToken) => get(
-            Uri.https(domain, 'api/v1/chat'),
+        func: (accessToken) => post(
+            Uri.https(domain, 'api/v1/chat/create', {
+              'receiver' : receiverId.toString()
+            }),
             headers: <String, String>{
               'Content-type' : 'application/json',
               'Authorization' : 'Bearer $accessToken'
