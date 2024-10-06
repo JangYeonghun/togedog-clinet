@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/chat_message_dto.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
@@ -23,9 +22,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
   XFile? imageFile;
   final String testOppNickname = 'xxxx';
   final int testUserId = 33;
-  double height = 0;
-  double inputPaddingTop = 20.h;
-  double inputPaddingBottom = 20.h;
+  bool isExpand = false;
   List<ChatMessageDTO> test = [
     ChatMessageDTO(
       userId: 32,
@@ -116,9 +113,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
         onTap: () {
           FocusScope.of(context).unfocus();
           setState(() {
-            height = 0;
-            inputPaddingTop = 20.h;
-            inputPaddingBottom = 20.h;
+            isExpand = false;
           });
         },
         child: Container(
@@ -160,7 +155,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
-      height: height,
+      height: isExpand ? 290 : 0,
       color: const Color(0xFFF2F2F2),
       padding: EdgeInsets.only(left: 40.w, right: 40.w, top: 28.h, bottom: 28.h),
       child: SingleChildScrollView(
@@ -233,7 +228,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
-      padding: EdgeInsets.fromLTRB(14.w, inputPaddingTop, 14.w, inputPaddingBottom),
+      padding: EdgeInsets.fromLTRB(14.w, isExpand ? 12.h : 20.h, 14.w, isExpand ? 8.h : 20.h),
       color: const Color(0xFFF2F2F2),
       child: Row(
         children: [
@@ -241,9 +236,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
               onTap: () {
                 FocusScope.of(context).unfocus();
                 setState(() {
-                  height = height == 0 ? 290 : 0;
-                  inputPaddingTop = inputPaddingTop == 20.h ? 12.h : 20.h;
-                  inputPaddingBottom = inputPaddingBottom == 20.h ? 8.h : 20.h;
+                  isExpand = !isExpand;
                 });
               },
               child: Image.asset('assets/images/expand_button.png', width: 36.w)
@@ -269,9 +262,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
                     maxLines: 5,
                     onTap: () {
                       setState(() {
-                        height = 0;
-                        inputPaddingTop = 20.h;
-                        inputPaddingBottom = 20.h;
+                        isExpand = false;
                       });
                     },
                     decoration: InputDecoration(
@@ -326,9 +317,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
     chatController.text = '';
 
     setState(() {
-      height = 0;
-      inputPaddingTop = 20.h;
-      inputPaddingBottom = 20.h;
+      isExpand = false;
     });
   }
 
@@ -346,11 +335,29 @@ class _ChatTemplateState extends State<ChatTemplate> {
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
         appBar: PopHeader(title: testOppNickname, useBackButton: true),
-        body: Column(
-          children: [
-            msgList(),
-            inputBox()
-          ],
+        body: PopScope(
+          canPop: false,
+          onPopInvoked: (pop) {
+            if (isExpand) {
+              setState(() {
+                isExpand = false;
+              });
+              return;
+            }
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              }
+            });
+            return;
+          },
+          child: Column(
+            children: [
+              msgList(),
+              inputBox()
+            ],
+          ),
         )
     );
   }
