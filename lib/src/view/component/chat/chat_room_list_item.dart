@@ -33,7 +33,7 @@ class ChatRoomListItem extends StatelessWidget {
           context,
           Transition(
               transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-              child: const ChatTemplate()
+              child: ChatTemplate(roomId: chatRoomDto.roomId)
           )
       ),
       child: Container(
