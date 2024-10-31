@@ -1,16 +1,21 @@
+import 'dart:convert';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/chat_message_dto.dart';
+import 'package:dog/src/repository/chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/image_util.dart';
 import 'package:dog/src/view/component/chat/chat_message_item.dart';
 import 'package:dog/src/view/component/chat/chat_separator.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatTemplate extends StatefulWidget {
-  const ChatTemplate({super.key});
+  final int roomId;
+  const ChatTemplate({super.key, required this.roomId});
 
   @override
   State<ChatTemplate> createState() => _ChatTemplateState();
@@ -19,6 +24,7 @@ class ChatTemplate extends StatefulWidget {
 class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderStateMixin {
   final TextEditingController chatController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  late final StompClient client;
   XFile? imageFile;
   final String testOppNickname = 'xxxx';
   final int testUserId = 33;
@@ -94,8 +100,68 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
 
   late List<ChatMessageDTO> rList;
 
+  void connect() {
+    client = StompClient(
+        config: StompConfig.sockJS(
+          url: "https://www.walktogedog.life/ws",
+          onConnect: onConnectCallback,
+          onWebSocketError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
+        )
+    );
+    debugPrint('Connecting...');
+    client.activate();
+  }
+
+  void onConnectCallback(StompFrame connectFrame) {
+    debugPrint('callback');
+    debugPrint('Connection: ${client.connected}, ${client.isActive}');
+    client.subscribe(
+        destination: '/sub/chat/room/${widget.roomId}',
+        callback: (stompFrame) {
+          debugPrint('Message received');
+          debugPrint(stompFrame.body);
+          if (stompFrame.body == null) return;
+          final Map<String, dynamic> body = jsonDecode(stompFrame.body!);
+          handleMessage(
+            userId: body['userId'],
+            timestamp: DateTime.parse(body['lastTime']),
+            content: body['content'],
+            imgUrl: body['image']
+          );
+        }
+    );
+  }
+
+  void send() async {
+    String base64Image = '';
+    if (imageFile != null) {
+      debugPrint("NOT NULL");
+      final Uint8List imageBytes = await imageFile!.readAsBytes();
+      debugPrint("READ BYTES");
+      base64Image = base64Encode(imageBytes);
+      debugPrint(base64Image);
+      imageFile = null;
+    }
+
+    final Map<String, dynamic> message = {
+      'roomId': widget.roomId,
+      'userId': testUserId,
+      'content': chatController.text,
+      'lastTime': DateTime.now().toIso8601String(),
+      'image': base64Image
+    };
+
+    debugPrint('Send message');
+
+    client.send(
+        destination: '/pub/chat',
+        body: jsonEncode(message)
+    );
+  }
+
   @override
   void dispose() {
+    client.deactivate();
     scrollController.dispose();
     chatController.dispose();
     super.dispose();
@@ -103,6 +169,8 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
 
   @override
   void initState() {
+    ChatRepository().unreadMessage(roomId: widget.roomId, lastTime: DateTime.now().toString());
+    connect();
     rList = test.reversed.toList();
     controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     super.initState();
@@ -174,9 +242,14 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
                           context: context,
                           imageSource: ImageSource.gallery
                       );
-                      if (imageFile != null) {
-                        sendMsg(imgUrl: 'https://cdn.inflearn.com/public/course-325829-cover/dbf21271-7ce3-4e26-880c-22cd4d8c226b');
-                      }
+                      send();
+                      /*if (imageFile != null) {
+                        handleMessage(
+                          userId: testUserId,
+                          timestamp: DateTime.now(),
+                          imgUrl: 'https://cdn.inflearn.com/public/course-325829-cover/dbf21271-7ce3-4e26-880c-22cd4d8c226b'
+                        );
+                      }*/
                     },
                     child: Image.asset('assets/images/photo_icon.png', width: 50.w)
                 ),
@@ -203,7 +276,11 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
                           imageSource: ImageSource.camera
                       );
                       if (imageFile != null) {
-                        sendMsg(imgUrl: 'https://cdn.inflearn.com/public/course-325829-cover/dbf21271-7ce3-4e26-880c-22cd4d8c226b');
+                        handleMessage(
+                          userId: testUserId,
+                          timestamp: DateTime.now(),
+                          imgUrl: 'https://cdn.inflearn.com/public/course-325829-cover/dbf21271-7ce3-4e26-880c-22cd4d8c226b'
+                        );
                       }
                     },
                     child: Image.asset('assets/images/camera_icon.png', width: 50.w)
@@ -268,7 +345,6 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
                   }
                 ),
               )
-            //Image.asset('assets/images/expand_button.png', width: 36.w)
           ),
           SizedBox(width: 10.w),
           Flexible(
@@ -321,7 +397,9 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
           ),
           SizedBox(width: 10.w),
           GestureDetector(
-              onTap: () => sendMsg(content: chatController.text),
+              onTap: () {
+                send();
+              },
               child: Image.asset('assets/images/send_button.png', width: 36.w)
           ),
         ],
@@ -329,16 +407,18 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
     );
   }
 
-  void sendMsg({
+  void handleMessage({
+    required int userId,
+    required DateTime timestamp,
     String? content,
     String? imgUrl
   }) {
     test.add(
       ChatMessageDTO(
-        userId: testUserId,
+        userId: userId,
         content: content ?? '',
         imgUrl: imgUrl ?? '',
-        timestamp: DateTime.now().toString()
+        timestamp: timestamp.toString()
       )
     );
 
