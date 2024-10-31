@@ -21,7 +21,7 @@ class ChatRepository extends API {
   }) {
     return api(
         func: (accessToken) => post(
-            Uri.https(domain, 'api/v1/chat/create', {
+            Uri.https(domain, '/api/v1/chat/get-or-create', {
               'receiver' : receiverId.toString()
             }),
             headers: <String, String>{

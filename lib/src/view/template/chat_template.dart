@@ -16,7 +16,7 @@ class ChatTemplate extends StatefulWidget {
   State<ChatTemplate> createState() => _ChatTemplateState();
 }
 
-class _ChatTemplateState extends State<ChatTemplate> {
+class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderStateMixin {
   final TextEditingController chatController = TextEditingController();
   final ScrollController scrollController = ScrollController();
   XFile? imageFile;
@@ -104,6 +104,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
   @override
   void initState() {
     rList = test.reversed.toList();
+    controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     super.initState();
   }
 
@@ -114,6 +115,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
           FocusScope.of(context).unfocus();
           setState(() {
             isExpand = false;
+            controller.reverse();
           });
         },
         child: Container(
@@ -224,6 +226,8 @@ class _ChatTemplateState extends State<ChatTemplate> {
     );
   }
 
+  late final AnimationController controller;
+
   Widget inputBoxMain() {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 250),
@@ -236,10 +240,35 @@ class _ChatTemplateState extends State<ChatTemplate> {
               onTap: () {
                 FocusScope.of(context).unfocus();
                 setState(() {
-                  isExpand = !isExpand;
+                  if (isExpand) {
+                    isExpand = false;
+                    controller.reverse();
+                    return;
+                  }
+
+                  isExpand = true;
+                  controller.forward();
+
                 });
               },
-              child: Image.asset('assets/images/expand_button.png', width: 36.w)
+              child: Container(
+                width: 36.w,
+                height: 36.w,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10)
+                ),
+                child: AnimatedBuilder(
+                  animation: controller,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: controller.value * 0.785398,
+                      child: Icon(Icons.add_rounded, color: Palette.green6, size: 30.w)
+                    );
+                  }
+                ),
+              )
+            //Image.asset('assets/images/expand_button.png', width: 36.w)
           ),
           SizedBox(width: 10.w),
           Flexible(
@@ -263,6 +292,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
                     onTap: () {
                       setState(() {
                         isExpand = false;
+                        controller.reverse();
                       });
                     },
                     decoration: InputDecoration(
@@ -318,6 +348,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
 
     setState(() {
       isExpand = false;
+      controller.reverse();
     });
   }
 
@@ -341,6 +372,7 @@ class _ChatTemplateState extends State<ChatTemplate> {
             if (isExpand) {
               setState(() {
                 isExpand = false;
+                controller.reverse();
               });
               return;
             }
