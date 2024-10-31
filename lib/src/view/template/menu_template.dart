@@ -167,9 +167,12 @@ class _MenuTemplateState extends State<MenuTemplate> {
   //테스뚜버튼~~
   Widget testButton() {
     return InkWell(
-      onTap: () async {
+      onTap: () {
         //ChatRepository().createRoom(receiverId: 1);
-        await WebSocketUtil(url: "wss://walktogedog.life").connect();
+        Navigator.push(
+          context,
+          Transition(child: WebSocketUtil(roomId: 4))
+        );
         //storage.read(key: 'accessToken').then((accessToken) => debugPrint("\n\n\naccessToken: $accessToken\n\n\n"));
       },
       child: const Text(

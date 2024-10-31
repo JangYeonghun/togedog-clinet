@@ -1,22 +1,87 @@
-import 'package:flutter/foundation.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
+import 'dart:convert';
 
-class WebSocketUtil {
-  final String url;
+import 'package:dog/src/util/common_scaffold_util.dart';
+import 'package:flutter/material.dart';
+import 'package:stomp_dart_client/stomp_dart_client.dart';
+class WebSocketUtil extends StatefulWidget {
+  final int roomId;
+  const WebSocketUtil({super.key, required this.roomId});
 
-  const WebSocketUtil({required this.url});
+  @override
+  State<WebSocketUtil> createState() => _WebSocketUtilState();
+}
 
-  Future<void> connect() async {
-    final channel = WebSocketChannel.connect(Uri.parse(url));
+class _WebSocketUtilState extends State<WebSocketUtil> {
+  late final StompClient client;
 
-    await channel.ready;
-    debugPrint('준비완료');
+  @override
+  void initState() {
+    connect();
+    super.initState();
+  }
 
-    channel.stream.listen((message) {
-      debugPrint(message);
-      channel.sink.add('received!');
-      channel.sink.close(status.goingAway);
-    });
+  @override
+  void dispose() {
+    client.deactivate();
+    super.dispose();
+  }
+
+  void connect() {
+    client = StompClient(
+        config: StompConfig.sockJS(
+          url: "https://www.walktogedog.life/ws",
+          onConnect: onConnectCallback,
+          onWebSocketError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
+        )
+    );
+    debugPrint('Connecting...');
+    client.activate();
+  }
+
+  void onConnectCallback(StompFrame connectFrame) {
+    debugPrint('callback');
+    debugPrint('Connection: ${client.connected}, ${client.isActive}');
+    client.subscribe(
+        destination: '/sub/chat/room/${widget.roomId}',
+        callback: (stompFrame) {
+          debugPrint('Message received');
+          debugPrint(stompFrame.body);
+        }
+    );
+  }
+
+  void send() {
+    final Map<String, dynamic> message = {
+      'roomId': widget.roomId,
+      'userId': 3,
+      'content': 'test',
+      'lastTime': DateTime.now().toIso8601String(),
+      'image': ''
+    };
+
+    debugPrint('Send message');
+
+    client.send(
+      destination: '/pub/chat',
+      body: jsonEncode(message)
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CommonScaffoldUtil(
+      body: Center(
+        child: GestureDetector(
+          onTap: () => send(),
+          child: const Text(
+            'SEND',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20
+            ),
+          )
+        ),
+      )
+    );
   }
 }
