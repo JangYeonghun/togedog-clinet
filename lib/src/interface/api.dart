@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/repository/auth_repository.dart';
 import 'package:dog/src/util/api_error_notifier.dart';
@@ -17,7 +19,9 @@ class API {
   int _retry = 0;
   int _reissueWait = 0;
   int _backoffDelay = 200;
+  static const int _maxBackoffDelay = 800;
   int _reissueBackoffDelay = 200;
+  static const int _maxReissueBackoffDelay = 800;
 
   // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도
   Future<Response> api({BuildContext? context, required Future<Response> Function(String? accessToken) func}) async {
@@ -26,7 +30,7 @@ class API {
       _reissueWait ++;
 
       if (isReissuing) {
-        await Future.delayed(Duration(milliseconds: _reissueBackoffDelay));
+        await Future.delayed(Duration(milliseconds: min(_reissueBackoffDelay, _maxReissueBackoffDelay)));
         _reissueBackoffDelay *= 2;
 
       } else {
@@ -93,7 +97,7 @@ class API {
     _retry ++;
 
     if (_retry > 1) {
-      await Future.delayed(Duration(milliseconds: _backoffDelay));
+      await Future.delayed(Duration(milliseconds: min(_backoffDelay, _maxBackoffDelay)));
       _backoffDelay *= 2;
     }
 
