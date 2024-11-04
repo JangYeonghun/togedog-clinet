@@ -10,7 +10,7 @@ class ChatRoomListItem extends StatelessWidget {
   const ChatRoomListItem({super.key, required this.chatRoomDto});
 
   String _passedTime() {
-    final Duration diff = DateTime.now().difference(DateTime.parse(chatRoomDto.lastTime));
+    final Duration diff = DateTime.now().difference(DateTime.parse(chatRoomDto.lastTime).toLocal());
     late final String timePassed;
 
     if (diff.inMinutes <= 60) {
@@ -33,7 +33,7 @@ class ChatRoomListItem extends StatelessWidget {
           context,
           Transition(
               transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-              child: ChatTemplate(roomId: chatRoomDto.roomId)
+              child: ChatTemplate(roomId: chatRoomDto.roomId, profileImage: "https://mentoapp.s3.ap-northeast-2.amazonaws.com/4add7998-8%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-10-01%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%203.28.42.png")
           )
       ),
       child: Container(

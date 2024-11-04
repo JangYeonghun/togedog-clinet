@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/chat_message_dto.dart';
+import 'package:dog/src/model/user_account.dart';
 import 'package:dog/src/repository/chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/image_util.dart';
@@ -10,12 +11,14 @@ import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatTemplate extends StatefulWidget {
   final int roomId;
-  const ChatTemplate({super.key, required this.roomId});
+  final String profileImage;
+  const ChatTemplate({super.key, required this.roomId, required this.profileImage});
 
   @override
   State<ChatTemplate> createState() => _ChatTemplateState();
@@ -27,7 +30,7 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   late final StompClient client;
   XFile? imageFile;
   final String testOppNickname = 'xxxx';
-  final int testUserId = 33;
+  final UserAccount userAccount = UserAccount();
   bool isExpand = false;
   List<ChatMessageDTO> test = [
     ChatMessageDTO(
@@ -43,19 +46,19 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
         timestamp: '2024-09-17 00:15:07'
     ),
     ChatMessageDTO(
-        userId: 33,
+        userId: 3,
         content: '테스뚜테스뚜',
         imgUrl: '',
         timestamp: '2024-09-22 14:01:05'
     ),
     ChatMessageDTO(
-      userId: 33,
+      userId: 3,
       content: '테테테테ㅔㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ먀내얻쟈ㅐㅓ애ㅑㄷ저래ㅑㅈ더랟ㅈ더랴ㅐㅈ더랟저래ㅑㅈ더랴ㅐㅓㄴ이ㅏ러나이러ㅏㅣㄴ러ㅏ닝러ㅏㅣㅇ너링나ㅓ리낭렁니ㅏ러ㅏㄴ이러ㅏㅇ니러ㅏㅇ니ㅓ링나ㅓㄹㅇ니ㅏㅐ더래ㅑ더ㅑㅐ',
       imgUrl: '',
       timestamp: '2024-09-22 14:01:10',
     ),
     ChatMessageDTO(
-      userId: 33,
+      userId: 3,
       content: '테스뚜테스뚜',
       imgUrl: '',
       timestamp: '2024-09-23 00:01:05',
@@ -67,7 +70,7 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
       timestamp: '2024-09-23 00:05:07',
     ),
     ChatMessageDTO(
-      userId: 33,
+      userId: 3,
       content: 'ㄴㄴㄴㄴㄴㅈ댜러ㅐㅑㅈ더ㅓㅈ대러ㅐㅈ',
       imgUrl: '',
       timestamp: '2024-09-23 00:06:03',
@@ -105,7 +108,9 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
         config: StompConfig.sockJS(
           url: "https://www.walktogedog.life/ws",
           onConnect: onConnectCallback,
-          onWebSocketError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
+          onWebSocketError: (dynamic error) => debugPrint('SOCKET_ERR: $error'),
+          onStompError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
+          onDisconnect: (StompFrame frame) => debugPrint('DISCONN: ${frame.headers}\n${frame.body}')
         )
     );
     debugPrint('Connecting...');
@@ -122,41 +127,41 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
           debugPrint(stompFrame.body);
           if (stompFrame.body == null) return;
           final Map<String, dynamic> body = jsonDecode(stompFrame.body!);
-          handleMessage(
-            userId: body['userId'],
-            timestamp: DateTime.parse(body['lastTime']),
-            content: body['content'],
-            imgUrl: body['image']
-          );
+          handleMessage(dto: ChatMessageDTO.fromJson(body));
         }
     );
   }
 
   void send() async {
-    String base64Image = '';
+    if (imageFile == null && chatController.text.isEmpty) return;
+
+    String imageUrl = '';
     if (imageFile != null) {
-      debugPrint("NOT NULL");
-      final Uint8List imageBytes = await imageFile!.readAsBytes();
-      debugPrint("READ BYTES");
-      base64Image = base64Encode(imageBytes);
-      debugPrint(base64Image);
-      imageFile = null;
+      final Response response = await ChatRepository().uploadImage(image: imageFile!);
+      if (response.statusCode ~/ 100 == 2) {
+        imageUrl = response.body;
+      }
     }
 
     final Map<String, dynamic> message = {
       'roomId': widget.roomId,
-      'userId': testUserId,
+      'userId': userAccount.getUUID(),
       'content': chatController.text,
-      'lastTime': DateTime.now().toIso8601String(),
-      'image': base64Image
+      'lastTime': DateTime.now().toUtc().toString(),
+      'image': imageUrl
     };
 
-    debugPrint('Send message');
+    try {
+      client.send(
+          destination: '/pub/chat',
+          body: jsonEncode(message)
+      );
+    } catch(e) {
+      debugPrint('CHAT_ERR: $e');
+    }
 
-    client.send(
-        destination: '/pub/chat',
-        body: jsonEncode(message)
-    );
+    debugPrint('Send message');
+    debugPrint(message.toString());
   }
 
   @override
@@ -200,11 +205,12 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
               final bool isFirst = index == rList.length - 1;
 
               return ChatMessageItem(
-                isMine: currentMessage.userId == testUserId,
+                isMine: currentMessage.userId == userAccount.getUUID(),
                 currentMessage: currentMessage,
                 previousMessage: isFirst ? null : rList[index + 1],
                 nextMessage: index == 0 ? null : rList[index - 1],
-                isFirst: isFirst
+                isFirst: isFirst,
+                profileImage: widget.profileImage,
               );
             },
             separatorBuilder: (context, index) {
@@ -243,13 +249,6 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
                           imageSource: ImageSource.gallery
                       );
                       send();
-                      /*if (imageFile != null) {
-                        handleMessage(
-                          userId: testUserId,
-                          timestamp: DateTime.now(),
-                          imgUrl: 'https://cdn.inflearn.com/public/course-325829-cover/dbf21271-7ce3-4e26-880c-22cd4d8c226b'
-                        );
-                      }*/
                     },
                     child: Image.asset('assets/images/photo_icon.png', width: 50.w)
                 ),
@@ -275,13 +274,7 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
                           context: context,
                           imageSource: ImageSource.camera
                       );
-                      if (imageFile != null) {
-                        handleMessage(
-                          userId: testUserId,
-                          timestamp: DateTime.now(),
-                          imgUrl: 'https://cdn.inflearn.com/public/course-325829-cover/dbf21271-7ce3-4e26-880c-22cd4d8c226b'
-                        );
-                      }
+                      send();
                     },
                     child: Image.asset('assets/images/camera_icon.png', width: 50.w)
                 ),
@@ -408,19 +401,9 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   }
 
   void handleMessage({
-    required int userId,
-    required DateTime timestamp,
-    String? content,
-    String? imgUrl
+    required ChatMessageDTO dto
   }) {
-    test.add(
-      ChatMessageDTO(
-        userId: userId,
-        content: content ?? '',
-        imgUrl: imgUrl ?? '',
-        timestamp: timestamp.toString()
-      )
-    );
+    test.add(dto);
 
     rList = test.reversed.toList();
 

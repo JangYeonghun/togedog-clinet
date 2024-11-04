@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/model/user_account.dart';
+import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/loading_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -84,7 +87,6 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
 
   @override
   void initState() {
-    // checkAccessToken();
     _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
@@ -185,6 +187,9 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
               } else if (snapshot.data == true) {
                 // Access token exists, navigate to main
                 WidgetsBinding.instance.addPostFrameCallback((_) {
+                  UserProfileRepository().getAccount().then((response) {
+                    if (response.statusCode ~/ 100 == 2) UserAccount().set(map: jsonDecode(response.body));
+                  });
                   Navigator.pushReplacementNamed(context, '/main');
                 });
                 return const SizedBox.shrink(); // Placeholder while navigating

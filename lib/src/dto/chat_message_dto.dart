@@ -14,6 +14,6 @@ class ChatMessageDTO {
   ChatMessageDTO.fromJson(Map<String, dynamic> map) :
     userId = map['userId'],
     content = map['content'],
-    imgUrl = map['imgUrl'],
-    timestamp = map['timestamp'];
+    imgUrl = map['image'],
+    timestamp = map['lastTime'];
 }
