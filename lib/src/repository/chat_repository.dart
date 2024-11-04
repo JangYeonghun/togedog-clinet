@@ -1,4 +1,5 @@
 import 'package:dog/src/interface/api.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart';
 
 class ChatRepository extends API {
@@ -22,7 +23,8 @@ class ChatRepository extends API {
     return api(
         func: (accessToken) => post(
             Uri.https(domain, '/api/v1/chat/get-or-create', {
-              'receiver' : receiverId.toString()
+              'receiver' : receiverId.toString(),
+              'roomTitle' : '테스트'
             }),
             headers: <String, String>{
               'Content-type' : 'application/json',
@@ -59,4 +61,32 @@ class ChatRepository extends API {
     );
   }
 
+
+  Future<Response> uploadImage({
+    required XFile image
+  }) {
+    return api(func: (accessToken) async {
+          MultipartRequest request = MultipartRequest(
+              'POST',
+              Uri.https(domain, 'api/v1/chat/get-imageUrl')
+          )
+            ..headers.addAll({
+              "Content-Type": "multipart/form-data",
+              'Authorization': 'Bearer $accessToken'
+            });
+
+          request.files.add(await MultipartFile.fromPath(
+              'image',
+              image.path,
+              filename: image.path.split('/').last
+          ));
+
+          StreamedResponse streamedResponse = await request.send();
+
+          final Response response = await Response.fromStream(streamedResponse);
+
+          return response;
+        }
+    );
+  }
 }

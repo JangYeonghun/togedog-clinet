@@ -9,6 +9,18 @@ import 'package:http/http.dart';
 
 class UserProfileRepository extends API {
 
+  Future<Response> getAccount() {
+    return api(
+        func: (accessToken) => get(
+            Uri.https(domain, '/api/v1/member'),
+            headers: <String, String> {
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            }
+        )
+    );
+  }
+
   Future<Response> getProfile({
     required BuildContext? context
   }) {

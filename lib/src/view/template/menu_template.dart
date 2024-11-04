@@ -1,4 +1,6 @@
 import 'package:dog/src/config/palette.dart';
+import 'package:dog/src/model/user_account.dart';
+import 'package:dog/src/repository/auth_repository.dart';
 import 'package:dog/src/repository/chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/web_socket_util.dart';
@@ -18,7 +20,7 @@ class MenuTemplate extends StatefulWidget {
 }
 
 class _MenuTemplateState extends State<MenuTemplate> {
-  final String account = "dogmate@gmail.comㅁㅁㅁㅁㅁㅁㅁㅁㅁ";
+  final UserAccount userAccount = UserAccount();
   final FlutterSecureStorage storage = const FlutterSecureStorage();
   int notiCount = 2;
   late final XFile profileImage;
@@ -47,11 +49,10 @@ class _MenuTemplateState extends State<MenuTemplate> {
   }
 
   Widget logOut() {
+    final String account = userAccount.getEmail()!;
     return menuItem(
         onTap: () async {
-          await storage.deleteAll().whenComplete(() async {
-            Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false, arguments: {'isLogout': true});
-          });
+          await AuthRepository().signOut(context: context);
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -168,11 +169,11 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget testButton() {
     return InkWell(
       onTap: () {
-        //ChatRepository().createRoom(receiverId: 1);
-        Navigator.push(
+        ChatRepository().createRoom(receiverId: 1);
+        /*Navigator.push(
           context,
           Transition(child: WebSocketUtil(roomId: 4))
-        );
+        );*/
         //storage.read(key: 'accessToken').then((accessToken) => debugPrint("\n\n\naccessToken: $accessToken\n\n\n"));
       },
       child: const Text(

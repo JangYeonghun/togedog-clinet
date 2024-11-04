@@ -19,8 +19,8 @@ class ChatSeparator extends StatelessWidget {
       return const SizedBox();
     }
 
-    final DateTime currentTime = DateTime.parse(currentMessage.timestamp);
-    final DateTime nextTime = DateTime.parse(nextMessage!.timestamp);
+    final DateTime currentTime = DateTime.parse(currentMessage.timestamp).toLocal();
+    final DateTime nextTime = DateTime.parse(nextMessage!.timestamp).toLocal();
 
     if (_isDiffDate(currentTime: currentTime, nextTime: nextTime)) {
       return Padding(

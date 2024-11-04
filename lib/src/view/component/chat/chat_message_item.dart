@@ -11,6 +11,7 @@ class ChatMessageItem extends StatefulWidget {
   final ChatMessageDTO? previousMessage;
   final ChatMessageDTO? nextMessage;
   final bool isFirst;
+  final String profileImage;
 
   const ChatMessageItem({
     super.key,
@@ -18,7 +19,8 @@ class ChatMessageItem extends StatefulWidget {
     required this.currentMessage,
     required this.previousMessage,
     required this.nextMessage,
-    required this.isFirst
+    required this.isFirst,
+    required this.profileImage
   });
 
   @override
@@ -37,8 +39,8 @@ class _ChatMessageItemState extends State<ChatMessageItem> {
       return true;
     }
 
-    final DateTime currentTimestamp = DateTime.parse(widget.currentMessage.timestamp);
-    final DateTime previousTimestamp = DateTime.parse(widget.previousMessage!.timestamp);
+    final DateTime currentTimestamp = DateTime.parse(widget.currentMessage.timestamp).toLocal();
+    final DateTime previousTimestamp = DateTime.parse(widget.previousMessage!.timestamp).toLocal();
     
     if (currentTimestamp.difference(previousTimestamp).inDays != 0) {
       return true;
@@ -50,11 +52,22 @@ class _ChatMessageItemState extends State<ChatMessageItem> {
   Widget profile() {
     return profileChecker() ? Padding(
       padding: EdgeInsets.only(right: 10.w),
-      child: Image.asset(
-        'assets/images/profile_default.png',
+      child: SizedBox(
         height: 36.h,
-        width: 36.w
-      ),
+        width: 36.w,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(100),
+          child: widget.profileImage.isNotEmpty
+              ? CachedNetworkImage(
+              imageUrl: widget.profileImage,
+              fit: BoxFit.cover,
+          )
+              : Image.asset(
+              'assets/images/profile_default.png',
+              fit: BoxFit.cover
+          ),
+        ),
+      )
     ) : SizedBox(
       width: 46.w,
     );
@@ -75,13 +88,13 @@ class _ChatMessageItemState extends State<ChatMessageItem> {
   }
 
   DateTime? timestamp() {
-    final currentTimestamp = DateTime.parse(widget.currentMessage.timestamp);
+    final currentTimestamp = DateTime.parse(widget.currentMessage.timestamp).toLocal();
 
     if (widget.nextMessage == null) {
       return currentTimestamp;
     }
 
-    final previousTimestamp = DateTime.parse(widget.nextMessage!.timestamp);
+    final previousTimestamp = DateTime.parse(widget.nextMessage!.timestamp).toLocal();
 
     if (widget.currentMessage.userId != widget.nextMessage?.userId) {
       return currentTimestamp;
