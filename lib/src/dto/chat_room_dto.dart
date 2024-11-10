@@ -1,19 +1,25 @@
 class ChatRoomDto {
   final int roomId;
-  final String content;
+  final String title;
+  final String lastMessage;
+  final int unreceivedMessageCount;
   final String lastTime;
-  final String nickname;
+  final String senderImage;
 
   const ChatRoomDto({
     required this.roomId,
-    required this.content,
+    required this.title,
+    required this.lastMessage,
+    required this.unreceivedMessageCount,
     required this.lastTime,
-    required this.nickname
+    required this.senderImage
   });
 
   ChatRoomDto.fromJson(Map<String, dynamic> map) :
     roomId = map['roomId'] ?? 0,
-    content = map['content'] ?? '',
+    title = map['title'] ?? '',
+    lastMessage = map['lastMessage'] ?? '',
+    unreceivedMessageCount = map['unreceivedMessageCount'] ?? 0,
     lastTime = map['lastTime'] ?? '',
-    nickname = map['nickname'] ?? '';
+    senderImage = map['senderImage'] ?? '';
 }

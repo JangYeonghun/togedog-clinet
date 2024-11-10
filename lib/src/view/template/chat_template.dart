@@ -120,16 +120,21 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   void onConnectCallback(StompFrame connectFrame) {
     debugPrint('callback');
     debugPrint('Connection: ${client.connected}, ${client.isActive}');
-    client.subscribe(
-        destination: '/sub/chat/room/${widget.roomId}',
-        callback: (stompFrame) {
-          debugPrint('Message received');
-          debugPrint(stompFrame.body);
-          if (stompFrame.body == null) return;
-          final Map<String, dynamic> body = jsonDecode(stompFrame.body!);
-          handleMessage(dto: ChatMessageDTO.fromJson(body));
-        }
-    );
+
+    try {
+      client.subscribe(
+          destination: '/sub/chat/room/${widget.roomId}',
+          callback: (stompFrame) {
+            debugPrint('Message received');
+            debugPrint(stompFrame.body);
+            if (stompFrame.body == null) return;
+            final Map<String, dynamic> body = jsonDecode(stompFrame.body!);
+            handleMessage(dto: ChatMessageDTO.fromJson(body));
+          }
+      );
+    } catch(e) {
+      debugPrint('CHAT_SUB_ERR: $e');
+    }
   }
 
   void send() async {

@@ -5,7 +5,9 @@ import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/model/user_account.dart';
+import 'package:dog/src/repository/auth_repository.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
+import 'package:dog/src/util/firebase_cloud_message.dart';
 import 'package:dog/src/util/loading_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -38,12 +40,19 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
   Future<bool> checkAccessToken() async {
     final accessToken = await storage.read(key: 'accessToken');
     FlutterNativeSplash.remove();
-    if (accessToken != null) {
-      return true;
-    } else {
+
+    if (accessToken == null) {
       await initAppLinks();
       return false;
     }
+
+    if (!(await AuthRepository().reissueToken())) {
+      await initAppLinks();
+      return false;
+    }
+
+    await FirebaseCloudMessage().tokenHandler();
+    return true;
   }
 
   Future<void> initAppLinks() async {
@@ -80,7 +89,11 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
         await storage.write(key: 'refreshToken', value: refreshToken);
         debugPrint('Access Token: $accessToken');
         debugPrint('Refresh Token: $refreshToken');
-        setState(() {}); // Trigger a rebuild to check the access token again
+        //setState(() {}); // Trigger a rebuild to check the access token again
+        UserProfileRepository().getAccount().then((response) {
+          if (response.statusCode ~/ 100 == 2) UserAccount().set(map: jsonDecode(response.body));
+          Navigator.pushReplacementNamed(context, '/main');
+        });
       }
     }
   }
@@ -189,8 +202,8 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   UserProfileRepository().getAccount().then((response) {
                     if (response.statusCode ~/ 100 == 2) UserAccount().set(map: jsonDecode(response.body));
+                    Navigator.pushReplacementNamed(context, '/main');
                   });
-                  Navigator.pushReplacementNamed(context, '/main');
                 });
                 return const SizedBox.shrink(); // Placeholder while navigating
                 } else {
