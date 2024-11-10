@@ -9,13 +9,13 @@ class AuthRepository {
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
   Future<void> signOut({required BuildContext context}) async {
-    final String? refreshToken = await storage.read(key: 'refreshToken');
+    final String? accessToken = await storage.read(key: 'accessToken');
 
     final Response response = await post(
         Uri.https(domain, 'api/v1/member/logout'),
         headers: <String, String>{
           'Content-type' : 'application/json',
-          'Authorization' : 'Bearer $refreshToken'
+          'Authorization' : 'Bearer $accessToken'
         }
     );
 
@@ -42,12 +42,14 @@ class AuthRepository {
 
   Future<bool> reissueToken() async {
     final String? refreshToken = await storage.read(key: 'refreshToken');
+    final String? accessToken = await storage.read(key: 'accessToken');
 
     final Response response = await get(
       Uri.https(domain, 'api/v1/member/reissue-token'),
       headers: <String, String>{
         'Content-type' : 'application/json',
-        'Authorization' : 'Bearer $refreshToken'
+        'Authorization' : 'Bearer $accessToken',
+        'refresh-token' : '$refreshToken'
       }
     );
 

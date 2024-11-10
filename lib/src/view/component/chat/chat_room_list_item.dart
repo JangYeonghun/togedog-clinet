@@ -33,7 +33,7 @@ class ChatRoomListItem extends StatelessWidget {
           context,
           Transition(
               transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-              child: ChatTemplate(roomId: chatRoomDto.roomId, profileImage: "https://mentoapp.s3.ap-northeast-2.amazonaws.com/4add7998-8%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA%202024-10-01%20%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE%203.28.42.png")
+              child: ChatTemplate(roomId: chatRoomDto.roomId, profileImage: chatRoomDto.senderImage)
           )
       ),
       child: Container(
@@ -47,7 +47,7 @@ class ChatRoomListItem extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    chatRoomDto.nickname,
+                    chatRoomDto.title,
                     style: TextStyle(
                         color: Palette.darkFont2,
                         fontSize: 16.sp,
@@ -74,7 +74,7 @@ class ChatRoomListItem extends StatelessWidget {
                   SizedBox(
                     width: 191.w,
                     child: Text(
-                      chatRoomDto.content,
+                      chatRoomDto.lastMessage,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: TextStyle(
@@ -86,24 +86,25 @@ class ChatRoomListItem extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 20.w),
-                  Container(
-                    width: 18.w,
-                    height: 18.h,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Palette.green6
-                    ),
-                    child: Text(
-                      3.toString(),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12.sp,
-                          fontFamily: 'Pretendard',
-                          fontWeight: FontWeight.w400
+                  if (chatRoomDto.unreceivedMessageCount != 0)
+                    Container(
+                      width: 18.w,
+                      height: 18.h,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Palette.green6
                       ),
-                    ),
-                  )
+                      child: Text(
+                        chatRoomDto.unreceivedMessageCount.toString(),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12.sp,
+                            fontFamily: 'Pretendard',
+                            fontWeight: FontWeight.w400
+                        ),
+                      ),
+                    )
                 ],
               ),
             )

@@ -25,15 +25,7 @@ class _ChatBodyState extends State<ChatBody> {
   Future<List<ChatRoomDto>> getChatList() async {
     final Response response = await chatRepository.chatList();
     final List<dynamic> list = jsonDecode(response.body);
-    //return list.map((e) => ChatRoomDto.fromJson(e)).toList();
-    return [
-      const ChatRoomDto(
-        roomId: 1,
-        content: '으음',
-        lastTime: '2024-09-03 10:03:22',
-        nickname: '테스트'
-      )
-    ];
+    return list.map((e) => ChatRoomDto.fromJson(e)).toList();
   }
 
   @override

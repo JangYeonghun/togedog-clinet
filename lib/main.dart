@@ -22,7 +22,6 @@ Future<void> main() async {
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseCloudMessage().tokenHandler();
   await FirebaseCloudMessage().foreground();
   await FirebaseCloudMessage().terminated();
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
