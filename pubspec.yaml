@@ -41,7 +41,7 @@ dependencies:
   flutter_riverpod: ^2.5.1
   permission_handler:
   device_info_plus:
-  sqflite: ^2.2.8+4
+  sqflite: ^2.3.3+1
   transition: ^2.0.2
   table_calendar: ^3.1.1
   intl: ^0.19.0
