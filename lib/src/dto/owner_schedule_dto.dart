@@ -1,7 +1,7 @@
 import 'package:dog/src/dto/my_walk_schedule_content_dto.dart';
 import 'package:dog/src/dto/sort_info_dto.dart';
 
-class MyWalkScheduleDTO {
+class OwnerScheduleDTO {
   final int totalPages;
   final int totalElements;
   final SortInfoDTO sort;
@@ -11,10 +11,10 @@ class MyWalkScheduleDTO {
   final int numberOfElements;
   final PageableInfo pageable;
   final int size;
-  final List<MyWalkScheduleContentDTO> content;
+  final List<OwnerScheduleContentDTO> content;
   final bool empty;
 
-  MyWalkScheduleDTO({
+  OwnerScheduleDTO({
     required this.totalPages,
     required this.totalElements,
     required this.sort,
@@ -28,8 +28,8 @@ class MyWalkScheduleDTO {
     required this.empty,
   });
 
-  factory MyWalkScheduleDTO.fromJson(Map<String, dynamic> json) {
-    return MyWalkScheduleDTO(
+  factory OwnerScheduleDTO.fromJson(Map<String, dynamic> json) {
+    return OwnerScheduleDTO(
       totalPages: json['totalPages'] ?? 0,
       totalElements: json['totalElements'] ?? 0,
       sort: SortInfoDTO.fromJson(json['sort'] ?? {}),
@@ -40,7 +40,7 @@ class MyWalkScheduleDTO {
       pageable: PageableInfo.fromJson(json['pageable'] ?? {}),
       size: json['size'] ?? 0,
       content: (json['content'] as List<dynamic>?)
-          ?.map((item) => MyWalkScheduleContentDTO.fromJson(item as Map<String, dynamic>))
+          ?.map((item) => OwnerScheduleContentDTO.fromJson(item as Map<String, dynamic>))
           .toList() ?? [],
       empty: json['empty'] ?? true,
     );

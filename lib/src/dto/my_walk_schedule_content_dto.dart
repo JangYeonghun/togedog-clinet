@@ -1,7 +1,7 @@
-class MyWalkScheduleContentDTO {
+class OwnerScheduleContentDTO {
   final int boardId;
   final String pickUpDay;
-  final String statrTime;
+  final String statTime;
   final String endTime;
   final String fee;
   final String mateNickname;
@@ -10,10 +10,10 @@ class MyWalkScheduleContentDTO {
   final int mateId;
   final String matchStatus;
 
-  MyWalkScheduleContentDTO({
+  OwnerScheduleContentDTO({
     required this.boardId,
     required this.pickUpDay,
-    required this.statrTime,
+    required this.statTime,
     required this.endTime,
     required this.fee,
     required this.mateNickname,
@@ -23,11 +23,11 @@ class MyWalkScheduleContentDTO {
     required this.matchStatus,
   });
 
-  factory MyWalkScheduleContentDTO.fromJson(Map<String, dynamic> json) {
-    return MyWalkScheduleContentDTO(
+  factory OwnerScheduleContentDTO.fromJson(Map<String, dynamic> json) {
+    return OwnerScheduleContentDTO(
         boardId: json['boardId'] ?? 0,
         pickUpDay: json['pickUpDay'] ?? '',
-        statrTime: json['startTime'] ?? '',
+        statTime: json['statTime'] ?? '',
         endTime: json['endTime'] ?? '',
         fee: json['fee'] ?? '',
         mateNickname: json['mateNickname'] ?? '',

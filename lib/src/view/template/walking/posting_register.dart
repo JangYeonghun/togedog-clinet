@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/dog_profile_dto.dart';
 import 'package:dog/src/dto/location_data_dto.dart';
-import 'package:dog/src/dto/time_of_day_dto.dart';
 import 'package:dog/src/dto/walk_board_dto.dart';
 import 'package:dog/src/repository/dog_profile_repository.dart';
 import 'package:dog/src/repository/walking_repository.dart';
@@ -55,6 +54,7 @@ class _PostingRegisterState extends State<PostingRegister> {
 
   bool isSelectStartTime = false;
   bool isSelectEndTime = false;
+  bool isValidDate = true;
 
   List<String> hashTagList = [];
   List<bool> isProfileSelected = [];
@@ -286,16 +286,22 @@ class _PostingRegisterState extends State<PostingRegister> {
     DateTime startTime;
     DateTime endTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 23, 0);
 
-    if (selectedDate.year == now.year && selectedDate.month == now.month && selectedDate.day == now.day) {
+    final today = DateTime(now.year, now.month, now.day);
+    final selected = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+
+    if (selected.isAtSameMomentAs(today)) {
       // 오늘 날짜인 경우
+      isValidDate = true;
       startTime = now.minute < 30
           ? DateTime(now.year, now.month, now.day, now.hour, 30).add(const Duration(minutes: 30))
           : DateTime(now.year, now.month, now.day, now.hour + 1, 0).add(const Duration(minutes: 30));
-    } else if (selectedDate.year < now.year || selectedDate.month < now.month || selectedDate.day < now.day) {
+    } else if (selected.isBefore(today)) {
       // 이전 날짜인 경우
+      isValidDate = false;
       return timeSlots;
     }  else {
       // 오늘이 아닌 날짜인 경우
+      isValidDate = true;
       startTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 0, 0);
     }
 
@@ -311,8 +317,12 @@ class _PostingRegisterState extends State<PostingRegister> {
   List<String> endTimeSlots(DateTime selectedDate) {
     List<String> timeSlots = [];
     DateTime now = DateTime.now();
+
     DateTime startTime;
     DateTime endTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 23, 30);
+
+    final today = DateTime(now.year, now.month, now.day);
+    final selected = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
 
     if (_startTime != '시작') {
       List<String> timeParts = _startTime.split(':');
@@ -321,17 +331,20 @@ class _PostingRegisterState extends State<PostingRegister> {
 
       startTime = DateTime(now.year, now.month, now.day, hour, minute).add(const Duration(minutes: 30));
       endTime = DateTime(now.year, now.month, now.day, 23, 30);
-    } else if (selectedDate.year == now.year && selectedDate.month == now.month && selectedDate.day == now.day) {
+    } else if (selected.isAtSameMomentAs(today)) {
       // 오늘 날짜인 경우
+      isValidDate = true;
       startTime = now.minute < 30
           ? DateTime(now.year, now.month, now.day, now.hour, 30).add(const Duration(hours: 1))
           : DateTime(now.year, now.month, now.day, now.hour + 1, 0).add(const Duration(hours: 1));
       endTime = DateTime(now.year, now.month, now.day, 23, 30);
-    } else if (selectedDate.year < now.year || selectedDate.month < now.month || selectedDate.day < now.day) {
+    } else if (selected.isBefore(today)) {
       // 이전 날짜인 경우(_onDateSelected 여기서 1차 막힘)
+      isValidDate = false;
       return timeSlots;
     } else {
       // 오늘 아닌 날짜인 경우
+      isValidDate = true;
       startTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, 0, 30);
     }
 
@@ -565,6 +578,12 @@ class _PostingRegisterState extends State<PostingRegister> {
           return const Center(child: Text('No dog profiles available'));
         } else {
           List<DogProfileDTO> profiles = snapshot.data!;
+
+          // profiles 길이에 맞춰 isProfileSelected 배열 초기화
+          if (isProfileSelected.length != profiles.length) {
+            isProfileSelected = List.generate(profiles.length, (index) => false);
+          }
+
           return ListView.builder(
               shrinkWrap: true,
               itemCount: profiles.length + (profiles.length < 4 ? 1 : 0),
@@ -819,6 +838,31 @@ class _PostingRegisterState extends State<PostingRegister> {
     );
   }
 
+  Widget selectTime() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        selectTimeBox(text: _startTime, type: 'start', color: isSelectStartTime ? Palette.green6 : const Color(0xFF4C433F)),
+        SizedBox(
+          width: 25.w,
+          child: Align(
+            alignment: Alignment.center,
+            child: Text(
+              '~',
+              style: TextStyle(
+                color: Palette.darkFont4,
+                fontSize: 12.sp,
+                fontFamily: 'Pretendard',
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        ),
+        selectTimeBox(text: _endTime, type: 'end', color: isSelectEndTime ? Palette.green6 : const Color(0xFF4C433F)),
+      ],
+    );
+  }
+
   Widget selectTimeMenu({
     required String type,
     required Color color
@@ -856,10 +900,17 @@ class _PostingRegisterState extends State<PostingRegister> {
           }
         });
         List<String> timeSlots = getTimeSlots();
-        /*if (timeSlots.isEmpty) {
-          ToastPopupUtil.error(context: context, content: '선택 가능한 시간이 없어요.');
-          return;
-        } else */if (timeSlots.length >= 4) {
+        if (timeSlots.isEmpty) {
+          setState(() {
+            if (type == 'start') {
+              isSelectStartTime = false;
+            } else {
+              isSelectEndTime = false;
+            }
+          });
+          ToastPopupUtil.error(context: context, content: '날짜를 다시 확인해 주세요.');
+          return <PopupMenuItem<String>>[];
+        } else if (timeSlots.length >= 4) {
           return [
             PopupMenuItem<String>(
               padding: EdgeInsets.only(left: 0),
@@ -940,31 +991,6 @@ class _PostingRegisterState extends State<PostingRegister> {
           }).toList();
         }
       },
-    );
-  }
-
-  Widget selectTime() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        selectTimeBox(text: _startTime, type: 'start', color: isSelectStartTime ? Palette.green6 : const Color(0xFF4C433F)),
-        SizedBox(
-          width: 25.w,
-          child: Align(
-            alignment: Alignment.center,
-            child: Text(
-              '~',
-              style: TextStyle(
-                color: Palette.darkFont4,
-                fontSize: 12.sp,
-                fontFamily: 'Pretendard',
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-        ),
-        selectTimeBox(text: _endTime, type: 'end', color: isSelectEndTime ? Palette.green6 : const Color(0xFF4C433F)),
-      ],
     );
   }
 

@@ -5,7 +5,7 @@ import 'package:http/http.dart';
 
 class MyWalkRepository extends API {
 
-  Future<Response> myWalkScheduleList({
+  Future<Response> ownerScheduleList({
     required BuildContext context,
     required int page,
     required int size
@@ -42,6 +42,26 @@ class MyWalkRepository extends API {
             'Authorization': 'Bearer $accessToken'
           }
       )
+    );
+  }
+
+  Future<Response> mateScheduleList({
+    required BuildContext context,
+    required int page,
+    required int size
+  }) {
+    return api(
+        context: context,
+        func: (accessToken) => get(
+            Uri.https(domain, '/api/v1/mate/mySchedule', {
+              'page': page.toString(),
+              'size': size.toString()
+            }),
+            headers: <String, String> {
+              'Content-type': 'application/json',
+              'Authorization': 'Bearer $accessToken'
+            }
+        )
     );
   }
 }
