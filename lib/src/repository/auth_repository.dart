@@ -44,6 +44,9 @@ class AuthRepository {
     final String? refreshToken = await storage.read(key: 'refreshToken');
     final String? accessToken = await storage.read(key: 'accessToken');
 
+    debugPrint('requesting accessToken: $accessToken');
+    debugPrint('requesting refreshToken: $refreshToken');
+
     final Response response = await get(
       Uri.https(domain, 'api/v1/member/reissue-token'),
       headers: <String, String>{
@@ -51,7 +54,10 @@ class AuthRepository {
         'Authorization' : 'Bearer $accessToken',
         'refresh-token' : '$refreshToken'
       }
-    );
+    ).timeout(const Duration(seconds: 3), onTimeout: () {
+      debugPrint('타임아웃');
+      throw Exception('타임아웃!!');
+    });
 
     debugPrint('''
       
