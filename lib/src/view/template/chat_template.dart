@@ -11,6 +11,7 @@ import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
@@ -32,6 +33,8 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   final String testOppNickname = 'xxxx';
   final UserAccount userAccount = UserAccount();
   bool isExpand = false;
+  static const FlutterSecureStorage storage = FlutterSecureStorage();
+
   List<ChatMessageDTO> test = [
     ChatMessageDTO(
       userId: 32,
@@ -103,11 +106,21 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
 
   late List<ChatMessageDTO> rList;
 
-  void connect() {
+  Future<void> connect() async {
+    final String? accessToken = await storage.read(key: 'accessToken');
+
     client = StompClient(
         config: StompConfig.sockJS(
           url: "https://www.walktogedog.life/ws",
           onConnect: onConnectCallback,
+          stompConnectHeaders: <String, String>{
+            'Content-type' : 'application/json',
+            'Authorization' : 'Bearer $accessToken'
+          },
+          webSocketConnectHeaders: <String, String>{
+            'Content-type' : 'application/json',
+            'Authorization' : 'Bearer $accessToken'
+          },
           onWebSocketError: (dynamic error) => debugPrint('SOCKET_ERR: $error'),
           onStompError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
           onDisconnect: (StompFrame frame) => debugPrint('DISCONN: ${frame.headers}\n${frame.body}')
@@ -157,7 +170,13 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
     };
 
     try {
+      final String? accessToken = await storage.read(key: 'accessToken');
+
       client.send(
+          headers: <String, String>{
+            'Content-type' : 'application/json',
+            'Authorization' : 'Bearer $accessToken'
+          },
           destination: '/pub/chat',
           body: jsonEncode(message)
       );

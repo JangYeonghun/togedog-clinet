@@ -27,11 +27,14 @@ class FirebaseCloudMessage {
     flutterLocalNotificationsPlugin.initialize(settings);
 
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
+      debugPrint('수신!!');
+      debugPrint(message?.data.toString());
 
       if (message != null) {
         showFlutterNotification(message);
       }
     });
+
   }
 
   Future<void> terminated() async {
