@@ -1,9 +1,7 @@
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/chat_room_dto.dart';
-import 'package:dog/src/view/template/chat_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:transition/transition.dart';
 
 class ChatRoomListItem extends StatelessWidget {
   final ChatRoomDto chatRoomDto;
@@ -28,88 +26,79 @@ class ChatRoomListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => Navigator.push(
-          context,
-          Transition(
-              transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-              child: ChatTemplate(roomId: chatRoomDto.roomId, profileImage: chatRoomDto.senderImage)
-          )
-      ),
-      child: Container(
-        padding: EdgeInsets.only(top: 29.h, bottom: 19.h),
-        color: Colors.white,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 14.w, right: 14.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    chatRoomDto.title,
-                    style: TextStyle(
-                        color: Palette.darkFont2,
-                        fontSize: 16.sp,
-                        fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w500
-                    ),
+    return Container(
+      padding: EdgeInsets.only(top: 29.h, bottom: 19.h),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 14.w, right: 14.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  chatRoomDto.title,
+                  style: TextStyle(
+                      color: Palette.darkFont2,
+                      fontSize: 16.sp,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w500
                   ),
-                  Text(
-                    _passedTime(),
+                ),
+                Text(
+                  _passedTime(),
+                  style: TextStyle(
+                      color: Palette.darkFont1,
+                      fontSize: 12.sp,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w500
+                  ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 14.w, top: 12.h, bottom: 12.h, right: 15.w),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 191.w,
+                  child: Text(
+                    chatRoomDto.lastMessage,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                     style: TextStyle(
-                        color: Palette.darkFont1,
+                        color: Palette.darkFont4,
                         fontSize: 12.sp,
                         fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w500
+                        fontWeight: FontWeight.w400
                     ),
-                  )
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 14.w, top: 12.h, bottom: 12.h, right: 15.w),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 191.w,
+                  ),
+                ),
+                SizedBox(width: 20.w),
+                if (chatRoomDto.unreceivedMessageCount != 0)
+                  Container(
+                    width: 18.w,
+                    height: 18.h,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Palette.green6
+                    ),
                     child: Text(
-                      chatRoomDto.lastMessage,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                      chatRoomDto.unreceivedMessageCount.toString(),
                       style: TextStyle(
-                          color: Palette.darkFont4,
+                          color: Colors.white,
                           fontSize: 12.sp,
                           fontFamily: 'Pretendard',
                           fontWeight: FontWeight.w400
                       ),
                     ),
-                  ),
-                  SizedBox(width: 20.w),
-                  if (chatRoomDto.unreceivedMessageCount != 0)
-                    Container(
-                      width: 18.w,
-                      height: 18.h,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Palette.green6
-                      ),
-                      child: Text(
-                        chatRoomDto.unreceivedMessageCount.toString(),
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12.sp,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w400
-                        ),
-                      ),
-                    )
-                ],
-              ),
-            )
-          ],
-        ),
+                  )
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
