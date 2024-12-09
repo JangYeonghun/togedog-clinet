@@ -8,7 +8,11 @@ class ChatRoomListItem extends StatelessWidget {
   const ChatRoomListItem({super.key, required this.chatRoomDto});
 
   String _passedTime() {
-    final Duration diff = DateTime.now().difference(DateTime.parse(chatRoomDto.lastTime).toLocal());
+    // final Duration diff = DateTime.now().difference(DateTime.parse(chatRoomDto.lastTime).toLocal());
+    // TODO: 테스트방 나가서 에러를 없앤 다음 위에꺼로 원상복귀 해놓을것.
+    final String lastTime = chatRoomDto.lastTime.isEmpty ? DateTime.now().toString() : chatRoomDto.lastTime;
+    final Duration diff = DateTime.now().difference(DateTime.parse(lastTime).toLocal());
+    
     late final String timePassed;
 
     if (diff.inMinutes <= 60) {

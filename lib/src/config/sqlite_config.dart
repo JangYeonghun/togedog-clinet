@@ -32,22 +32,21 @@ class SQLiteConfig {
   }
 
   static Future<void> _onCreate(Database db, int version) async {
-    // String createChatQuery = '''
-    //   CREATE TABLE IF NOT EXISTS tb_chat (
-    //     chatId INTEGER PRIMARY KEY AUTOINCREMENT
-    //     , roomId INTEGER
-    //     , userId INTEGER
-    //     , chat TEXT
-    //     , urlYn INTEGER
-    //     , timeStamp INTEGER
-    //   );
-    //  ''';
-    // await db.execute(createChatQuery);
-    //
-    // // 인덱스 추가
-    // await db.execute(
-    //     'CREATE INDEX idx_tb_chat_roomId ON tb_chat (roomId);'
-    // );
+    String createChatQuery = '''
+      CREATE TABLE IF NOT EXISTS tb_chat (
+        roomId INTEGER
+        , userId INTEGER
+        , content TEXT
+        , image TEXT
+        , timestamp TEXT
+      );
+     ''';
+    await db.execute(createChatQuery);
+
+    // 인덱스 추가
+    await db.execute(
+        'CREATE INDEX idx_tb_chat_roomId ON tb_chat (roomId);'
+    );
 
   }
 
