@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/dto/chat_message_dto.dart';
+import 'package:dog/src/model/chat_local_model.dart';
 import 'package:dog/src/model/user_account.dart';
 import 'package:dog/src/repository/chat_repository.dart';
+import 'package:dog/src/repository/sqlite_chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/image_util.dart';
 import 'package:dog/src/view/component/chat/chat_message_item.dart';
@@ -28,6 +30,7 @@ class ChatTemplate extends StatefulWidget {
 class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderStateMixin {
   final TextEditingController chatController = TextEditingController();
   final ScrollController scrollController = ScrollController();
+  final SQLiteChatRepository sqLiteChatRepository = SQLiteChatRepository();
   late final StompClient client;
   XFile? imageFile;
   final String testOppNickname = 'xxxx';
@@ -35,95 +38,27 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   bool isExpand = false;
   static const FlutterSecureStorage storage = FlutterSecureStorage();
 
-  List<ChatMessageDTO> test = [
-    ChatMessageDTO(
-      userId: 32,
-      content: 'ㅡㅏㅡㅏ',
-      imgUrl: '',
-      timestamp: '2024-09-17 00:05:07'
-    ),
-    ChatMessageDTO(
-        userId: 32,
-        content: '아오아오아오 으아으ㅏ으아 그아으아ㅡ아으ㅏ으ㅏㅇ 크ㅏ으아ㅡ아ㅡ아 으아ㅡ',
-        imgUrl: '',
-        timestamp: '2024-09-17 00:15:07'
-    ),
-    ChatMessageDTO(
-        userId: 3,
-        content: '테스뚜테스뚜',
-        imgUrl: '',
-        timestamp: '2024-09-22 14:01:05'
-    ),
-    ChatMessageDTO(
-      userId: 3,
-      content: '테테테테ㅔㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ먀내얻쟈ㅐㅓ애ㅑㄷ저래ㅑㅈ더랟ㅈ더랴ㅐㅈ더랟저래ㅑㅈ더랴ㅐㅓㄴ이ㅏ러나이러ㅏㅣㄴ러ㅏ닝러ㅏㅣㅇ너링나ㅓ리낭렁니ㅏ러ㅏㄴ이러ㅏㅇ니러ㅏㅇ니ㅓ링나ㅓㄹㅇ니ㅏㅐ더래ㅑ더ㅑㅐ',
-      imgUrl: '',
-      timestamp: '2024-09-22 14:01:10',
-    ),
-    ChatMessageDTO(
-      userId: 3,
-      content: '테스뚜테스뚜',
-      imgUrl: '',
-      timestamp: '2024-09-23 00:01:05',
-    ),
-    ChatMessageDTO(
-      userId: 32,
-      content: '테스뚜테스뚜',
-      imgUrl: '',
-      timestamp: '2024-09-23 00:05:07',
-    ),
-    ChatMessageDTO(
-      userId: 3,
-      content: 'ㄴㄴㄴㄴㄴㅈ댜러ㅐㅑㅈ더ㅓㅈ대러ㅐㅈ',
-      imgUrl: '',
-      timestamp: '2024-09-23 00:06:03',
-    ),
-    ChatMessageDTO(
-      userId: 32,
-      content: '',
-      imgUrl: 'https://miro.medium.com/v2/resize:fit:4800/format:webp/1*y7yPy0OrJyeCOscaFAPwBg.jpeg',
-      timestamp: '2024-09-23 00:15:00',
-    ),
-    ChatMessageDTO(
-      userId: 32,
-      content: 'ㅇㅇddd',
-      imgUrl: '',
-      timestamp: '2024-09-23 00:15:59',
-    ),
-    ChatMessageDTO(
-      userId: 32,
-      content: 'ㅇㅇ',
-      imgUrl: '',
-      timestamp: '2024-09-23 00:17:07',
-    ),
-    ChatMessageDTO(
-      userId: 32,
-      content: '이예아우와야이야아',
-      imgUrl: '',
-      timestamp: '2024-09-24 13:12:07',
-    ),
-  ];
-
-  late List<ChatMessageDTO> rList;
+  List<ChatMessageDTO> chats = [];
+  List<ChatMessageDTO> rList = [];
 
   Future<void> connect() async {
     final String? accessToken = await storage.read(key: 'accessToken');
 
     client = StompClient(
         config: StompConfig.sockJS(
-          url: "https://www.walktogedog.life/ws",
-          onConnect: onConnectCallback,
-          stompConnectHeaders: <String, String>{
-            'Content-type' : 'application/json',
-            'Authorization' : 'Bearer $accessToken'
-          },
-          webSocketConnectHeaders: <String, String>{
-            'Content-type' : 'application/json',
-            'Authorization' : 'Bearer $accessToken'
-          },
-          onWebSocketError: (dynamic error) => debugPrint('SOCKET_ERR: $error'),
-          onStompError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
-          onDisconnect: (StompFrame frame) => debugPrint('DISCONN: ${frame.headers}\n${frame.body}')
+            url: "https://www.walktogedog.life/ws",
+            onConnect: onConnectCallback,
+            stompConnectHeaders: <String, String>{
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            },
+            webSocketConnectHeaders: <String, String>{
+              'Content-type' : 'application/json',
+              'Authorization' : 'Bearer $accessToken'
+            },
+            onWebSocketError: (dynamic error) => debugPrint('SOCKET_ERR: $error'),
+            onStompError: (dynamic error) => debugPrint('STOMP_ERR: $error'),
+            onDisconnect: (StompFrame frame) => debugPrint('DISCONN: ${frame.headers}\n${frame.body}')
         )
     );
     debugPrint('Connecting...');
@@ -141,8 +76,11 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
             debugPrint('Message received');
             debugPrint(stompFrame.body);
             if (stompFrame.body == null) return;
+
             final Map<String, dynamic> body = jsonDecode(stompFrame.body!);
             handleMessage(dto: ChatMessageDTO.fromJson(body));
+
+            saveMessageToLocalDb(body);
           }
       );
     } catch(e) {
@@ -188,6 +126,29 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
     debugPrint(message.toString());
   }
 
+  Future<void> saveMessageToLocalDb(Map<String, dynamic> message) async {
+    try {
+      final model = ChatLocalModel(
+        roomId: message['roomId'],
+        userId: message['userId'],
+        content: message['content'],
+        image: message['image'],
+        timeStamp: message['lastTime'],
+      );
+
+      await sqLiteChatRepository.insertChat(model);
+    } catch (e) {
+      debugPrint('saveMessageToLocalDb() exception: $e');
+    }
+  }
+
+  Future<void> chatContents() async {
+    chats = await sqLiteChatRepository.selectChats(roomId: widget.roomId);
+    setState(() {
+      rList = chats;
+    });
+  }
+
   @override
   void dispose() {
     client.deactivate();
@@ -200,7 +161,7 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   void initState() {
     ChatRepository().unreadMessage(roomId: widget.roomId, lastTime: DateTime.parse('2024-09-23 00:06:03').toString()/*DateTime.now().toString()*/);
     connect();
-    rList = test.reversed.toList();
+    chatContents();
     controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
     super.initState();
   }
@@ -349,17 +310,17 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
                 width: 36.w,
                 height: 36.w,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10)
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10)
                 ),
                 child: AnimatedBuilder(
-                  animation: controller,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: controller.value * 0.785398,
-                      child: Icon(Icons.add_rounded, color: Palette.green6, size: 30.w)
-                    );
-                  }
+                    animation: controller,
+                    builder: (context, child) {
+                      return Transform.rotate(
+                          angle: controller.value * 0.785398,
+                          child: Icon(Icons.add_rounded, color: Palette.green6, size: 30.w)
+                      );
+                    }
                 ),
               )
           ),
@@ -427,9 +388,9 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   void handleMessage({
     required ChatMessageDTO dto
   }) {
-    test.add(dto);
+    chats.insert(0, dto);
 
-    rList = test.reversed.toList();
+    rList = chats.toList();
 
     chatController.text = '';
 
