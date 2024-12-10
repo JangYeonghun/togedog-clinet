@@ -4,15 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatRoomListItem extends StatelessWidget {
-  final ChatRoomDto chatRoomDto;
+  final ChatRoomDTO chatRoomDto;
   const ChatRoomListItem({super.key, required this.chatRoomDto});
 
   String _passedTime() {
-    // final Duration diff = DateTime.now().difference(DateTime.parse(chatRoomDto.lastTime).toLocal());
-    // TODO: 테스트방 나가서 에러를 없앤 다음 위에꺼로 원상복귀 해놓을것.
-    final String lastTime = chatRoomDto.lastTime.isEmpty ? DateTime.now().toString() : chatRoomDto.lastTime;
-    final Duration diff = DateTime.now().difference(DateTime.parse(lastTime).toLocal());
-    
+    if (chatRoomDto.lastTime.isEmpty) return '';
+
+    final Duration diff = DateTime.now().difference(DateTime.parse(chatRoomDto.lastTime).toLocal());
     late final String timePassed;
 
     if (diff.inMinutes <= 60) {

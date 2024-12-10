@@ -1,4 +1,4 @@
-class ChatRoomDto {
+class ChatRoomDTO {
   final int roomId;
   final String title;
   final String lastMessage;
@@ -6,7 +6,7 @@ class ChatRoomDto {
   final String lastTime;
   final String senderImage;
 
-  const ChatRoomDto({
+  const ChatRoomDTO({
     required this.roomId,
     required this.title,
     required this.lastMessage,
@@ -15,7 +15,7 @@ class ChatRoomDto {
     required this.senderImage
   });
 
-  ChatRoomDto.fromJson(Map<String, dynamic> map) :
+  ChatRoomDTO.fromJson(Map<String, dynamic> map) :
     roomId = map['roomId'] ?? 0,
     title = map['title'] ?? '',
     lastMessage = map['lastMessage'] ?? '',

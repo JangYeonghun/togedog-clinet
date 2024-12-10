@@ -159,7 +159,7 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
 
   @override
   void initState() {
-    ChatRepository().unreadMessage(roomId: widget.roomId, lastTime: DateTime.parse('2024-09-23 00:06:03').toString()/*DateTime.now().toString()*/);
+    ChatRepository().unreadMessage(roomId: widget.roomId, lastTime: '2024-09-08 11:49:53.372360Z'/*DateTime.now().toString()*/);
     connect();
     chatContents();
     controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 300));
