@@ -24,21 +24,33 @@ class ChatBody extends StatefulWidget {
 
 class _ChatBodyState extends State<ChatBody> {
   final ChatRepository chatRepository = ChatRepository();
-  final StreamSubscription fcmStream = FirebaseMessaging.onMessage.listen((message) {
-    debugPrint('테스트다 테스트');
-  });
-  late Future<List<ChatRoomDto>> fetchChatList;
+  late final StreamSubscription fcmStream;
+  late Future<List<ChatRoomDTO>> fetchChatList;
 
-  Future<List<ChatRoomDto>> getChatList() async {
+  Future<List<ChatRoomDTO>> getChatList() async {
     final Response response = await chatRepository.chatList();
     final List<dynamic> list = jsonDecode(response.body);
-    final List<ChatRoomDto> chatRoomList = list.map((e) => ChatRoomDto.fromJson(e)).toList();
+    final List<ChatRoomDTO> chatRoomList = list.map((e) => ChatRoomDTO.fromJson(e)).toList();
     chatRoomList.sort((a, b) => b.lastTime.compareTo(a.lastTime));
     return chatRoomList;
   }
 
   @override
   void initState() {
+    fcmStream = FirebaseMessaging.onMessage.listen((message) async {
+      debugPrint('테스트다 테스트');
+
+      if (message.data.isEmpty) return;
+
+      final int roomId = message.data['roomId'];
+      final Response response = await chatRepository.chatRoom(roomId: roomId);
+      final ChatRoomDTO dto = ChatRoomDTO.fromJson(jsonDecode(response.body));
+      (await fetchChatList).removeWhere((e) => e.roomId == roomId);
+      (await fetchChatList).insert(0, dto);
+      setState(() {
+
+      });
+    });
     fetchChatList = getChatList();
     super.initState();
   }
@@ -76,23 +88,27 @@ class _ChatBodyState extends State<ChatBody> {
           return emptyChat();
         }
 
-        final List<ChatRoomDto> chatListData = snapshot.data;
+        final List<ChatRoomDTO> chatListData = snapshot.data;
 
         return ListView.builder(
             itemCount: chatListData.length,
             itemBuilder: (context, index) {
               return GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    Transition(
-                        transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-                        child: ChatTemplate(roomId: chatListData[index].roomId, profileImage: chatListData[index].senderImage)
-                    )
-                ).whenComplete(() {
-                  setState(() {
-                    fetchChatList = getChatList();
+                onTap: () {
+                  fcmStream.pause();
+                  Navigator.push(
+                      context,
+                      Transition(
+                          transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
+                          child: ChatTemplate(roomId: chatListData[index].roomId, profileImage: chatListData[index].senderImage)
+                      )
+                  ).whenComplete(() {
+                    setState(() {
+                      fetchChatList = getChatList();
+                    });
+                    fcmStream.resume();
                   });
-                }),
+                },
                 child: ChatRoomListItem(chatRoomDto: chatListData[index])
               );
             }

@@ -46,6 +46,20 @@ class ChatRepository extends API {
     );
   }
 
+  Future<Response> chatRoom({required int roomId}) {
+    return api(
+        func: (accessToken) => get(
+          Uri.https(domain, 'api/v1/chat/chatroom', {
+            'roomId' : roomId.toString()
+          }),
+          headers: <String, String>{
+            'Content-type' : 'application/json',
+            'Authorization' : 'Bearer $accessToken'
+          }
+        )
+    );
+  }
+
   Future<Response> unreadMessage({required int roomId, required String lastTime}) {
     return api(
       func: (accessToken) => get(
