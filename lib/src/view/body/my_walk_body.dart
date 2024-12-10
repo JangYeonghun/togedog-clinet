@@ -17,6 +17,7 @@ import 'package:dog/src/util/button_util.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
 import 'package:dog/src/util/horizontal_divider.dart';
 import 'package:dog/src/util/loading_util.dart';
+import 'package:dog/src/util/text_input_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,6 +34,7 @@ class MyWalkBody extends ConsumerStatefulWidget {
 class _MyWalkBodyState extends ConsumerState<MyWalkBody> with SingleTickerProviderStateMixin {
   final double deviceWidth = GlobalVariables.width;
   final MyWalkRepository myWalkRepository = MyWalkRepository();
+  final TextEditingController matchMateController = TextEditingController();
 
   late TabController _tabController;
   late final Future<MyWalkingDTO>? myWalkList;
@@ -370,14 +372,19 @@ class _MyWalkBodyState extends ConsumerState<MyWalkBody> with SingleTickerProvid
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                Text(
-                  '매칭하기',
-                  style: TextStyle(
-                    color: Palette.green6,
-                    fontSize: 14.sp,
-                    fontFamily: 'Pretendard',
-                    fontWeight: FontWeight.w500,
-                    decoration: TextDecoration.underline,
+                InkWell(
+                  onTap: () {
+                    matchMateDialog();
+                  },
+                  child: Text(
+                    '매칭하기',
+                    style: TextStyle(
+                      color: Palette.green6,
+                      fontSize: 14.sp,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                 ),
               ],
@@ -427,6 +434,130 @@ class _MyWalkBodyState extends ConsumerState<MyWalkBody> with SingleTickerProvid
           ],
         ),
       ),
+    );
+  }
+
+  void matchMateDialog() {
+    List<dynamic> userNames = [];
+    OverlayEntry? overlayEntry;
+
+    void showOverlay(BuildContext context, TextEditingController controller) {
+      if (overlayEntry != null) {
+        overlayEntry!.remove();
+      }
+
+      overlayEntry = OverlayEntry(
+          builder: (context) => Positioned(
+              child: CompositedTransformFollower(
+                link: LayerLink(),
+                showWhenUnlinked: false,
+                offset: Offset(0, 45),
+                child: Material(
+                  elevation: 4.0,
+                  child: ListView.builder(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      itemCount: userNames.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(userNames[index]),
+                          onTap: () {
+                            controller.text = userNames[index];
+                            overlayEntry!.remove();
+                            overlayEntry = null;
+                          },
+                        );
+                      }
+                  ),
+                ),
+              ),
+          ),
+      );
+
+      Overlay.of(context).insert(overlayEntry!);
+    }
+
+    showDialog(
+        context: context,
+        builder: (_) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.r)
+            ),
+            backgroundColor: const Color(0xFF828282),
+            insetPadding: EdgeInsets.symmetric(horizontal: 28.5.w),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15.r),
+              ),
+              padding: EdgeInsets.fromLTRB(17.w, 23.h, 17.w, 32.h),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Align(alignment: Alignment.centerRight, child: InkWell(onTap: () => Navigator.pop(context), child: Icon(Icons.close, size: 25.w, color: Palette.green6))),
+                  SizedBox(height: 8.h),
+                  Text(
+                    '매칭을 희망하는 산책 메이트의 \n닉네임을 검색해주세요 ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Palette.darkFont4,
+                      fontSize: 16.sp,
+                      fontFamily: 'Pretendard',
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 38.h),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(14.w, 0, 14.w, 12.h),
+                    child: TextField(
+                      controller: matchMateController,
+                      style: TextInputUtil().textStyle,
+                      textInputAction: TextInputAction.go,
+                      onChanged: (value) async {
+                        // 완성된 한글, 영어, 숫자, 특수 기호 정규 표현식
+                        final RegExp inputRegex = RegExp(r'^[가-힣a-zA-Z0-9!@#\$%^&*(),.?":{}|<>]+$');
+
+                        if (value.isNotEmpty && inputRegex.hasMatch(value)) {
+                          debugPrint('궯: $value');
+                          await myWalkRepository.matchMate(context: context, name: value).then((response) {
+                            if (response.statusCode ~/ 100 == 2) {
+                              setState(() {
+                                userNames = jsonDecode(response.body);
+                                debugPrint('궯: $userNames');
+                              });
+                              showOverlay(context, matchMateController);
+                            } else {
+                              if (overlayEntry != null) {
+                                overlayEntry!.remove();
+                                overlayEntry = null;
+                              }
+                            }
+                          });
+                        }
+                      },
+                      onSubmitted: (value) {
+                        if (overlayEntry != null) {
+                          overlayEntry!.remove();
+                          overlayEntry = null;
+                        }
+                      },
+                      keyboardType: TextInputType.text,
+                      decoration: TextInputUtil().inputDecoration(hintText: '같이걷개'),
+                    ),
+                  ),
+                  SizedBox(height: 24.h),
+                  ButtonUtil(
+                      width: deviceWidth - 91,
+                      height: (deviceWidth - 91) / 284 * 48,
+                      title: '매칭 요청하기',
+                      onTap: () => Navigator.pop(context)
+                  ).filledButton1m()
+                ],
+              ),
+            ),
+          );
+        }
     );
   }
 

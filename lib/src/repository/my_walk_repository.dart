@@ -1,6 +1,7 @@
 import 'package:dog/src/interface/api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart';
 
 class MyWalkRepository extends API {
@@ -61,6 +62,22 @@ class MyWalkRepository extends API {
               'Content-type': 'application/json',
               'Authorization': 'Bearer $accessToken'
             }
+        )
+    );
+  }
+
+  Future<Response> matchMate({
+    required BuildContext context,
+    required String name
+  }) {
+    return api(
+        context: context,
+        func: (accessToken) => get(
+          Uri.https(domain, '/api/v1/mate/keyword/$name'),
+          headers: <String, String> {
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer $accessToken'
+          }
         )
     );
   }

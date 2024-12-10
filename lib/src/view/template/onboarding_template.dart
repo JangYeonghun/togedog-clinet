@@ -93,14 +93,14 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
         UserProfileRepository().getAccount().then((response) {
           if (response.statusCode ~/ 100 == 2) UserAccount().set(map: jsonDecode(response.body));
           Navigator.pushReplacementNamed(context, '/main');
-        });
-      }
-    }
-  }
+  });
+}
+}
+}
 
-  @override
-  void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+@override
+void initState() {
+  _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
