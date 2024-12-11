@@ -12,7 +12,6 @@ class WalkingRepository extends API {
     required WalkBoardDTO dto
   }) {
     return api(
-      context: context,
       func: (accessToken) async {
         Uri url = Uri.https(domain, 'api/v1/board');
         final response = await post(

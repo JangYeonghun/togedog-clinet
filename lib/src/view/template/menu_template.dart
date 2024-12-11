@@ -3,7 +3,6 @@ import 'package:dog/src/model/user_account.dart';
 import 'package:dog/src/repository/auth_repository.dart';
 import 'package:dog/src/repository/chat_repository.dart';
 import 'package:dog/src/util/common_scaffold_util.dart';
-import 'package:dog/src/util/web_socket_util.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:dog/src/view/template/notification_template.dart';
 import 'package:flutter/material.dart';

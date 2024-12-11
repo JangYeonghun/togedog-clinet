@@ -12,7 +12,6 @@ class MyWalkRepository extends API {
     required int size
   }) {
     return api(
-      context: context,
       func: (accessToken) => get(
           Uri.https(domain, '/api/v1/owner/mySchedule', {
             'page': page.toString(),
@@ -32,7 +31,6 @@ class MyWalkRepository extends API {
     required int size
   }) {
     return api(
-      context: context,
       func: (accessToken) => get(
           Uri.https(domain, '/api/v1/owner/myWalking', {
             'page': page.toString(),
@@ -52,7 +50,6 @@ class MyWalkRepository extends API {
     required int size
   }) {
     return api(
-        context: context,
         func: (accessToken) => get(
             Uri.https(domain, '/api/v1/mate/mySchedule', {
               'page': page.toString(),
@@ -71,7 +68,6 @@ class MyWalkRepository extends API {
     required String name
   }) {
     return api(
-        context: context,
         func: (accessToken) => get(
           Uri.https(domain, '/api/v1/mate/keyword/$name'),
           headers: <String, String> {

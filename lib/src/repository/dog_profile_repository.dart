@@ -12,7 +12,6 @@ class DogProfileRepository extends API {
     required DogProfileRegisterDTO dto
   }) {
     return api(
-      context: context,
       func: (accessToken) async {
         MultipartRequest request = MultipartRequest(
             'POST',
@@ -58,7 +57,6 @@ class DogProfileRepository extends API {
     required DogProfileRegisterDTO dto
   }) async {
     return api(
-        context: context,
         func: (accessToken) async {
           MultipartRequest request = MultipartRequest(
               'PATCH',
@@ -104,7 +102,6 @@ class DogProfileRepository extends API {
     required BuildContext? context
   }) {
     return api(
-      context: context,
       func: (accessToken) => get(
           Uri.https(domain, '/api/v1/dog'),
           headers: <String, String>{
@@ -134,7 +131,6 @@ class DogProfileRepository extends API {
     required int dogId
   }) {
     return api(
-      context: context,
       func: (accessToken) => delete(
           Uri.https(domain, '/api/v1/dog/$dogId'),
           headers: <String, String>{
@@ -151,7 +147,6 @@ class DogProfileRepository extends API {
     required int size
   }) {
     return api(
-        context: context,
         func: (accessToken) => get(
             Uri.https(domain, '/api/v1/dog/random', {
               'page' : page.toString(),

@@ -1,114 +1,99 @@
 import 'dart:math';
-
 import 'package:dog/src/config/global_variables.dart';
-import 'package:dog/src/repository/auth_repository.dart';
-import 'package:dog/src/util/api_error_notifier.dart';
+import 'package:dog/src/exception/api_exception.dart';
+import 'package:dog/src/exception/token_reissue_exception.dart';
+import 'package:dog/src/repository/token_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
-class API {
+abstract class API {
   final String domain = GlobalVariables.domain;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final TokenRepository _tokenRepository = TokenRepository();
 
-  final FlutterSecureStorage storage = const FlutterSecureStorage();
-  final AuthRepository authRepository = AuthRepository();
-  final APIErrorNotifier apiErrorNotifier = APIErrorNotifier();
-
-  static bool isReissuing = false;
-
-  int _retry = 0;
-  int _reissueWait = 0;
-  int _backoffDelay = 200;
+  static bool isGlobalReissuing = false;
   static const int _maxBackoffDelay = 800;
-  int _reissueBackoffDelay = 200;
-  static const int _maxReissueBackoffDelay = 800;
 
-  // 401 unauthorized 발생시 토큰 재발급 및 API 호출 재시도
-  Future<Response> api({BuildContext? context, required Future<Response> Function(String? accessToken) func}) async {
+  Future<Response> api({required Future<Response> Function(String? accessToken) func}) async {
+    int retry = 0;
+    late final Response response;
 
-    while (_reissueWait < 4) {
-      _reissueWait ++;
+    while (retry < 4) {
+      retry++;
 
-      if (isReissuing) {
-        await Future.delayed(Duration(milliseconds: min(_reissueBackoffDelay, _maxReissueBackoffDelay)));
-        _reissueBackoffDelay *= 2;
+      if (retry > 4) throw TokenReissueException('Token reissue timeout');
 
-      } else {
-        return storage.read(key: 'accessToken').then((accessToken) {
-          return func(accessToken).then((response) async {
-            debugPrint('''
-      
-            /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
-            
-            API: ${response.request?.method} ${response.request?.url}
-            StatusCode: ${response.statusCode}
-            Content: ${response.body}
-            
-            /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
-            
-            ''');
+      if (isGlobalReissuing) {
+        await _exponentialBackoff(retry, _maxBackoffDelay);
+        continue;
+      }
 
-            if (response.statusCode ~/ 100 == 2) {
-              return response;
-            }
+      try {
+        response = await _callApi(func: func);
+        break;
+      } on ApiException catch(e) {
 
-            if (response.statusCode == 401) {
-              return _reissueToken().then((result) async {
-                if (result) {
-                  // 토큰 갱신 성공시 API 호출 재시도 및 토큰 재발급 관련 변수 초기화
-                  _resetReissueState();
-                  return await api(func: (accessToken) => func(accessToken), context: context);
+        if (e.statusCode == 401) {
+          if (await _reissueToken()) response = await _callApi(func: func);
+          break;
+        }
 
-                } else {
-                  // 토큰 갱신 실패시 만료된 기존 토큰 제거
-                  await storage.deleteAll();
-                  throw Exception('Error: Token Expired');
-
-                }
-              });
-
-            }
-
-            // optional 값인 context 존재시 응답 결과에 따른 토스트 팝업 제공
-            if (context != null) {
-              apiErrorNotifier.notify(response: response, context: context);
-
-            }
-
-            throw Exception("API call failed");
-          });
-        });
       }
     }
 
-    throw Exception("Token reissue wait timeout");
+    return response;
   }
 
-  // 토큰 재발급 관련 변수 초기화
-  void _resetReissueState() {
-    isReissuing = false;
-    _reissueWait = 0;
-    _reissueBackoffDelay = 200;
+  Future<Response> _callApi({required Future<Response> Function(String? accessToken) func}) async {
+    final String? accessToken = await _storage.read(key: 'accessToken');
+    final Response response = await func(accessToken);
+
+    _logApi(response: response);
+
+    if (response.statusCode ~/ 100 == 2) return response;
+
+    throw ApiException('API call failure', response.statusCode);
   }
 
-  // 토큰 재발급
   Future<bool> _reissueToken() async {
-    isReissuing = true;
-    _retry ++;
+    isGlobalReissuing = true;
+    int retry = 0;
+    late final bool succeed;
 
-    if (_retry > 1) {
-      await Future.delayed(Duration(milliseconds: min(_backoffDelay, _maxBackoffDelay)));
-      _backoffDelay *= 2;
+    while (retry < 4) {
+      retry++;
+
+      if (retry > 4) {
+        throw TokenReissueException('Access Token reissue failure');
+      }
+
+      if (await _tokenRepository.reissueToken()) {
+        succeed = true;
+        break;
+      }
+
+      await _exponentialBackoff(retry, _maxBackoffDelay);
     }
 
-    if (_retry < 3) {
-      return authRepository.reissueToken();
+    return succeed;
+  }
 
-    } else {
-      _retry = 0;
-      _backoffDelay = 200;
-      throw Exception('Error: Token reissue failure');
+  Future<void> _exponentialBackoff(int retryCount, int maxDelay) async {
+    await Future.delayed(Duration(milliseconds: min(200 * pow(2, retryCount).toInt(), maxDelay)));
+  }
 
-    }
+  void _logApi({required Response response}) {
+    debugPrint('''
+
+        /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
+        
+        API: ${response.request?.method} ${response.request?.url}
+        StatusCode: ${response.statusCode}
+        Content: ${response.body}
+        
+        /=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/=/
+        
+        ''');
   }
 }

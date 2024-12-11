@@ -5,7 +5,7 @@ import 'package:app_links/app_links.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/palette.dart';
 import 'package:dog/src/model/user_account.dart';
-import 'package:dog/src/repository/auth_repository.dart';
+import 'package:dog/src/repository/token_repository.dart';
 import 'package:dog/src/repository/user_profile_repository.dart';
 import 'package:dog/src/util/firebase_cloud_message.dart';
 import 'package:dog/src/util/loading_util.dart';
@@ -46,7 +46,7 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
       return false;
     }
 
-    if (!(await AuthRepository().reissueToken())) {
+    if (!(await TokenRepository().reissueToken())) {
       await initAppLinks();
       return false;
     }
@@ -93,14 +93,14 @@ class _OnboardingTemplateState extends State<OnboardingTemplate> with SingleTick
         UserProfileRepository().getAccount().then((response) {
           if (response.statusCode ~/ 100 == 2) UserAccount().set(map: jsonDecode(response.body));
           Navigator.pushReplacementNamed(context, '/main');
-  });
-}
-}
-}
+        });
+      }
+    }
+  }
 
-@override
-void initState() {
-  _tabController = TabController(length: 3, vsync: this);
+  @override
+  void initState() {
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
