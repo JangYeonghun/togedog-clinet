@@ -1,7 +1,7 @@
 import 'package:dog/firebase_options.dart';
 import 'package:dog/src/config/global_variables.dart';
 import 'package:dog/src/config/sqlite_config.dart';
-import 'package:dog/src/repository/auth_repository.dart';
+import 'package:dog/src/repository/token_repository.dart';
 import 'package:dog/src/util/firebase_cloud_message.dart';
 import 'package:dog/src/view/template/main_template.dart';
 import 'package:dog/src/view/template/onboarding_template.dart';

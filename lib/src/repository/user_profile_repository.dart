@@ -25,7 +25,6 @@ class UserProfileRepository extends API {
     required BuildContext? context
   }) {
     return api(
-      context: context,
       func: (accessToken) => get(
           Uri.https(domain, '/api/v1/mate'),
           headers: <String, String> {
@@ -42,7 +41,6 @@ class UserProfileRepository extends API {
     required int size
   }) {
     return api(
-        context: context,
         func: (accessToken) => get(
             Uri.https(domain, '/api/v1/mate/random', {
               'page' : page.toString(),
@@ -60,7 +58,6 @@ class UserProfileRepository extends API {
     required BuildContext? context
   }) {
     return api(
-        context: context,
         func: (accessToken) => delete(
             Uri.https(domain, '/api/v1/mate'),
             headers: <String, String> {
@@ -76,7 +73,6 @@ class UserProfileRepository extends API {
     required UserProfileRegisterDto dto
   }) {
     return api(
-        context: context,
         func: (accessToken) async {
           MultipartRequest request = MultipartRequest(
               'PATCH',
@@ -124,7 +120,6 @@ class UserProfileRepository extends API {
     required UserProfileRegisterDto dto
   }) {
     return api(
-      context: context,
       func: (accessToken) async {
         MultipartRequest request = MultipartRequest(
             'POST',
@@ -172,7 +167,6 @@ class UserProfileRepository extends API {
     required String nickname
   }) {
     return api(
-      context: context,
       func: (accessToken) => get(
           Uri.https(domain, '/api/v1/mate/$nickname'),
           headers: <String, String> {
