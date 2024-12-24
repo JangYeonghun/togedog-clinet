@@ -393,7 +393,7 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
 
     rList = chats.toList();
 
-    chatController.text = '';
+    if (dto.userId == userAccount.getUUID()) chatController.text = '';
 
     setState(() {
       isExpand = false;
