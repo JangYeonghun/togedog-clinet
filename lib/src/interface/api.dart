@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
 
-abstract class API {
+class API {
   final String domain = GlobalVariables.domain;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final TokenRepository _tokenRepository = TokenRepository();
