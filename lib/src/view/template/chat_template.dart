@@ -20,8 +20,9 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 class ChatTemplate extends StatefulWidget {
   final int roomId;
+  final String roomTitle;
   final String profileImage;
-  const ChatTemplate({super.key, required this.roomId, required this.profileImage});
+  const ChatTemplate({super.key, required this.roomId, required this.roomTitle, required this.profileImage});
 
   @override
   State<ChatTemplate> createState() => _ChatTemplateState();
@@ -33,10 +34,10 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   final SQLiteChatRepository sqLiteChatRepository = SQLiteChatRepository();
   late final StompClient client;
   XFile? imageFile;
-  final String testOppNickname = 'xxxx';
   final UserAccount userAccount = UserAccount();
   bool isExpand = false;
   static const FlutterSecureStorage storage = FlutterSecureStorage();
+  bool isHandlingPop = false;
 
   List<ChatMessageDTO> chats = [];
   List<ChatMessageDTO> rList = [];
@@ -413,24 +414,23 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     return CommonScaffoldUtil(
-        appBar: PopHeader(title: testOppNickname, useBackButton: true),
+        appBar: PopHeader(title: widget.roomTitle, useBackButton: true),
         body: PopScope(
           canPop: false,
           onPopInvoked: (pop) {
+            if (isHandlingPop) return;
+            isHandlingPop = true;
+
             if (isExpand) {
               setState(() {
                 isExpand = false;
                 controller.reverse();
               });
+              isHandlingPop = false;
               return;
             }
 
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (Navigator.canPop(context)) {
-                Navigator.pop(context);
-              }
-            });
-            return;
+            Navigator.pop(context);
           },
           child: Column(
             children: [
