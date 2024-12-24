@@ -101,11 +101,19 @@ class _ChatBodyState extends State<ChatBody> {
                       context,
                       Transition(
                           transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-                          child: ChatTemplate(roomId: dto.roomId, profileImage: dto.senderImage)
+                          child: ChatTemplate(
+                            roomId: dto.roomId,
+                            roomTitle: dto.title,
+                            profileImage: dto.senderImage
+                          )
                       )
                   ).whenComplete(() {
-                    setState(() {
-                      fetchChatList = getChatList();
+                    fetchChatList = getChatList().whenComplete(() {
+                      Future.delayed(const Duration(microseconds: 10), () {
+                        setState(() {
+
+                        });
+                      });
                     });
                     fcmStream.resume();
                   });
