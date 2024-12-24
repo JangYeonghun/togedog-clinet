@@ -42,7 +42,7 @@ class _ChatBodyState extends State<ChatBody> {
 
       if (message.data.isEmpty) return;
 
-      final int roomId = message.data['roomId'];
+      final int roomId = int.parse(message.data['roomId']);
       final Response response = await chatRepository.chatRoom(roomId: roomId);
       final ChatRoomDTO dto = ChatRoomDTO.fromJson(jsonDecode(response.body));
       (await fetchChatList).removeWhere((e) => e.roomId == roomId);
@@ -96,11 +96,12 @@ class _ChatBodyState extends State<ChatBody> {
               return GestureDetector(
                 onTap: () {
                   fcmStream.pause();
+                  final ChatRoomDTO dto = chatListData[index];
                   Navigator.push(
                       context,
                       Transition(
                           transitionEffect: TransitionEffect.RIGHT_TO_LEFT,
-                          child: ChatTemplate(roomId: chatListData[index].roomId, profileImage: chatListData[index].senderImage)
+                          child: ChatTemplate(roomId: dto.roomId, profileImage: dto.senderImage)
                       )
                   ).whenComplete(() {
                     setState(() {

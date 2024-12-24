@@ -168,7 +168,7 @@ class _MenuTemplateState extends State<MenuTemplate> {
   Widget testButton() {
     return InkWell(
       onTap: () {
-        ChatRepository().createRoom(receiverId: 1);
+        ChatRepository().createRoom(receiverId: 4);
         /*Navigator.push(
           context,
           Transition(child: WebSocketUtil(roomId: 4))
