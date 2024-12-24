@@ -11,7 +11,6 @@ import 'package:dog/src/view/component/chat/chat_message_item.dart';
 import 'package:dog/src/view/component/chat/chat_separator.dart';
 import 'package:dog/src/view/header/pop_header.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart';
@@ -119,6 +118,8 @@ class _ChatTemplateState extends State<ChatTemplate> with SingleTickerProviderSt
           destination: '/pub/chat',
           body: jsonEncode(message)
       );
+
+      imageFile = null;
     } catch(e) {
       debugPrint('CHAT_ERR: $e');
     }
