@@ -34,10 +34,13 @@ class API {
         break;
       } on ApiException catch(e) {
 
-        if (e.statusCode == 401) {
+        if (e.response.statusCode == 401) {
           if (await _reissueToken()) response = await _callApi(func: func);
           break;
         }
+
+        response = e.response;
+        break;
 
       }
     }
@@ -53,7 +56,7 @@ class API {
 
     if (response.statusCode ~/ 100 == 2) return response;
 
-    throw ApiException('API call failure', response.statusCode);
+    throw ApiException('API call failure', response);
   }
 
   Future<bool> _reissueToken() async {
